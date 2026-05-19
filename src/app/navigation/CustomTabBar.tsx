@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: colors.glassBorder,
-    paddingBottom: 20,
+    paddingBottom: 34,
   },
   blurBg: {
     backdropFilter: 'blur(25px)',

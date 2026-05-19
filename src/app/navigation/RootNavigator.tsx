@@ -7,6 +7,7 @@ import { CustomTabBar } from './CustomTabBar';
 
 // Screens
 import { RingScreen } from '../../features/ring/screens/RingScreen';
+import { RingDetailScreen } from '../../features/ring/screens/RingDetailScreen';
 import { TaskRecordingModal } from '../../features/ring/screens/TaskRecordingModal';
 import { ProjectsListScreen } from '../../features/projects/screens/ProjectsListScreen';
 import { ProjectOutlineScreen } from '../../features/projects/screens/ProjectOutlineScreen';
@@ -42,6 +43,7 @@ function RingStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="RingMain" component={RingScreen} />
+      <Stack.Screen name="RingDetail" component={RingDetailScreen} />
       <Stack.Screen
         name="TaskRecordingModal"
         component={TaskRecordingModal}
@@ -56,6 +58,7 @@ function ProjectsStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProjectsList" component={ProjectsListScreen} />
       <Stack.Screen name="ProjectOutline" component={ProjectOutlineScreen} />
+      <Stack.Screen name="RingDetail" component={RingDetailScreen} />
       <Stack.Screen name="ArchivedRing" component={ArchivedRingScreen} />
     </Stack.Navigator>
   );

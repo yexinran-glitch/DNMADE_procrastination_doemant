@@ -32,12 +32,7 @@ export function TaskRecordingModal({ navigation, route }: any) {
 
   return (
     <View style={styles.container}>
-      <BlurView
-        style={StyleSheet.absoluteFill}
-        blurType="dark"
-        blurAmount={30}
-        reducedTransparencyFallbackColor={colors.background}
-      />
+      <View style={[StyleSheet.absoluteFill, styles.modalBlurBg]} />
 
       {/* Header */}
       <View style={styles.header}>

@@ -4,6 +4,7 @@ import { useStore } from '../../../store/projectStore';
 import { useShallow } from 'zustand/react/shallow';
 import { colors } from '../../../shared/theme/colors';
 import { GlassView } from '../../../shared/components/GlassView';
+import { ScreenHeader } from '../../../shared/components/ScreenHeader';
 import type { StoryId } from '../../../data/models';
 
 export function ProjectOutlineScreen({ navigation }: any) {
@@ -47,7 +48,11 @@ export function ProjectOutlineScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{project?.name ?? 'Project'} Outline</Text>
+      <ScreenHeader
+        title={`${project?.name ?? 'Project'} Outline`}
+        onBack={() => navigation.goBack()}
+      />
+      <View style={styles.content}>
 
       {/* New Story Input */}
       <GlassView style={styles.inputRow} borderOpacity={0.1}>
@@ -132,6 +137,7 @@ export function ProjectOutlineScreen({ navigation }: any) {
           )}
         </View>
       ))}
+      </View>
     </View>
   );
 }
@@ -140,14 +146,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    padding: 16,
-    paddingTop: 60,
   },
-  title: {
-    color: colors.textPrimary,
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 20,
+  content: {
+    flex: 1,
+    padding: 16,
+    paddingTop: 8,
   },
   inputRow: {
     flexDirection: 'row',

@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useStore } from '../../../store/projectStore';
 import { useShallow } from 'zustand/react/shallow';
 import { colors } from '../../../shared/theme/colors';
 import { GlassView } from '../../../shared/components/GlassView';
+import { ScreenHeader } from '../../../shared/components/ScreenHeader';
 import type { Project } from '../../../data/models';
 import { ProjectStatus } from '../../../data/models';
 
@@ -14,7 +15,7 @@ export function ProjectsListScreen({ navigation }: any) {
 
   const handleProjectPress = (project: Project) => {
     setCurrentProject(project.id);
-    navigation.navigate('RingTab');
+    navigation.navigate('RingDetail');
   };
 
   const handleArchivedPress = (project: Project) => {
@@ -51,19 +52,25 @@ export function ProjectsListScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Active</Text>
-      {activeProjects.length === 0 ? (
-        <Text style={styles.empty}>No active projects</Text>
-      ) : (
-        activeProjects.map((p) => renderProject(p, false))
-      )}
+      <ScreenHeader
+        title="Projects"
+        onBack={() => navigation.goBack()}
+      />
+      <View style={styles.content}>
+        <Text style={styles.sectionTitle}>Active</Text>
+        {activeProjects.length === 0 ? (
+          <Text style={styles.empty}>No active projects</Text>
+        ) : (
+          activeProjects.map((p) => renderProject(p, false))
+        )}
 
-      <Text style={[styles.sectionTitle, { marginTop: 32 }]}>Archived</Text>
-      {archivedProjects.length === 0 ? (
-        <Text style={styles.empty}>No archived projects</Text>
-      ) : (
-        archivedProjects.map((p) => renderProject(p, true))
-      )}
+        <Text style={[styles.sectionTitle, { marginTop: 32 }]}>Archived</Text>
+        {archivedProjects.length === 0 ? (
+          <Text style={styles.empty}>No archived projects</Text>
+        ) : (
+          archivedProjects.map((p) => renderProject(p, true))
+        )}
+      </View>
     </View>
   );
 }
@@ -72,8 +79,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  content: {
+    flex: 1,
     padding: 16,
-    paddingTop: 60,
+    paddingTop: 8,
   },
   sectionTitle: {
     color: colors.textSecondary,

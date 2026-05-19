@@ -134,13 +134,13 @@ const styles = StyleSheet.create({
   },
   hud: {
     position: 'absolute',
-    top: 60,
+    top: 54,
     left: 0,
     right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
   },
   projectNameBadge: {
     borderRadius: 20,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
   layerIndicator: {
     position: 'absolute',
-    bottom: 120,
+    bottom: 100,
     alignSelf: 'center',
     backgroundColor: colors.glassBg,
     paddingHorizontal: 14,

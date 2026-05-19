@@ -1,6 +1,7 @@
-import { Dimensions } from 'react-native';
+import { PHONE_WIDTH, PHONE_HEIGHT } from '../../../shared/theme/layout';
 
-const { width: SW, height: SH } = Dimensions.get('window');
+const SW = PHONE_WIDTH;
+const SH = PHONE_HEIGHT;
 
 // Ring center: far right, vertically centered
 export const RING_CENTER_X = SW * 0.85;

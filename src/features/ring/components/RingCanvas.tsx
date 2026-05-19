@@ -7,6 +7,7 @@ import {
   PEN_ANGLE,
   computeRingRadius,
 } from '../utils/ringGeometry';
+import { PHONE_WIDTH, PHONE_HEIGHT } from '../../../shared/theme/layout';
 import { colors } from '../../../shared/theme/colors';
 
 const DEFAULT_SPEED = 0.3;
@@ -46,8 +47,8 @@ export function RingCanvas() {
     const container = containerRef.current;
     if (!container) return;
 
-    const SW = window.innerWidth;
-    const SH = window.innerHeight;
+    const SW = PHONE_WIDTH;
+    const SH = PHONE_HEIGHT;
     const canvas = document.createElement('canvas');
     canvas.width = SW * window.devicePixelRatio;
     canvas.height = SH * window.devicePixelRatio;
@@ -71,8 +72,8 @@ export function RingCanvas() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const SW = window.innerWidth;
-    const SH = window.innerHeight;
+    const SW = PHONE_WIDTH;
+    const SH = PHONE_HEIGHT;
     const dpr = window.devicePixelRatio;
     const centerX = SW * 0.85;
     const centerY = SH * 0.5;
