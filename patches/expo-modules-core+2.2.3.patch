@@ -1,0 +1,92 @@
+diff --git a/node_modules/expo-modules-core/index.js b/node_modules/expo-modules-core/index.js
+index b894a23..88ccc2e 100644
+--- a/node_modules/expo-modules-core/index.js
++++ b/node_modules/expo-modules-core/index.js
+@@ -1 +1,86 @@
+-module.exports = null;
++"use strict";
++
++// Node.js shim for expo-modules-core
++// This module is loaded by Expo config plugins running in Node.js context.
++// Runtime behavior (native modules, event emitters) is not needed here —
++// plugins only need the types and error classes to be loadable.
++
++class CodedError extends Error {
++  constructor(code, message) {
++    super(message);
++    this.code = code;
++  }
++}
++
++class UnavailabilityError extends CodedError {
++  constructor(moduleName, propertyName) {
++    super(
++      "ERR_UNAVAILABLE",
++      `The method or property ${moduleName}.${propertyName} is not available on this platform.`
++    );
++  }
++}
++
++function requireNativeModule(moduleName) {
++  return null;
++}
++
++function requireOptionalNativeModule(moduleName) {
++  return null;
++}
++
++function requireNativeViewManager(viewName) {
++  return null;
++}
++
++function registerWebModule(module) {}
++
++function reloadAppAsync() {
++  return Promise.resolve();
++}
++
++// Refs
++function useReleasingSharedObject(sharedObject) {
++  return sharedObject;
++}
++
++module.exports = {
++  // Core classes
++  EventEmitter: class EventEmitter {
++    addListener() { return { remove() {} }; }
++    removeListeners() {}
++    emit() {}
++  },
++  SharedObject: class SharedObject {},
++  SharedRef: class SharedRef {},
++  NativeModule: class NativeModule {},
++
++  // Methods
++  requireNativeModule,
++  requireOptionalNativeModule,
++  requireNativeViewManager,
++  requireNativeView: requireNativeViewManager,
++  registerWebModule,
++  reloadAppAsync,
++
++  // Errors
++  CodedError,
++  UnavailabilityError,
++
++  // Hooks (stubs for Node.js)
++  useEvent: () => {},
++  useEventListener: () => {},
++
++  // UUID
++  uuid: { v4: () => "00000000-0000-0000-0000-000000000000" },
++
++  // Platform
++  Platform: { OS: "ios" },
++
++  // Refs
++  useReleasingSharedObject,
++
++  // Legacy
++  NativeModulesProxy: {},
++  LegacyEventEmitter: class LegacyEventEmitter {},
++};

@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Dormant",
+    "slug": "dormant",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.dormant.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "shortName": "Dormant"
+    },
+    "plugins": [
+      "expo-file-system"
+    ]
+  }
+}
