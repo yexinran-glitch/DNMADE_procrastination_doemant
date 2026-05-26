@@ -2041,10 +2041,38 @@ function drawRingFrame(angle, time) {
       task._trailFeelingsLog = [{ atRotation: angle, feelX: task.feelings?.x ?? 0.5, feelY: task.feelings?.y ?? 0.5 }];
     }
 
-    // Current parameters
-    const thick = (statusThick[task.status] || 2.5);
+    // Current parameters (with smooth thickness transition)
+    var targetThick = statusThick[task.status] || 2.5;
+    if (task._displayThickness === undefined) task._displayThickness = targetThick;
+    if (task._lastStatus !== undefined && task._lastStatus !== task.status) {
+      task._thickTransition = { from: task._displayThickness, to: targetThick, startAngle: angle };
+    }
+    task._lastStatus = task.status;
+    var thick;
+    if (task._thickTransition && angle - task._thickTransition.startAngle < 0.4) {
+      var blendT = (angle - task._thickTransition.startAngle) / 0.4;
+      thick = task._thickTransition.from + (task._thickTransition.to - task._thickTransition.from) * blendT;
+      task._displayThickness = thick;
+    } else {
+      thick = targetThick;
+      task._displayThickness = thick;
+    }
     const feelX = task.feelings?.x ?? 0.5;
     const feelY = task.feelings?.y ?? 0.5;
+
+    // Status offset — staggered endpoint positions like a race
+    var statusDrift = { smooth: 0.04, procrastinating: 0.0, stuck: -0.06 };
+    if (task._statusOffset === undefined) task._statusOffset = 0;
+    if (task._lastAngle !== undefined) {
+      var angleDelta = angle - task._lastAngle;
+      if (angleDelta > 0 && angleDelta < 0.1) {
+        var drift = statusDrift[task.status] || 0;
+        task._statusOffset += drift * (angleDelta / 0.22);
+        task._statusOffset = Math.max(-0.6, Math.min(0.6, task._statusOffset));
+      }
+    }
+    task._lastAngle = angle;
+    var offset = task._statusOffset;
 
     // ── 1. Faint guide circle (ideal circle reference) ──
     ctx.beginPath();
@@ -2092,7 +2120,7 @@ function drawRingFrame(angle, time) {
       ctx.beginPath();
       for (var v = 0; v < visible.length; v++) {
         var vpt = visible[v];
-        var vsa = vpt.angle - angle;
+        var vsa = vpt.angle - angle + offset;
         var vrx = RING_CX + Math.cos(vsa) * vpt.radius;
         var vry = RING_CY + Math.sin(vsa) * vpt.radius;
         v === 0 ? ctx.moveTo(vrx, vry) : ctx.lineTo(vrx, vry);
@@ -2113,14 +2141,14 @@ function drawRingFrame(angle, time) {
         }
         if (gEnd < visible.length) gEnd++;
 
-        var gMidSa = visible[gStart].angle - angle;
+        var gMidSa = visible[gStart].angle - angle + offset;
         var gDist = Math.max(0, -gMidSa / TRAIL_SPAN);
         var gCoreAlpha = (0.05 + 0.9 * Math.exp(-gDist * 3.2)) * layerBright;
 
         ctx.beginPath();
         for (var g = gStart; g < gEnd; g++) {
           var gpt = visible[g];
-          var ga = gpt.angle - angle;
+          var ga = gpt.angle - angle + offset;
           var grx = RING_CX + Math.cos(ga) * gpt.radius;
           var gry = RING_CY + Math.sin(ga) * gpt.radius;
           g === gStart ? ctx.moveTo(grx, gry) : ctx.lineTo(grx, gry);
@@ -2138,8 +2166,9 @@ function drawRingFrame(angle, time) {
     ctx.globalAlpha = 1;
 
     // ── 4. Point dot (the moving endpoint) ──
-    var penX = RING_CX + Math.cos(PEN_ANGLE) * radius;
-    var penY = RING_CY + Math.sin(PEN_ANGLE) * radius;
+    var penScreenAngle = PEN_ANGLE + offset;
+    var penX = RING_CX + Math.cos(penScreenAngle) * radius;
+    var penY = RING_CY + Math.sin(penScreenAngle) * radius;
 
     var pulse = 1 + 0.25 * Math.sin(t * 3.5 + i * 0.7);
     var glowR = 16 * pulse * layerBright;
