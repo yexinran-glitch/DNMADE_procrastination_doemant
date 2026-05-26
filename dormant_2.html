@@ -1,0 +1,3054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Dormant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-base: #000000;
+  --ink: #F5F1E9;
+  --ink2: #A1998F;
+  --ink3: #6B6055;
+  --story1: #8C7354;
+  --story2: #5C7A6B;
+  --story3: #7A5C6B;
+  --story4: #7E8FA5;
+  --add-btn: #1C1A14;
+  --card-bg: rgba(159, 159, 159, 0.2);
+  --card-stroke: rgba(255, 255, 255, 0.3);
+  --proj-bg: rgba(237, 232, 219, 0.2);
+  --proj-stroke: rgba(28, 26, 20, 0.08);
+  --panel-bg: rgba(255, 255, 255, 0.1);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Roboto Serif', serif;
+  background: #2A2520;
+  color: var(--ink);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.phone {
+  width: 100%;
+  max-width: 375px;
+  height: 100vh;
+  max-height: 812px;
+  background: var(--bg-base);
+  border-radius: 38px;
+  border: 1.5px solid rgba(255,255,255,0.06);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.phone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(0,0,0,0.5) 42%);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+.phone > * { position: relative; z-index: 1; }
+
+/* ============= SHARED STATUS BAR ============= */
+.status-bar {
+  padding: 12px 24px 6px;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.status-bar .brand {
+  font-family: 'Roboto Serif', serif;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+/* ============= PAGES ============= */
+.page-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.page {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.45s cubic-bezier(0.32, 0, 0.15, 1),
+              transform 0.45s cubic-bezier(0.32, 0, 0.15, 1);
+}
+.page.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* ============= RING PAGE HEADER ============= */
+.ring-header {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-shrink: 0;
+  gap: 12px;
+}
+.proj-info { display: flex; flex-direction: column; gap: 6px; }
+.proj-title {
+  font-family: 'Roboto Serif', serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  line-height: 1.1;
+  transition: opacity 0.25s ease;
+}
+.proj-meta {
+  font-size: 9px;
+  color: var(--ink2);
+  letter-spacing: 0.08em;
+  transition: opacity 0.25s ease;
+}
+
+.menu-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+.menu-btn:hover { background: rgba(255, 255, 255, 0.16); }
+.menu-btn:active { transform: scale(0.95); }
+
+/* ============= RING AREA ============= */
+.ring-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+/* Drop-active: when dragging is in progress, ring area shows it can receive */
+.ring-area.drop-active::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1.5px dashed rgba(212, 165, 120, 0.5);
+  border-radius: 24px;
+  pointer-events: none;
+  animation: pulseBorder 1.6s ease-in-out infinite;
+  z-index: 2;
+}
+/* Drop-hover: when ghost is actually over the ring area */
+.ring-area.drop-hover {
+  background: rgba(212, 165, 120, 0.06);
+}
+.ring-area.drop-hover::before {
+  border-color: rgba(212, 165, 120, 0.85);
+  animation: none;
+}
+@keyframes pulseBorder {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+/* Pulse on successful drop */
+.ring-area.drop-success {
+  animation: dropPulse 0.6s ease-out;
+}
+@keyframes dropPulse {
+  0% { background: rgba(212, 165, 120, 0.18); }
+  100% { background: transparent; }
+}
+
+.ring-canvas-wrap {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.bg-glow {
+  position: absolute;
+  top: 50%;
+  left: -30%;
+  transform: translateY(-50%);
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(212, 165, 120, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hint {
+  position: absolute;
+  bottom: 130px;
+  left: 30px;
+  font-size: 9px;
+  color: var(--ink2);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.ring-tap-target {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+/* ============= PROJECTS PAGE HEADER ============= */
+.projects-header {
+  padding: 16px 20px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 12px;
+}
+.projects-title {
+  font-family: 'Roboto Serif', serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.15;
+}
+.projects-meta {
+  font-size: 9px;
+  color: var(--ink2);
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+.tab-toggle {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 4px;
+  display: flex;
+  margin-bottom: 4px;
+}
+.tab {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: var(--ink);
+  padding: 5px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.25s;
+  border: none;
+  background: transparent;
+  white-space: nowrap;
+}
+.tab.active { background: rgba(255, 255, 255, 0.2); }
+
+/* ============= PROJECTS MAIN AREA ============= */
+.projects-main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 20px 12px;
+  scrollbar-width: none;
+}
+.projects-main::-webkit-scrollbar { display: none; }
+
+.year-stack { display: flex; flex-direction: column; gap: 10px; }
+
+.year-card {
+  background: var(--card-bg);
+  border: 0.5px solid var(--card-stroke);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.year-head {
+  padding: 11px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  min-height: 35px;
+}
+.year-head:hover { background: rgba(255,255,255,0.02); }
+.year-name {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--ink);
+}
+.year-count { font-size: 10px; color: var(--ink2); }
+.year-divider {
+  height: 0.5px;
+  background: rgba(245, 241, 233, 0.3);
+  transition: opacity 0.25s;
+}
+.year-card.collapsed .year-divider { opacity: 0; }
+.year-body {
+  max-height: 600px;
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.32, 0, 0.15, 1);
+}
+.year-card.collapsed .year-body { max-height: 0; }
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 10px;
+}
+.proj-card {
+  background: var(--proj-bg);
+  border: 0.5px solid var(--proj-stroke);
+  border-radius: 12px;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+.proj-card:hover {
+  transform: translateY(-2px);
+  background: rgba(237, 232, 219, 0.28);
+}
+.proj-ring { width: 76px; height: 76px; display: flex; align-items: center; justify-content: center; }
+.proj-name {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: var(--ink);
+  text-align: center;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+.proj-days {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: rgba(245, 241, 233, 0.5);
+}
+.proj-card.add-card {
+  border: 0.5px solid rgba(28, 26, 20, 0.15);
+  background: rgba(245, 240, 232, 0.2);
+}
+.add-icon { font-size: 22px; color: var(--ink2); line-height: 1; }
+.add-label {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: rgba(245, 241, 233, 0.5);
+}
+.expand-indicator {
+  font-size: 8px;
+  color: var(--ink2);
+  transition: transform 0.25s;
+  margin-left: 4px;
+}
+.year-card.collapsed .expand-indicator { transform: rotate(-90deg); }
+
+/* ============= SHARED BOTTOM NAV ============= */
+.bnav-wrap {
+  flex-shrink: 0;
+  padding: 0 20px 22px;
+  position: relative;
+}
+.bnav {
+  background: rgba(217, 217, 217, 0.2);
+  border: 0.5px solid rgba(254, 254, 254, 0.3);
+  border-radius: 20px;
+  height: 52px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 24px;
+  position: relative;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  flex: 1;
+  text-align: center;
+}
+.nav-item.active { opacity: 1; }
+.nav-item:hover { opacity: 0.7; }
+.nav-item.active:hover { opacity: 1; }
+.nav-item .ico { font-size: 14px; color: var(--ink); }
+.nav-item .lbl {
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  color: var(--ink2);
+  text-transform: uppercase;
+}
+.nav-item.active .lbl { color: var(--ink); }
+.nav-gap { flex: 0 0 56px; }
+
+.add-floating {
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--add-btn);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 300;
+  cursor: pointer;
+  border: 1px solid rgba(245, 240, 232, 0.25);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  z-index: 5;
+  transition: transform 0.2s;
+}
+.add-floating:hover { transform: translateX(-50%) scale(1.06); }
+.add-floating:active { transform: translateX(-50%) scale(0.95); }
+
+/* ============= SCRIM ============= */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none;
+  transition: background 0.35s ease;
+  z-index: 10;
+}
+.scrim.active {
+  background: rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+}
+
+/* ============= OUTLINE PANEL ============= */
+.outline-panel {
+  position: absolute;
+  top: 120px;
+  right: 0;
+  bottom: 90px;
+  width: 210px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.32, 0, 0.15, 1);
+  z-index: 15;
+  padding: 18px 14px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.outline-panel.open { transform: translateX(0); }
+.outline-panel::-webkit-scrollbar { display: none; }
+
+.panel-title {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 10px;
+  color: rgba(245, 241, 233, 0.8);
+  margin-bottom: 18px;
+  padding-left: 4px;
+}
+
+.story-group { margin-bottom: 16px; }
+.story-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 4px;
+  margin-bottom: 4px;
+}
+.story-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.story-name-lg {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+/* ============= TASK PILL (key layout fix) ============= */
+.task-pill {
+  background: rgba(18, 18, 18, 0.2);
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 30px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 10px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, border-color 0.2s;
+  flex-wrap: nowrap;
+  user-select: none;
+}
+.task-pill:hover { background: rgba(18, 18, 18, 0.32); }
+
+.task-pill.draggable {
+  cursor: grab;
+}
+.task-pill.draggable:active { cursor: grabbing; }
+.task-pill.dragging {
+  opacity: 0.3;
+  border-color: rgba(212, 165, 120, 0.5);
+}
+
+.drag-handle-grip {
+  width: 8px;
+  height: 14px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5px;
+  opacity: 0.5;
+  cursor: grab;
+}
+.drag-handle-grip::before,
+.drag-handle-grip::after {
+  content: '';
+  width: 100%;
+  height: 1.5px;
+  background: var(--ink);
+  border-radius: 1px;
+  box-shadow: 0 -4px 0 var(--ink), 0 4px 0 var(--ink);
+}
+.task-pill.draggable .drag-handle-grip {
+  display: flex;
+}
+.task-pill:not(.draggable) .drag-handle-grip {
+  display: none;
+}
+
+.task-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.task-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.in-ring-badge {
+  background: rgba(121, 121, 121, 0.9);
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 6px;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ============= GHOST (dragged element preview) ============= */
+.drag-ghost {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  background: rgba(28, 26, 20, 0.95);
+  border: 0.5px solid rgba(212, 165, 120, 0.6);
+  border-radius: 30px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 10px;
+  color: var(--ink);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  transform: translate(-50%, -50%) scale(1.05);
+  transition: transform 0.5s cubic-bezier(0.32, 0, 0.15, 1),
+              opacity 0.5s, left 0.5s cubic-bezier(0.32, 0, 0.15, 1),
+              top 0.5s cubic-bezier(0.32, 0, 0.15, 1);
+}
+.drag-ghost.success {
+  transform: translate(-50%, -50%) scale(0.1);
+  opacity: 0;
+}
+.drag-ghost .task-dot {
+  width: 8px;
+  height: 8px;
+}
+.proj-ghost {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 2px !important;
+  padding: 10px 14px !important;
+  border-radius: 16px !important;
+}
+.tab.drop-target {
+  background: rgba(212, 165, 120, 0.3) !important;
+  transition: background 0.3s;
+}
+.tab.drop-hover {
+  background: rgba(212, 165, 120, 0.55) !important;
+  box-shadow: 0 0 12px rgba(212, 165, 120, 0.4);
+}
+
+/* ============= RECORD PANEL ============= */
+.record-panel {
+  position: absolute;
+  top: 120px;
+  right: 0;
+  bottom: 90px;
+  width: 210px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.32, 0, 0.15, 1);
+  z-index: 15;
+  padding: 18px 16px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+}
+.record-panel.open { transform: translateX(0); }
+.record-panel::-webkit-scrollbar { display: none; }
+
+.task-title {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 14px;
+}
+.section-divider {
+  height: 0.5px;
+  background: rgba(255, 255, 255, 0.4);
+  margin: 0 0 8px;
+}
+.section-label {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: rgba(245, 241, 233, 0.5);
+  text-align: center;
+  margin-bottom: 12px;
+}
+.status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.status-pill {
+  background: rgba(18, 18, 18, 0.2);
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 30px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 10px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.status-pill:hover { background: rgba(255, 255, 255, 0.06); }
+.status-pill.selected {
+  background: rgba(140, 115, 84, 0.25);
+  border-color: rgba(140, 115, 84, 0.5);
+}
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--story1);
+  flex-shrink: 0;
+}
+.feeling-section { margin-bottom: 14px; }
+.pad-wrap { position: relative; padding: 18px 28px 14px 28px; }
+.pad {
+  width: 103px;
+  height: 103px;
+  margin: 0 auto;
+  border-radius: 20px;
+  position: relative;
+  background:
+    radial-gradient(at 12% 8%, rgba(237, 57, 57, 0.4), transparent 60%),
+    radial-gradient(at 88% 92%, rgba(19, 199, 196, 0.4), transparent 60%),
+    radial-gradient(at 12% 92%, rgba(80, 80, 100, 0.35), transparent 60%),
+    radial-gradient(at 88% 8%, rgba(255, 255, 255, 0.2), transparent 50%);
+  cursor: crosshair;
+}
+.pad-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #D9D9D9;
+  border: 1px solid rgba(255,255,255,0.6);
+  transform: translate(-50%, -50%);
+  top: 22%;
+  left: 28%;
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(255,255,255,0.5);
+}
+.pad-label-top, .pad-label-bottom, .pad-label-left, .pad-label-right {
+  position: absolute;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: rgba(245, 241, 233, 0.5);
+  white-space: nowrap;
+}
+.pad-label-top { top: 4px; left: 50%; transform: translateX(-50%); }
+.pad-label-bottom { bottom: 2px; left: 50%; transform: translateX(-50%); }
+.pad-label-left { left: 2px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+.pad-label-right { right: 2px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+
+.back-btn {
+  background: rgba(245, 241, 233, 0.2);
+  border: 0.5px solid rgba(28, 26, 20, 0.1);
+  border-radius: 30px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--ink);
+  cursor: pointer;
+  margin-top: auto;
+  transition: background 0.2s;
+}
+.back-btn:hover { background: rgba(245, 241, 233, 0.28); }
+.back-btn .arrow { font-size: 13px; }
+
+/* ============= CREATE PROJECT BOTTOM SHEET ============= */
+.create-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(100% - 120px);
+  background: var(--bg-base);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.32, 0, 0.15, 1);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.4);
+}
+.create-sheet.open { transform: translateY(0); }
+.create-sheet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(0,0,0,0.5) 42%);
+  opacity: 0.5;
+  pointer-events: none;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  z-index: 0;
+}
+.create-sheet > * { position: relative; z-index: 1; }
+
+.drag-handle {
+  width: 49px;
+  height: 4px;
+  border-radius: 5px;
+  background: rgba(217, 217, 217, 0.5);
+  margin: 14px auto 18px;
+  flex-shrink: 0;
+}
+
+.sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 16px;
+  scrollbar-width: none;
+}
+.sheet-content::-webkit-scrollbar { display: none; }
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+.sheet-title {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 24px;
+  color: var(--ink);
+}
+.close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.close-btn:hover { background: rgba(255, 255, 255, 0.16); }
+.close-btn:active { transform: scale(0.95); }
+
+.project-name-section { margin-bottom: 28px; }
+.label-small {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 9px;
+  color: var(--ink2);
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+.proj-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--ink);
+  outline: none;
+  padding: 4px 0 12px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 26px;
+  color: var(--ink);
+}
+.proj-input::placeholder { color: rgba(245, 241, 233, 0.3); }
+
+.stories-section { margin-bottom: 32px; }
+.stories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.add-story-btn {
+  background: rgba(245, 241, 233, 0.2);
+  border: 0.5px solid rgba(28, 26, 20, 0.1);
+  border-radius: 20px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 9px;
+  color: var(--ink);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background 0.2s;
+}
+.add-story-btn:hover { background: rgba(245, 241, 233, 0.3); }
+.add-story-btn .plus { font-size: 11px; line-height: 1; }
+
+/* Expandable story card in Create Project sheet */
+.create-story-card {
+  background: rgba(159, 159, 159, 0.12);
+  border: 0.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: background 0.2s, border-color 0.2s;
+}
+.create-story-card.expanded {
+  background: rgba(159, 159, 159, 0.18);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.create-story-head {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  gap: 10px;
+  user-select: none;
+}
+.create-story-head:hover { background: rgba(255, 255, 255, 0.03); }
+
+.story-dot-sm {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.create-story-name-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--ink);
+  padding: 0;
+  cursor: pointer;
+  min-width: 0;
+}
+.create-story-name-input:focus { cursor: text; }
+
+.create-story-count {
+  font-size: 10px;
+  color: var(--ink2);
+  flex-shrink: 0;
+}
+
+.create-story-toggle {
+  font-size: 8px;
+  color: var(--ink2);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+}
+.create-story-card.expanded .create-story-toggle {
+  transform: rotate(180deg);
+}
+
+.create-story-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.32, 0, 0.15, 1);
+}
+.create-story-card.expanded .create-story-body {
+  max-height: 600px;
+}
+
+.create-story-body-inner {
+  padding: 4px 14px 14px;
+}
+
+.color-picker {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+.swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: transform 0.15s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.swatch.selected {
+  border-color: rgba(245, 241, 233, 0.9);
+}
+.swatch:hover { transform: scale(1.08); }
+
+.create-task-pill {
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--ink);
+}
+.task-dot-sm-light {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(245, 241, 233, 0.55);
+  flex-shrink: 0;
+}
+.create-task-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.task-x {
+  font-size: 16px;
+  color: var(--ink2);
+  cursor: pointer;
+  padding: 0 2px;
+  flex-shrink: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.task-x:hover { color: var(--ink); }
+
+.add-task-row {
+  background: rgba(255, 255, 255, 0.03);
+  border: 0.5px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.add-task-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+.add-task-row .add-task-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--ink);
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 11px;
+}
+.add-task-row .add-task-input::placeholder {
+  color: rgba(245, 241, 233, 0.4);
+}
+
+.sheet-footer { padding: 12px 20px 22px; flex-shrink: 0; }
+.begin-btn {
+  width: 100%;
+  background: rgba(245, 241, 233, 0.2);
+  border: 0.5px solid rgba(28, 26, 20, 0.1);
+  border-radius: 30px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.begin-btn:hover { background: rgba(245, 241, 233, 0.3); }
+.begin-btn:active { transform: scale(0.98); }
+.begin-btn .plus { font-size: 18px; }
+
+/* ─────── ARCHIVE DETAIL PAGE ─────── */
+.archive-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 12px;
+  scrollbar-width: none;
+}
+.archive-main::-webkit-scrollbar { display: none; }
+
+.archive-ring-section {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+}
+.archive-ring-section canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.archive-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+.archive-stat {
+  background: var(--card-bg);
+  border: 0.5px solid var(--card-stroke);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.stat-value {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--ink);
+}
+.stat-label {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: var(--ink2);
+  letter-spacing: 0.08em;
+}
+.archive-emotion-section {
+  background: var(--card-bg);
+  border: 0.5px solid var(--card-stroke);
+  border-radius: 16px;
+  padding: 14px 18px;
+}
+.archive-emotion-section canvas {
+  width: 100%;
+  height: 60px;
+}
+.archive-bottom {
+  padding: 16px 0 8px;
+}
+.generate-3d-btn {
+  width: 100%;
+  background: rgba(245, 241, 233, 0.15);
+  border: 0.5px solid rgba(245, 241, 233, 0.25);
+  border-radius: 30px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.generate-3d-btn:hover { background: rgba(245, 241, 233, 0.25); }
+
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- ============= STATUS BAR ============= -->
+  <div class="status-bar">
+    <span class="brand">Dormant</span>
+  </div>
+
+  <!-- ============= PAGES ============= -->
+  <div class="page-wrap">
+
+    <!-- ─────── RING PAGE ─────── -->
+    <div class="page active" data-page="ring">
+      <div class="ring-header">
+        <div class="proj-info">
+          <div class="proj-title" id="ringProjTitle">Brand Identity</div>
+          <div class="proj-meta" id="ringProjMeta">6 TASKS · IN PROGRESS</div>
+        </div>
+        <div class="menu-btn" id="menuBtn">≡</div>
+      </div>
+
+      <div class="ring-area" id="ringArea">
+        <div class="bg-glow"></div>
+        <div class="ring-canvas-wrap">
+          <canvas id="ringCanvas" width="540" height="540"></canvas>
+        </div>
+        <div class="ring-tap-target" id="ringTap"></div>
+        <div class="hint" id="ringHint">TAP A RING TO INTERACT</div>
+      </div>
+    </div>
+
+    <!-- ─────── IDENTITY PAGE ─────── -->
+    <div class="page" data-page="identity">
+      <div class="projects-header">
+        <div>
+          <div class="projects-title">Identity</div>
+          <div class="projects-meta">YOUR WORK IDENTITY</div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;opacity:0.4;">
+          <div style="font-size:40px;margin-bottom:12px;">✦</div>
+          <div style="font-family:'Roboto Serif',serif;font-size:13px;color:var(--ink2);">Coming Soon</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────── PROFILE PAGE ─────── -->
+    <div class="page" data-page="profile">
+      <div class="projects-header">
+        <div>
+          <div class="projects-title">Profile</div>
+          <div class="projects-meta">YOUR SETTINGS</div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;opacity:0.4;">
+          <div style="font-size:40px;margin-bottom:12px;">○</div>
+          <div style="font-family:'Roboto Serif',serif;font-size:13px;color:var(--ink2);">Coming Soon</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────── PROJECTS PAGE ─────── -->
+    <div class="page" data-page="projects">
+      <div class="projects-header">
+        <div>
+          <div class="projects-title">Projects</div>
+          <div class="projects-meta">7 PROJECTS</div>
+        </div>
+        <div class="tab-toggle">
+          <button class="tab active" data-tab="in-progress">IN progress</button>
+          <button class="tab" data-tab="archive">archive</button>
+        </div>
+      </div>
+
+      <div class="projects-main">
+        <div class="year-stack" id="yearStack">
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────── ARCHIVE DETAIL PAGE ─────── -->
+    <div class="page" data-page="archive-detail">
+      <div class="projects-header">
+        <div>
+          <div class="projects-title" id="archiveDetailTitle">Project Name</div>
+          <div class="projects-meta" id="archiveDetailMeta">ARCHIVED</div>
+        </div>
+        <div class="menu-btn" id="archiveBackBtn">←</div>
+      </div>
+      <div class="archive-main">
+        <div class="archive-ring-section">
+          <canvas id="archiveRingCanvas" width="540" height="540"></canvas>
+        </div>
+        <div class="archive-analysis">
+          <div class="archive-stat">
+            <div class="stat-value" id="archiveBrewDays">--</div>
+            <div class="stat-label">DAYS BREWING</div>
+          </div>
+          <div class="archive-stat">
+            <div class="stat-value" id="archiveTaskCount">--</div>
+            <div class="stat-label">TASKS CLOSED</div>
+          </div>
+          <div class="archive-emotion-section">
+            <div class="stat-label" style="margin-bottom:8px;">EMOTION TREND</div>
+            <canvas id="archiveEmotionCanvas" width="320" height="60"></canvas>
+          </div>
+        </div>
+        <div class="archive-bottom">
+          <button class="generate-3d-btn" id="generate3dBtn">Generate 3D model →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============= BOTTOM NAV ============= -->
+  <div class="bnav-wrap">
+    <div class="bnav">
+      <div class="nav-item active" data-nav="ring"><div class="ico">◎</div><div class="lbl">Ring</div></div>
+      <div class="nav-item" data-nav="projects"><div class="ico">⊞</div><div class="lbl">Projects</div></div>
+      <div class="nav-gap"></div>
+      <div class="nav-item" data-nav="identity"><div class="ico">✦</div><div class="lbl">Identity</div></div>
+      <div class="nav-item" data-nav="profile"><div class="ico">○</div><div class="lbl">Profile</div></div>
+    </div>
+    <button class="add-floating" id="addBtn">+</button>
+  </div>
+
+  <!-- ============= SCRIM ============= -->
+  <div class="scrim" id="scrim"></div>
+
+  <!-- ============= OUTLINE PANEL ============= -->
+  <div class="outline-panel" id="outlinePanel">
+    <div class="panel-title">Project Outline</div>
+    <div id="taskList"></div>
+  </div>
+
+  <!-- ============= RECORD PANEL ============= -->
+  <div class="record-panel" id="recordPanel">
+    <div class="task-title" id="recordTaskTitle">Logo exploration</div>
+    <div class="section-divider"></div>
+    <div class="section-label">STATUS</div>
+    <div class="status-list">
+      <div class="status-pill" data-status="smooth"><div class="status-dot"></div>Smooth</div>
+      <div class="status-pill selected" data-status="procrastinating"><div class="status-dot"></div>Procrastinating</div>
+      <div class="status-pill" data-status="stuck"><div class="status-dot"></div>Totally Stuck</div>
+      <div class="status-pill" data-status="done"><div class="status-dot"></div>Done</div>
+    </div>
+    <div class="section-divider"></div>
+    <div class="section-label">FEELING</div>
+    <div class="feeling-section">
+      <div class="pad-wrap">
+        <div class="pad-label-top">Motivated</div>
+        <div class="pad-label-left">Anxious</div>
+        <div class="pad" id="emotionPad">
+          <div class="pad-handle" id="padHandle"></div>
+        </div>
+        <div class="pad-label-right">Calm</div>
+        <div class="pad-label-bottom">Unmotivated</div>
+      </div>
+    </div>
+    <div class="back-btn" id="closeRecord"><span class="arrow">←</span> Back to Ring</div>
+  </div>
+
+  <!-- ============= CREATE PROJECT SHEET ============= -->
+  <div class="create-sheet" id="createSheet">
+    <div class="drag-handle"></div>
+    <div class="sheet-content">
+      <div class="sheet-header">
+        <div class="sheet-title">New Project</div>
+        <div class="close-btn" id="closeCreate">×</div>
+      </div>
+      <div class="project-name-section">
+        <div class="label-small">PROJECT NAME</div>
+        <input type="text" class="proj-input" placeholder="Untitled project..." />
+      </div>
+      <div class="stories-section">
+        <div class="stories-header">
+          <div class="label-small" style="margin-bottom:0;">STORIES</div>
+          <div class="add-story-btn" id="addStoryBtn"><span class="plus">+</span> ADD STORY</div>
+        </div>
+        <div id="createStoriesContainer"></div>
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <div class="begin-btn"><span class="plus">+</span> begin this project</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============= TASK STATE =============
+const storyColorMap = {
+  research: '#8C7354',
+  concept: '#5C7A6B',
+  execution: '#7A5C6B'
+};
+
+const statusColors = {
+  smooth: '#4ADE80',
+  procrastinating: '#FBBF24',
+  stuck: '#EF4444',
+  done: '#60A5FA'
+};
+
+const statusLabels = {
+  smooth: 'Smooth',
+  procrastinating: 'Procrastinating',
+  stuck: 'Totally Stuck',
+  done: 'Done'
+};
+
+// ============= PROJECT STATE =============
+let projects = [];
+let activeProjectId = null;
+let tasks = [];
+
+function loadProjects() {
+  try {
+    const saved = localStorage.getItem('dormant-projects');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      parsed.forEach(p => {
+        p.tasks.forEach(t => {
+          if (!t.feelings) t.feelings = { x: 0.5, y: 0.5 };
+        });
+      });
+      return parsed;
+    }
+  } catch(e) {}
+  return null;
+}
+
+function saveProjects() {
+  try { localStorage.setItem('dormant-projects', JSON.stringify(projects)); } catch(e) {}
+}
+
+function saveTasks() {
+  const active = getActiveProject();
+  if (active) {
+    active.tasks.length = 0;
+    Array.prototype.push.apply(active.tasks, tasks);
+  }
+  saveProjects();
+}
+
+function checkAutoArchive() {
+  const active = getActiveProject();
+  if (!active || active.archived) return;
+  const allDone = active.tasks.every(t => t.status === 'done');
+  if (allDone && active.tasks.length > 0) {
+    active.archived = true;
+    saveProjects();
+    renderProjectsPage();
+  }
+}
+
+function migrateFromLegacyTasks() {
+  try {
+    const saved = localStorage.getItem('dormant-tasks');
+    if (saved) {
+      const legacyTasks = JSON.parse(saved);
+      legacyTasks.forEach(t => {
+        if (!t.feelings) t.feelings = { x: 0.5, y: 0.5 };
+      });
+      const project = {
+        id: 'proj_legacy_' + Date.now(),
+        name: 'Brand Identity',
+        tasks: legacyTasks,
+        createdAt: '2026-01-15'
+      };
+      projects.push(project);
+      localStorage.removeItem('dormant-tasks');
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+function createDefaultProjects() {
+  const defaults = [
+    { name: 'Motion Reel', year: '2026', stories: [
+      { name: 'concept', tasks: ['Storyboard draft', 'Reference gathering', 'Style frames'] },
+      { name: 'execution', tasks: ['Rough cut', 'Final edit'] }
+    ]},
+    { name: 'Brand Identity', year: '2026', stories: [
+      { name: 'research', tasks: ['Market research', 'Mood board', 'Competitor analysis'] },
+      { name: 'concept', tasks: ['Logo exploration', 'Color study'] },
+      { name: 'execution', tasks: ['Final design'] }
+    ]},
+    { name: 'Poster Series', year: '2026', stories: [
+      { name: 'concept', tasks: ['Concept sketches', 'Typography study'] },
+      { name: 'execution', tasks: ['Layout exploration', 'Final print prep'] }
+    ]},
+    { name: 'Type Specimen', year: '2025', stories: [
+      { name: 'research', tasks: ['Font selection'] },
+      { name: 'execution', tasks: ['Layout design', 'Print test'] }
+    ]},
+    { name: 'UX Research', year: '2025', stories: [
+      { name: 'research', tasks: ['User interviews', 'Survey design', 'Competitive audit', 'Persona creation'] },
+      { name: 'concept', tasks: ['Journey mapping', 'Wireframes'] },
+      { name: 'execution', tasks: ['Prototype', 'Usability test'] }
+    ]},
+    { name: 'Grad Thesis', year: '2024', stories: [
+      { name: 'research', tasks: ['Literature review', 'Case studies', 'Survey', 'Field research'] },
+      { name: 'concept', tasks: ['Thesis outline', 'Methodology', 'Visual framework'] },
+      { name: 'execution', tasks: ['Draft 1', 'Draft 2', 'Final draft', 'Presentation'] }
+    ]},
+    { name: 'Photo Series', year: '2024', stories: [
+      { name: 'concept', tasks: ['Location scout'] },
+      { name: 'execution', tasks: ['Shoot day', 'Edit selects'] }
+    ]}
+  ];
+
+  defaults.forEach((def, idx) => {
+    const projTasks = [];
+    def.stories.forEach(story => {
+      story.tasks.forEach(taskName => {
+        projTasks.push({
+          id: 't' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          name: taskName,
+          story: story.name.toLowerCase(),
+          inRing: false,
+          status: null,
+          feelings: { x: 0.5, y: 0.5 }
+        });
+      });
+    });
+    // Brand Identity (idx=1) gets some in-ring tasks matching original defaults
+    if (idx === 1) {
+      projTasks[0].inRing = true; projTasks[0].status = 'smooth';
+      projTasks[1].inRing = true; projTasks[1].status = 'procrastinating';
+      projTasks[2].inRing = false; projTasks[2].status = null;
+      projTasks[3].inRing = true; projTasks[3].status = 'stuck';
+      projTasks[4].inRing = false; projTasks[4].status = null;
+      projTasks[5].inRing = false; projTasks[5].status = null;
+    }
+    projects.push({
+      id: 'proj_' + Date.now() + '_' + idx,
+      name: def.name,
+      tasks: projTasks,
+      createdAt: def.year + '-06-01',
+      archived: def.year !== '2026'
+    });
+  });
+}
+
+// Initialize projects
+projects = loadProjects();
+if (!projects) {
+  projects = [];
+  const migrated = migrateFromLegacyTasks();
+  if (!migrated) {
+    createDefaultProjects();
+  } else {
+    createDefaultProjects();
+    // Deduplicate Brand Identity
+    const seen = new Set();
+    projects = projects.filter(p => {
+      if (seen.has(p.name)) return false;
+      seen.add(p.name);
+      return true;
+    });
+  }
+  saveProjects();
+}
+
+// Set active project
+activeProjectId = localStorage.getItem('dormant-active-project') || (projects.length > 0 ? projects[0].id : null);
+
+function setActiveProject(projectId) {
+  const project = projects.find(p => p.id === projectId);
+  if (!project) return;
+  activeProjectId = projectId;
+  tasks.length = 0;
+  project.tasks.forEach(function(t) {
+    delete t._ringRotation;
+    delete t._trailHistory;
+  });
+  Array.prototype.push.apply(tasks, project.tasks);
+  currentRingTasks = tasks.filter(t => t.inRing);
+  localStorage.setItem('dormant-active-project', activeProjectId);
+  saveProjects();
+  renderOutlinePanel();
+  updateRingHeader();
+}
+
+function getActiveProject() {
+  return projects.find(p => p.id === activeProjectId) || null;
+}
+
+function updateRingHeader() {
+  const active = getActiveProject();
+  if (!active) return;
+  const inRingCount = active.tasks.filter(t => t.inRing).length;
+  document.getElementById('ringProjTitle').textContent = active.name;
+  document.getElementById('ringProjMeta').textContent = active.tasks.length + ' TASKS · ' + inRingCount + ' IN RING';
+  document.getElementById('ringHint').style.display = inRingCount > 0 ? 'none' : 'block';
+}
+
+// Initialize tasks from active project
+if (activeProjectId) {
+  const active = projects.find(p => p.id === activeProjectId);
+  if (active) {
+    tasks.length = 0;
+    Array.prototype.push.apply(tasks, active.tasks);
+  } else if (projects.length > 0) {
+    activeProjectId = projects[0].id;
+    tasks.length = 0;
+    Array.prototype.push.apply(tasks, projects[0].tasks);
+    localStorage.setItem('dormant-active-project', activeProjectId);
+  }
+}
+
+const storyOrder = ['research', 'concept', 'execution'];
+const storyNames = { research: 'Research', concept: 'Concept', execution: 'Execution' };
+
+// ============= RENDER OUTLINE PANEL =============
+function renderOutlinePanel() {
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+
+  storyOrder.forEach(storyKey => {
+    const storyTasks = tasks.filter(t => t.story === storyKey);
+    if (storyTasks.length === 0) return;
+
+    const group = document.createElement('div');
+    group.className = 'story-group';
+
+    const header = document.createElement('div');
+    header.className = 'story-header';
+    header.innerHTML = `
+      <div class="story-dot" style="background:${storyColorMap[storyKey]};"></div>
+      <div class="story-name-lg">${storyNames[storyKey]}</div>
+    `;
+    group.appendChild(header);
+
+    storyTasks.forEach(task => {
+      const pill = document.createElement('div');
+      pill.className = 'task-pill' + (task.inRing ? '' : ' draggable');
+      pill.dataset.taskId = task.id;
+      const statusDot = task.status && statusColors[task.status]
+        ? `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${statusColors[task.status]};margin-right:2px;flex-shrink:0;"></span>`
+        : '';
+      pill.innerHTML = `
+        ${task.inRing ? '' : '<div class="drag-handle-grip"></div>'}
+        <div class="task-dot" style="background:${storyColorMap[storyKey]};"></div>
+        <div class="task-name">${task.name}</div>
+        ${statusDot}
+        ${task.inRing ? '<div class="in-ring-badge">in ring</div>' : ''}
+      `;
+      group.appendChild(pill);
+    });
+
+    list.appendChild(group);
+  });
+
+  attachDragHandlers();
+}
+
+// ============= DRAG-TO-RING =============
+let drag = null;
+let projDrag = null;
+let currentProjPressTarget = null;
+
+function attachDragHandlers() {
+  document.querySelectorAll('.task-pill.draggable').forEach(pill => {
+    pill.addEventListener('mousedown', startDrag);
+    pill.addEventListener('touchstart', startDrag, { passive: false });
+  });
+}
+
+function startDrag(e) {
+  const pill = e.currentTarget;
+  const taskId = pill.dataset.taskId;
+  const task = tasks.find(t => t.id === taskId);
+  if (!task || task.inRing) return;
+
+  e.preventDefault();
+  const pt = e.touches ? e.touches[0] : e;
+  const startX = pt.clientX;
+  const startY = pt.clientY;
+
+  drag = {
+    pill, task, startX, startY,
+    ghost: null,
+    moved: false
+  };
+
+  document.addEventListener('mousemove', onDragMove);
+  document.addEventListener('touchmove', onDragMove, { passive: false });
+  document.addEventListener('mouseup', onDragEnd);
+  document.addEventListener('touchend', onDragEnd);
+}
+
+function createGhost(task, x, y) {
+  const ghost = document.createElement('div');
+  ghost.className = 'drag-ghost';
+  ghost.innerHTML = `
+    <div class="task-dot" style="background:${storyColorMap[task.story]};"></div>
+    <div>${task.name}</div>
+  `;
+  ghost.style.left = x + 'px';
+  ghost.style.top = y + 'px';
+  document.body.appendChild(ghost);
+  return ghost;
+}
+
+function onDragMove(e) {
+  if (!drag) return;
+  e.preventDefault();
+  const pt = e.touches ? e.touches[0] : e;
+  const dx = pt.clientX - drag.startX;
+  const dy = pt.clientY - drag.startY;
+
+  if (!drag.moved && Math.hypot(dx, dy) > 5) {
+    drag.moved = true;
+    drag.pill.classList.add('dragging');
+    drag.ghost = createGhost(drag.task, pt.clientX, pt.clientY);
+    document.getElementById('ringArea').classList.add('drop-active');
+  }
+
+  if (drag.moved && drag.ghost) {
+    drag.ghost.style.left = pt.clientX + 'px';
+    drag.ghost.style.top = pt.clientY + 'px';
+
+    // Check if over ring area
+    const ringArea = document.getElementById('ringArea');
+    const r = ringArea.getBoundingClientRect();
+    const overRing = pt.clientX >= r.left && pt.clientX <= r.right
+                  && pt.clientY >= r.top && pt.clientY <= r.bottom;
+    ringArea.classList.toggle('drop-hover', overRing);
+  }
+}
+
+function onDragEnd(e) {
+  if (!drag) return;
+
+  document.removeEventListener('mousemove', onDragMove);
+  document.removeEventListener('touchmove', onDragMove);
+  document.removeEventListener('mouseup', onDragEnd);
+  document.removeEventListener('touchend', onDragEnd);
+
+  if (!drag.moved) { drag = null; return; }
+
+  const ringArea = document.getElementById('ringArea');
+  const dropZoneActive = ringArea.classList.contains('drop-hover');
+
+  ringArea.classList.remove('drop-active', 'drop-hover');
+
+  if (dropZoneActive && drag.ghost) {
+    // SUCCESS: fly ghost to ring center then shrink/fade
+    const ringWrap = document.querySelector('.ring-canvas-wrap');
+    const rwR = ringWrap.getBoundingClientRect();
+    const targetX = rwR.left + rwR.width * 0.25; // ring center is offset left
+    const targetY = rwR.top + rwR.height * 0.5;
+
+    drag.ghost.style.left = targetX + 'px';
+    drag.ghost.style.top = targetY + 'px';
+    setTimeout(() => {
+      drag.ghost.classList.add('success');
+    }, 50);
+
+    setTimeout(() => {
+      drag.ghost.remove();
+      // Update state
+      drag.task.inRing = true;
+      if (!drag.task.status) drag.task.status = 'smooth';
+      saveTasks();
+      // Pulse the ring area
+      ringArea.classList.add('drop-success');
+      setTimeout(() => ringArea.classList.remove('drop-success'), 600);
+      // Re-render outline
+      renderOutlinePanel();
+      drag = null;
+    }, 550);
+  } else {
+    // CANCELLED: fade ghost out
+    if (drag.ghost) {
+      drag.ghost.style.opacity = '0';
+      drag.ghost.style.transform = 'translate(-50%, -50%) scale(0.8)';
+      setTimeout(() => drag.ghost && drag.ghost.remove(), 300);
+    }
+    drag.pill.classList.remove('dragging');
+    drag = null;
+  }
+}
+
+// ============= PROJECT DRAG-TO-ARCHIVE =============
+function startProjDrag(card, project, clientX, clientY) {
+  projDrag = { card: card, project: project, ghost: null };
+  projDrag.ghost = createProjGhost(project, clientX, clientY);
+  card.style.opacity = '0.3';
+  var archiveTab = document.querySelector('.tab[data-tab="archive"]');
+  if (archiveTab) archiveTab.classList.add('drop-target');
+}
+
+function createProjGhost(project, x, y) {
+  var ghost = document.createElement('div');
+  ghost.className = 'drag-ghost proj-ghost';
+  ghost.innerHTML = '<div style="font-family:\'Roboto Serif\',serif;font-size:11px;white-space:nowrap;">'
+    + project.name.toLowerCase() + '</div>'
+    + '<div style="font-size:8px;opacity:0.5;">' + project.tasks.length + ' tasks</div>';
+  ghost.style.left = x + 'px';
+  ghost.style.top = y + 'px';
+  document.body.appendChild(ghost);
+  return ghost;
+}
+
+function onProjDragMove(point) {
+  if (!projDrag || !projDrag.ghost) return;
+  projDrag.ghost.style.left = (point.clientX || point.x) + 'px';
+  projDrag.ghost.style.top = (point.clientY || point.y) + 'px';
+
+  var archiveTab = document.querySelector('.tab[data-tab="archive"]');
+  var overArchive = false;
+  if (archiveTab) {
+    var r = archiveTab.getBoundingClientRect();
+    overArchive = (point.clientX || point.x) >= r.left && (point.clientX || point.x) <= r.right
+               && (point.clientY || point.y) >= r.top && (point.clientY || point.y) <= r.bottom;
+  }
+  if (archiveTab) archiveTab.classList.toggle('drop-hover', overArchive);
+}
+
+function onProjDragEnd(e) {
+  if (!projDrag) return;
+  var archiveTab = document.querySelector('.tab[data-tab="archive"]');
+  var overArchive = archiveTab && archiveTab.classList.contains('drop-hover');
+  if (archiveTab) archiveTab.classList.remove('drop-target', 'drop-hover');
+
+  if (overArchive && projDrag.ghost) {
+    var r = archiveTab.getBoundingClientRect();
+    projDrag.ghost.style.left = (r.left + r.width / 2) + 'px';
+    projDrag.ghost.style.top = (r.top + r.height / 2) + 'px';
+    setTimeout(function() {
+      projDrag.ghost.classList.add('success');
+    }, 50);
+    setTimeout(function() {
+      if (projDrag.ghost) projDrag.ghost.remove();
+      projDrag.project.tasks.forEach(function(t) { t.status = 'done'; });
+      projDrag.project.archived = true;
+      saveProjects();
+      if (projDrag.card) projDrag.card.style.opacity = '';
+      projDrag = null;
+      renderProjectsPage();
+    }, 550);
+  } else {
+    if (projDrag.ghost) {
+      projDrag.ghost.style.opacity = '0';
+      setTimeout(function() { if (projDrag && projDrag.ghost) projDrag.ghost.remove(); }, 300);
+    }
+    if (projDrag.card) projDrag.card.style.opacity = '';
+    projDrag = null;
+  }
+}
+
+// ============= PROJECT RINGS (small cards) =============
+function drawProjectMiniRing(canvas, project) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const CX = W / 2, CY = W / 2;
+  ctx.clearRect(0, 0, W, W);
+
+  const ringTasks = project.tasks.filter(t => t.inRing);
+  const taskCount = ringTasks.length;
+  if (taskCount === 0) {
+    // Draw empty hint circles
+    for (let i = 0; i < 2; i++) {
+      const r = W * 0.18 + i * (W * 0.09);
+      ctx.beginPath();
+      ctx.arc(CX, CY, r, 0, Math.PI * 2);
+      ctx.setLineDash([2, 6]);
+      ctx.strokeStyle = 'rgba(245,241,233,0.15)';
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    return;
+  }
+
+  const minR = W * 0.12, maxR = W * 0.44;
+  const gap = (maxR - minR) / Math.max(taskCount - 1, 1);
+
+  for (let i = 0; i < taskCount; i++) {
+    const task = ringTasks[i];
+    const r = minR + i * gap;
+    const alpha = 0.4 + (i / Math.max(taskCount, 1)) * 0.35;
+    const thick = task.status === 'stuck' ? 2.2 : task.status === 'procrastinating' ? 1.4 : 1.0;
+    const color = storyColorMap[task.story] || '#F5F1E9';
+
+    // Glow
+    ctx.beginPath();
+    ctx.arc(CX, CY, r, 0, Math.PI * 2);
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = alpha * 0.3;
+    ctx.lineWidth = thick + 2.5;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Core
+    ctx.beginPath();
+    ctx.arc(CX, CY, r, 0, Math.PI * 2);
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = thick;
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawAllProjectMiniRings() {
+  document.querySelectorAll('.proj-card:not(.add-card) canvas').forEach(canvas => {
+    const card = canvas.closest('.proj-card');
+    if (!card) return;
+    const projectId = card.dataset.projectId;
+    if (!projectId) return;
+    const project = projects.find(p => p.id === projectId);
+    if (project) drawProjectMiniRing(canvas, project);
+  });
+}
+
+// ============= MAIN RING ARCS (ANIMATED) =============
+const ringCanvas = document.getElementById('ringCanvas');
+const ringCtx = ringCanvas.getContext('2d');
+const CANVAS_W = 540;
+const RING_CX = -90;
+const RING_CY = 270;
+const RING_MIN_R = 130;
+const RING_MAX_R = 260;
+const PEN_ANGLE = 0;
+let globalAngle = 0;
+
+let ringAnimFrame = null;
+let hoveredTaskId = null;
+let currentRingTasks = tasks.filter(t => t.inRing);
+let lastDrawTime = null;
+
+var statusThick = { smooth: 1.5, procrastinating: 3.0, stuck: 7.0 };
+var statusSpeed = { smooth: 1.5, procrastinating: 1.0, stuck: 0.3 };
+
+function getRingCenterScreen() {
+  const wrap = document.querySelector('.ring-canvas-wrap');
+  const rect = wrap.getBoundingClientRect();
+  const scaleX = rect.width / CANVAS_W;
+  const scaleY = rect.height / CANVAS_W;
+  return {
+    x: rect.left + RING_CX * scaleX,
+    y: rect.top + RING_CY * scaleY,
+    scale: Math.min(scaleX, scaleY)
+  };
+}
+
+function getThicknessAtRotation(log, rotation) {
+  if (!log || log.length === 0) return 1.5;
+  var BLEND = 0.4;
+  var before = log[0];
+  for (var i = 0; i < log.length; i++) {
+    if (log[i].atRotation <= rotation) {
+      before = log[i];
+    } else {
+      var after = log[i];
+      var blendStart = after.atRotation - BLEND;
+      if (rotation >= blendStart) {
+        var t = (rotation - blendStart) / BLEND;
+        return before.thickness + (after.thickness - before.thickness) * t;
+      }
+      return before.thickness;
+    }
+  }
+  return before.thickness;
+}
+
+function getFeelingsAtRotation(log, rotation) {
+  if (!log || log.length === 0) return { feelX: 0.5, feelY: 0.5 };
+  var BLEND = 0.4;
+  var before = log[0];
+  for (var i = 0; i < log.length; i++) {
+    if (log[i].atRotation <= rotation) {
+      before = log[i];
+    } else {
+      var after = log[i];
+      var blendStart = after.atRotation - BLEND;
+      if (rotation >= blendStart) {
+        var t = (rotation - blendStart) / BLEND;
+        return {
+          feelX: before.feelX + (after.feelX - before.feelX) * t,
+          feelY: before.feelY + (after.feelY - before.feelY) * t
+        };
+      }
+      return { feelX: before.feelX, feelY: before.feelY };
+    }
+  }
+  return { feelX: before.feelX, feelY: before.feelY };
+}
+
+function organicWobble(angle, feelX, feelY) {
+  var amp = feelX * 6.0;
+  var f = 3.0 + feelY * 8.0;
+  return (
+    Math.sin(angle * f * 1.0)       * 0.6 +
+    Math.sin(angle * f * 1.7 + 1.3) * 0.4 +
+    Math.sin(angle * f * 3.1 + 2.7) * 0.25 +
+    Math.sin(angle * f * 5.3 + 4.1) * 0.12 +
+    Math.sin(angle * f * 7.9 + 5.3) * 0.05
+  ) * amp;
+}
+
+function drawRingFrame(angle, time) {
+  const ctx = ringCtx;
+  const W = CANVAS_W;
+  ctx.clearRect(0, 0, W, W);
+
+  const ringTasks = currentRingTasks;
+  const taskCount = ringTasks.length;
+
+  if (taskCount === 0) {
+    for (let i = 0; i < 3; i++) {
+      const r = RING_MIN_R + i * 50;
+      ctx.beginPath();
+      ctx.arc(RING_CX, RING_CY, r, 0, Math.PI * 2);
+      ctx.setLineDash([4, 10]);
+      ctx.strokeStyle = 'rgba(245,241,233,0.12)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    return;
+  }
+
+  const allDone = ringTasks.every(t => t.status === 'done');
+  if (allDone) {
+    const gap = (RING_MAX_R - RING_MIN_R) / Math.max(taskCount - 1, 1);
+    for (let i = 0; i < taskCount; i++) {
+      const r = RING_MIN_R + i * gap;
+      ctx.beginPath();
+      ctx.arc(RING_CX, RING_CY, r, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(245,241,233,0.55)';
+      ctx.lineWidth = 1.8;
+      ctx.shadowColor = 'rgba(245,241,233,0.3)';
+      ctx.shadowBlur = 6;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+    return;
+  }
+
+  const activeTasks = ringTasks.filter(t => t.status !== 'done');
+  const activeCount = activeTasks.length;
+  if (activeCount === 0) return;
+
+  const gap = (RING_MAX_R - RING_MIN_R) / Math.max(taskCount - 1, 1);
+  const TRAIL_SPAN = Math.PI * 1.72;
+  const t = time || 0;
+  const INK = '#F5F1E9';
+  const statusThick = { smooth: 1.5, procrastinating: 3.0, stressed: 5.0, stuck: 7.0 };
+
+  for (let i = 0; i < taskCount; i++) {
+    const task = ringTasks[i];
+    if (task.status === 'done') continue;
+
+    const baseR = RING_MIN_R + i * gap;
+    const layerBright = 0.7 + (i / Math.max(taskCount, 1)) * 0.3;
+
+    // Initialize trail logs for archive
+    if (!task._trailStatusLog || task._trailStatusLog.length === 0) {
+      task._trailStatusLog = [{ atRotation: angle, thickness: statusThick[task.status || 'smooth'] || 1.5 }];
+    }
+    if (!task._trailFeelingsLog || task._trailFeelingsLog.length === 0) {
+      task._trailFeelingsLog = [{ atRotation: angle, feelX: task.feelings?.x ?? 0.5, feelY: task.feelings?.y ?? 0.5 }];
+    }
+
+    // Current parameters
+    const thick = (statusThick[task.status] || 2.5);
+    const feelX = task.feelings?.x ?? 0.5;
+    const feelY = task.feelings?.y ?? 0.5;
+
+    // ── 1. Faint guide circle (ideal circle reference) ──
+    ctx.beginPath();
+    ctx.arc(RING_CX, RING_CY, baseR, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(245,241,233,' + (0.06 * layerBright).toFixed(3) + ')';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
+    // ── 2. Compute organic wobble & push to history ──
+    // The point carves its own path — radius = baseR + organic wobble
+    const wobble = organicWobble(angle, feelX, feelY);
+    const radius = baseR + wobble;
+
+    if (!task._trailHistory) task._trailHistory = [];
+    task._trailHistory.push({
+      angle: angle,
+      radius: radius,
+      thickness: thick
+    });
+
+    // Prune old points beyond TRAIL_SPAN
+    var pruneCutoff = angle - TRAIL_SPAN - 0.6;
+    while (task._trailHistory.length > 2 && task._trailHistory[1].angle < pruneCutoff) {
+      task._trailHistory.shift();
+    }
+    while (task._trailHistory.length > 2500) {
+      task._trailHistory.shift();
+    }
+
+    // ── 3. Gather visible history ──
+    // Point is at screen angle PEN_ANGLE=0; trail spans behind it
+    var visible = [];
+    var visMin = -TRAIL_SPAN - 0.15;
+    var visMax = 0.15;
+    for (var h = 0; h < task._trailHistory.length; h++) {
+      var hpt = task._trailHistory[h];
+      var sa = hpt.angle - angle;
+      if (sa >= visMin && sa <= visMax) {
+        visible.push(hpt);
+      }
+    }
+
+    if (visible.length >= 2) {
+      // ── 3a. Trail glow (wide, faint) ──
+      ctx.beginPath();
+      for (var v = 0; v < visible.length; v++) {
+        var vpt = visible[v];
+        var vsa = vpt.angle - angle;
+        var vrx = RING_CX + Math.cos(vsa) * vpt.radius;
+        var vry = RING_CY + Math.sin(vsa) * vpt.radius;
+        v === 0 ? ctx.moveTo(vrx, vry) : ctx.lineTo(vrx, vry);
+      }
+      ctx.strokeStyle = INK;
+      ctx.globalAlpha = 0.25 * layerBright;
+      ctx.lineWidth = thick + 5;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // ── 3b. Trail core — grouped by thickness ──
+      var gStart = 0;
+      while (gStart < visible.length - 1) {
+        var gEnd = gStart + 1;
+        var gThick = visible[gStart].thickness;
+        while (gEnd < visible.length - 1 && Math.abs(visible[gEnd].thickness - gThick) < 0.08) {
+          gEnd++;
+        }
+        if (gEnd < visible.length) gEnd++;
+
+        var gMidSa = visible[gStart].angle - angle;
+        var gDist = Math.max(0, -gMidSa / TRAIL_SPAN);
+        var gCoreAlpha = (0.05 + 0.9 * Math.exp(-gDist * 3.2)) * layerBright;
+
+        ctx.beginPath();
+        for (var g = gStart; g < gEnd; g++) {
+          var gpt = visible[g];
+          var ga = gpt.angle - angle;
+          var grx = RING_CX + Math.cos(ga) * gpt.radius;
+          var gry = RING_CY + Math.sin(ga) * gpt.radius;
+          g === gStart ? ctx.moveTo(grx, gry) : ctx.lineTo(grx, gry);
+        }
+        ctx.strokeStyle = INK;
+        ctx.globalAlpha = gCoreAlpha;
+        ctx.lineWidth = gThick;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        gStart = Math.max(gEnd - 1, gStart + 1);
+      }
+    }
+
+    ctx.globalAlpha = 1;
+
+    // ── 4. Point dot (the moving endpoint) ──
+    var penX = RING_CX + Math.cos(PEN_ANGLE) * radius;
+    var penY = RING_CY + Math.sin(PEN_ANGLE) * radius;
+
+    var pulse = 1 + 0.25 * Math.sin(t * 3.5 + i * 0.7);
+    var glowR = 16 * pulse * layerBright;
+
+    var penGlow = ctx.createRadialGradient(penX, penY, 0, penX, penY, glowR);
+    penGlow.addColorStop(0, 'rgba(245,241,233,0.6)');
+    penGlow.addColorStop(0.35, 'rgba(245,241,233,0.15)');
+    penGlow.addColorStop(1, 'rgba(245,241,233,0)');
+    ctx.beginPath();
+    ctx.arc(penX, penY, glowR, 0, Math.PI * 2);
+    ctx.fillStyle = penGlow;
+    ctx.fill();
+
+    var dotR = 5 + 0.4 * Math.sin(t * 3.5 + i * 0.7);
+    ctx.beginPath();
+    ctx.arc(penX, penY, dotR, 0, Math.PI * 2);
+    ctx.fillStyle = INK;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(penX - 1.2, penY - 1.2, dotR * 0.4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fill();
+
+    ctx.globalAlpha = 1;
+  }
+}
+
+function startRingAnimation() {
+  if (ringAnimFrame) return;
+  let lastTime = null;
+  let animTime = 0;
+  function animate(time) {
+    const tSec = time / 1000;
+    if (lastTime !== null) {
+      const dt = Math.min(tSec - lastTime, 0.1);
+      animTime += dt;
+      globalAngle += 0.22 * dt;
+    }
+    lastTime = tSec;
+    currentRingTasks = tasks.filter(t => t.inRing);
+    drawRingFrame(globalAngle, animTime);
+    ringAnimFrame = requestAnimationFrame(animate);
+  }
+  ringAnimFrame = requestAnimationFrame(animate);
+}
+function stopRingAnimation() {
+  if (ringAnimFrame) {
+    cancelAnimationFrame(ringAnimFrame);
+    ringAnimFrame = null;
+  }
+}
+
+// Start animation
+currentRingTasks = tasks.filter(t => t.inRing);
+updateRingHeader();
+renderProjectsPage();
+drawRingFrame(globalAngle, 0);
+startRingAnimation();
+
+// ============= RING TAP DETECTION =============
+const ringTap = document.getElementById('ringTap');
+ringTap.addEventListener('click', (e) => {
+  if (currentPage !== 'ring') return;
+  const ringTasks = tasks.filter(t => t.inRing);
+  if (ringTasks.length === 0) return;
+
+  const center = getRingCenterScreen();
+  const cx = center.x;
+  const cy = center.y;
+  const sc = center.scale;
+
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+  const dx = clientX - cx;
+  const dy = clientY - cy;
+  const dist = Math.sqrt(dx * dx + dy * dy) / sc;
+
+  const gap = (RING_MAX_R - RING_MIN_R) / Math.max(ringTasks.length - 1, 1);
+  const HIT_RADIUS = 18;
+
+  for (let i = 0; i < ringTasks.length; i++) {
+    const r = RING_MIN_R + i * gap;
+    if (Math.abs(dist - r) <= HIT_RADIUS) {
+      const task = ringTasks[i];
+      openRecordForTask(task);
+      return;
+    }
+  }
+  // Fallback: no specific ring was hit, open first ring task
+  openRecordForTask(ringTasks[0]);
+});
+
+// Hover detection — highlight ring under cursor
+ringTap.addEventListener('mousemove', (e) => {
+  if (currentPage !== 'ring') return;
+  const ringTasks = tasks.filter(t => t.inRing);
+  if (ringTasks.length === 0) {
+    hoveredTaskId = null;
+    ringTap.style.cursor = 'default';
+    return;
+  }
+  const center = getRingCenterScreen();
+  const cx = center.x;
+  const cy = center.y;
+  const sc = center.scale;
+  const dx = e.clientX - cx;
+  const dy = e.clientY - cy;
+  const dist = Math.sqrt(dx * dx + dy * dy) / sc;
+  const gap = (RING_MAX_R - RING_MIN_R) / Math.max(ringTasks.length - 1, 1);
+  const HIT_RADIUS = Math.max(gap * 0.6, 12);
+  let found = null;
+  let bestDist = Infinity;
+  for (let i = 0; i < ringTasks.length; i++) {
+    const r = RING_MIN_R + i * gap;
+    const d = Math.abs(dist - r);
+    if (d <= HIT_RADIUS && d < bestDist) {
+      found = ringTasks[i].id;
+      bestDist = d;
+    }
+  }
+  hoveredTaskId = found;
+  ringTap.style.cursor = found ? 'pointer' : 'default';
+});
+
+ringTap.addEventListener('mouseleave', () => {
+  hoveredTaskId = null;
+  ringTap.style.cursor = 'default';
+});
+
+// Also handle touch on ring tap
+ringTap.addEventListener('touchstart', (e) => {
+  // Let click handler deal with it via the touch coords
+}, { passive: true });
+
+// ============= PAGE NAVIGATION =============
+const pages = document.querySelectorAll('.page');
+const navItems = document.querySelectorAll('.nav-item');
+let currentPage = 'ring';
+
+function switchPage(pageName) {
+  if (pageName === currentPage) return;
+  currentPage = pageName;
+  pages.forEach(p => p.classList.toggle('active', p.dataset.page === pageName));
+  navItems.forEach(n => n.classList.toggle('active', n.dataset.nav === pageName));
+  closeAllOverlays();
+  if (pageName === 'projects') {
+    const activeCount = projects.filter(p => !p.archived).length;
+    document.querySelector('.projects-meta').textContent = activeCount + ' ACTIVE PROJECTS';
+    renderProjectsPage();
+  }
+}
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const target = item.dataset.nav;
+    switchPage(target);
+  });
+});
+
+// ============= PROJECT SWITCHING =============
+function selectProject(projectId) {
+  const project = projects.find(p => p.id === projectId);
+  if (!project) return;
+  document.getElementById('ringProjTitle').style.opacity = '0';
+  document.getElementById('ringProjMeta').style.opacity = '0';
+  setTimeout(() => {
+    setActiveProject(projectId);
+    document.getElementById('ringProjTitle').style.opacity = '1';
+    document.getElementById('ringProjMeta').style.opacity = '1';
+  }, 200);
+  switchPage('ring');
+}
+
+// ============= ARCHIVE DETAIL =============
+var archiveDetailProject = null;
+
+function openArchiveDetail(project) {
+  archiveDetailProject = project;
+  switchPage('archive-detail');
+  document.getElementById('archiveDetailTitle').textContent = project.name;
+  document.getElementById('archiveDetailMeta').textContent = 'ARCHIVED';
+  document.getElementById('archiveBrewDays').textContent = computeBrewDays(project);
+  document.getElementById('archiveTaskCount').textContent = project.tasks.length;
+  setTimeout(function() {
+    renderArchiveRing(project);
+    renderEmotionTrend(project);
+  }, 50);
+}
+
+function computeBrewDays(project) {
+  var created = new Date(project.createdAt);
+  var now = new Date();
+  var days = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+  return days || '--';
+}
+
+function renderEmotionTrend(project) {
+  var canvas = document.getElementById('archiveEmotionCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var allFeelings = [];
+  project.tasks.forEach(function(task) {
+    if (task._trailFeelingsLog) {
+      task._trailFeelingsLog.forEach(function(e) {
+        allFeelings.push(e);
+      });
+    }
+  });
+  allFeelings.sort(function(a, b) { return a.atRotation - b.atRotation; });
+
+  if (allFeelings.length < 2) {
+    ctx.fillStyle = 'rgba(245,241,233,0.3)';
+    ctx.font = '10px "Roboto Serif"';
+    ctx.textAlign = 'center';
+    ctx.fillText('Not enough data', W / 2, H / 2);
+    return;
+  }
+
+  var pad = 8;
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(212,165,120,0.8)';
+  ctx.lineWidth = 1.5;
+  for (var i = 0; i < allFeelings.length; i++) {
+    var x = pad + (i / Math.max(allFeelings.length - 1, 1)) * (W - pad * 2);
+    var y = pad + (1 - allFeelings[i].feelX) * (H - pad * 2);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+function renderArchiveRing(project) {
+  var canvas = document.getElementById('archiveRingCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var CX = W / 2, CY = H / 2;
+  ctx.clearRect(0, 0, W, H);
+
+  var tasks = project.tasks;
+  var taskCount = tasks.length;
+  if (taskCount === 0) return;
+
+  var MIN_R = 60, MAX_R = 240;
+  var gap = taskCount > 1 ? (MAX_R - MIN_R) / (taskCount - 1) : 0;
+  var statusThick = { smooth: 1.5, procrastinating: 3.0, stuck: 5.0, done: 0.8 };
+
+  for (var i = 0; i < taskCount; i++) {
+    var task = tasks[i];
+    var baseR = MIN_R + i * gap;
+    var storyColor = storyColorMap[task.story] || '#F5F1E9';
+
+    if (!task._trailFeelingsLog || task._trailFeelingsLog.length === 0) {
+      task._trailFeelingsLog = [{ atRotation: 0, feelX: task.feelings?.x ?? 0.5, feelY: task.feelings?.y ?? 0.5 }];
+    }
+    if (!task._trailStatusLog || task._trailStatusLog.length === 0) {
+      task._trailStatusLog = [{ atRotation: 0, thickness: statusThick[task.status || 'done'] || 1.5 }];
+    }
+
+    var flog = task._trailFeelingsLog;
+    var slog = task._trailStatusLog;
+    var minR = flog[0].atRotation;
+    var maxR = flog[flog.length - 1].atRotation;
+    var rotRange = Math.max(maxR - minR, Math.PI * 2);
+
+    // Initialize phase from first log entry
+    var f0 = flog[0];
+    var phase = {
+      p1: minR * (0.8 + f0.feelY * 0.8) + i * 0.5,
+      p2: minR * (1.5 + f0.feelY * 1.5) + i * 1.2 + 1.7,
+      p3: minR * (3.0 + f0.feelY * 2.5) + i * 2.1 + 3.1
+    };
+
+    var angleStep = 0.02;
+    var dAngle = angleStep * rotRange / (Math.PI * 2);
+
+    ctx.beginPath();
+    for (var a = 0; a <= Math.PI * 2 + angleStep * 0.5; a += angleStep) {
+      var rot = minR + a * rotRange / (Math.PI * 2);
+      var feels = getFeelingsAtRotation(flog, rot);
+      var f1 = 0.8 + feels.feelY * 0.8;
+      var f2 = 1.5 + feels.feelY * 1.5;
+      var f3 = 3.0 + feels.feelY * 2.5;
+      var a1 = 1.0 + feels.feelX * 8;
+      var a2 = 0.8 + feels.feelX * 5;
+      var a3 = 0.2 + feels.feelX * 2;
+
+      if (a > 0) {
+        phase.p1 += f1 * dAngle;
+        phase.p2 += f2 * dAngle;
+        phase.p3 += f3 * dAngle;
+      }
+      var rad = baseR +
+        Math.sin(phase.p1) * a1 +
+        Math.sin(phase.p2) * a2 +
+        Math.sin(phase.p3) * a3;
+      var rx = CX + Math.cos(a) * rad;
+      var ry = CY + Math.sin(a) * rad;
+      a === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = storyColor;
+    ctx.globalAlpha = 0.7;
+    ctx.lineWidth = 2.0;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// Card click handlers are attached dynamically in renderProjectsPage()
+
+
+// ============= OVERLAYS =============
+const scrim = document.getElementById('scrim');
+const outlinePanel = document.getElementById('outlinePanel');
+const recordPanel = document.getElementById('recordPanel');
+const createSheet = document.getElementById('createSheet');
+
+function closeAllOverlays() {
+  outlinePanel.classList.remove('open');
+  recordPanel.classList.remove('open');
+  createSheet.classList.remove('open');
+  scrim.classList.remove('active');
+}
+
+function openOutline() {
+  if (currentPage !== 'ring') switchPage('ring');
+  closeAllOverlays();
+  outlinePanel.classList.add('open');
+  scrim.classList.add('active');
+}
+let activeRecordTask = null;
+
+function openRecordForTask(task) {
+  if (currentPage !== 'ring') switchPage('ring');
+  closeAllOverlays();
+  activeRecordTask = task;
+
+  // Update record panel with task info
+  document.getElementById('recordTaskTitle').textContent = task.name;
+
+  // Highlight current status
+  document.querySelectorAll('.status-pill').forEach(p => {
+    p.classList.toggle('selected', p.dataset.status === (task.status || ''));
+  });
+
+  // Restore feelings pad handle position
+  var fx = task.feelings ? task.feelings.x : 0.5;
+  var fy = task.feelings ? task.feelings.y : 0.5;
+  padHandle.style.left = ((1 - fx) * 100) + '%';
+  padHandle.style.top = ((1 - fy) * 100) + '%';
+
+  recordPanel.classList.add('open');
+  scrim.classList.add('active');
+}
+
+function openCreate() {
+  const needsSwitch = currentPage !== 'ring';
+  if (needsSwitch) switchPage('ring');
+  closeAllOverlays();
+  setTimeout(() => {
+    createSheet.classList.add('open');
+    scrim.classList.add('active');
+  }, needsSwitch ? 200 : 0);
+}
+
+document.getElementById('menuBtn').addEventListener('click', openOutline);
+document.getElementById('addBtn').addEventListener('click', openCreate);
+document.getElementById('archiveBackBtn').addEventListener('click', function() {
+  archiveDetailProject = null;
+  switchPage('projects');
+});
+document.getElementById('generate3dBtn').addEventListener('click', function() {
+  alert('3D model export coming soon');
+});
+
+
+// ============= RENDER PROJECTS PAGE =============
+function renderProjectsPage() {
+  const yearStack = document.getElementById('yearStack');
+  if (!yearStack) return;
+
+  const activeProjects = projects.filter(p => !p.archived);
+  const archivedProjects = projects.filter(p => p.archived);
+
+  function groupByYear(projList) {
+    const byYear = {};
+    projList.forEach(p => {
+      const year = new Date(p.createdAt).getFullYear();
+      if (!byYear[year]) byYear[year] = [];
+      byYear[year].push(p);
+    });
+    return byYear;
+  }
+
+  function renderYearSection(year, yearProjects, isActive) {
+    const yearCard = document.createElement('div');
+    yearCard.className = 'year-card' + (isActive ? '' : ' collapsed');
+    yearCard.dataset.year = year;
+    yearCard.dataset.section = isActive ? 'active' : 'archived';
+
+    yearCard.innerHTML = `
+      <div class="year-head">
+        <div class="year-name">${year}</div>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <div class="year-count">${yearProjects.length} project${yearProjects.length !== 1 ? 's' : ''}</div>
+          <div class="expand-indicator">▼</div>
+        </div>
+      </div>
+      <div class="year-divider"></div>
+      <div class="year-body">
+        <div class="projects-grid">
+          ${yearProjects.map(p => `
+            <div class="proj-card" data-project-id="${p.id}">
+              <div class="proj-ring"><canvas width="76" height="76"></canvas></div>
+              <div class="proj-name">${p.name.toLowerCase()}</div>
+              <div class="proj-days">${p.tasks.length} tasks</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    yearStack.appendChild(yearCard);
+  }
+
+  yearStack.innerHTML = '';
+
+  // Active section
+  const activeByYear = groupByYear(activeProjects);
+  const activeYears = Object.keys(activeByYear).sort((a, b) => b - a);
+  if (activeYears.length > 0) {
+    activeYears.forEach(year => renderYearSection(year, activeByYear[year], true));
+  } else {
+    // Show empty state for active
+    const emptyCard = document.createElement('div');
+    emptyCard.className = 'year-card';
+    emptyCard.dataset.section = 'active';
+    emptyCard.innerHTML = `
+      <div class="year-head"><div class="year-name">No active projects</div></div>
+      <div class="year-divider"></div>
+      <div class="year-body"><div class="projects-grid"></div></div>
+    `;
+    yearStack.appendChild(emptyCard);
+  }
+
+  // Add new project button in active section
+  if (activeYears.length > 0) {
+    const lastActiveCard = yearStack.querySelector('.year-card[data-section="active"]:last-of-type .projects-grid');
+    if (lastActiveCard) {
+      const addCard = document.createElement('div');
+      addCard.className = 'proj-card add-card';
+      addCard.id = 'newProjBtn';
+      addCard.innerHTML = '<div class="add-icon">+</div><div class="add-label">New Project</div>';
+      lastActiveCard.appendChild(addCard);
+    }
+  }
+
+  // Archived section
+  const archivedByYear = groupByYear(archivedProjects);
+  const archivedYears = Object.keys(archivedByYear).sort((a, b) => b - a);
+  if (archivedYears.length > 0) {
+    archivedYears.forEach(year => renderYearSection(year, archivedByYear[year], false));
+  } else {
+    const emptyCard = document.createElement('div');
+    emptyCard.className = 'year-card collapsed';
+    emptyCard.dataset.section = 'archived';
+    emptyCard.innerHTML = `
+      <div class="year-head"><div class="year-name">No archived projects</div></div>
+      <div class="year-divider"></div>
+      <div class="year-body"><div class="projects-grid"></div></div>
+    `;
+    yearStack.appendChild(emptyCard);
+  }
+
+  // Attach handlers
+  document.querySelectorAll('.year-head').forEach(head => {
+    head.addEventListener('click', () => {
+      head.parentElement.classList.toggle('collapsed');
+    });
+  });
+
+  document.querySelectorAll('.proj-card:not(.add-card)').forEach(card => {
+    var projId = card.dataset.projectId;
+    var project = projects.find(function(p) { return p.id === projId; });
+    if (!project) return;
+
+    card.addEventListener('mousedown', function(e) {
+      if (e.button !== 0) return;
+      currentProjPressTarget = { card: card, project: project, startX: e.clientX, startY: e.clientY, longFired: false };
+      if (!project.archived) {
+        currentProjPressTarget.timer = setTimeout(function() {
+          currentProjPressTarget.longFired = true;
+          startProjDrag(card, project, e.clientX, e.clientY);
+        }, 400);
+      }
+    });
+
+    card.addEventListener('touchstart', function(e) {
+      var t = e.touches[0];
+      currentProjPressTarget = { card: card, project: project, startX: t.clientX, startY: t.clientY, longFired: false };
+      if (!project.archived) {
+        currentProjPressTarget.timer = setTimeout(function() {
+          currentProjPressTarget.longFired = true;
+          startProjDrag(card, project, t.clientX, t.clientY);
+        }, 400);
+      }
+    }, { passive: false });
+  });
+
+  const newBtn = document.getElementById('newProjBtn');
+  if (newBtn) newBtn.addEventListener('click', openCreate);
+
+  // Draw mini rings after DOM update
+  setTimeout(() => drawAllProjectMiniRings(), 50);
+}
+
+scrim.addEventListener('click', closeAllOverlays);
+document.getElementById('closeRecord').addEventListener('click', () => {
+  activeRecordTask = null;
+  closeAllOverlays();
+});
+document.getElementById('closeCreate').addEventListener('click', closeAllOverlays);
+  // ============= BEGIN THIS PROJECT =============
+  document.querySelector('.begin-btn').addEventListener('click', () => {
+    const nameInput = document.querySelector('.proj-input');
+    const projectName = (nameInput.value || '').trim() || 'Untitled project';
+
+    // Collect all tasks from sheet stories
+    const newTasks = [];
+    sheetStories.forEach(story => {
+      story.tasks.forEach(taskName => {
+        if (taskName.trim()) {
+          newTasks.push({
+            id: 't' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+            name: taskName.trim(),
+            story: story.name.toLowerCase(),
+            inRing: true,
+            status: 'smooth',
+            feelings: { x: 0.5, y: 0.5 }
+          });
+        }
+      });
+    });
+
+    if (newTasks.length === 0) return;
+
+    // Create new project
+    const newProject = {
+      id: 'proj_' + Date.now(),
+      name: projectName,
+      tasks: newTasks,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+    projects.push(newProject);
+
+    // Save and set as active
+    saveProjects();
+    setActiveProject(newProject.id);
+
+    // Close sheet and switch to ring
+    closeAllOverlays();
+    if (currentPage !== 'ring') switchPage('ring');
+
+    // Clear input for next use
+    nameInput.value = '';
+
+    // Update projects page
+    renderProjectsPage();
+  });
+
+
+// ============= STATUS & PAD =============
+document.querySelectorAll('.status-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.status-pill').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+    // Save status to active task
+    if (activeRecordTask) {
+      var oldStatus = activeRecordTask.status;
+      activeRecordTask.status = pill.dataset.status;
+      if (activeRecordTask.inRing) {
+        if (!activeRecordTask._trailStatusLog || activeRecordTask._trailStatusLog.length === 0) {
+          activeRecordTask._trailStatusLog = [{
+            atRotation: globalAngle,
+            thickness: statusThick[oldStatus || 'smooth'] || 1.5
+          }];
+        }
+        activeRecordTask._trailStatusLog.push({
+          atRotation: globalAngle,
+          thickness: statusThick[activeRecordTask.status] || 1.5
+        });
+        if (activeRecordTask._trailStatusLog.length > 200) {
+          var firstS = activeRecordTask._trailStatusLog[0];
+          activeRecordTask._trailStatusLog = [firstS].concat(
+            activeRecordTask._trailStatusLog.slice(-100)
+          );
+        }
+      }
+      saveTasks();
+    }
+  });
+});
+
+const pad = document.getElementById('emotionPad');
+const padHandle = document.getElementById('padHandle');
+function updatePadPosition(clientX, clientY) {
+  const rect = pad.getBoundingClientRect();
+  let x = ((clientX - rect.left) / rect.width) * 100;
+  let y = ((clientY - rect.top) / rect.height) * 100;
+  x = Math.max(0, Math.min(100, x));
+  y = Math.max(0, Math.min(100, y));
+  padHandle.style.left = x + '%';
+  padHandle.style.top = y + '%';
+  // Save feelings to active task (x: anxious->calm, y: motivated->unmotivated)
+  if (activeRecordTask) {
+    var oldFeelX = activeRecordTask.feelings?.x ?? 0.5;
+    var oldFeelY = activeRecordTask.feelings?.y ?? 0.5;
+    activeRecordTask.feelings = activeRecordTask.feelings || {};
+    activeRecordTask.feelings.x = 1 - x / 100;
+    activeRecordTask.feelings.y = 1 - y / 100;
+    // Record feelings change in trail log
+    if (activeRecordTask.inRing) {
+      if (!activeRecordTask._trailFeelingsLog || activeRecordTask._trailFeelingsLog.length === 0) {
+        activeRecordTask._trailFeelingsLog = [{
+          atRotation: globalAngle,
+          feelX: oldFeelX,
+          feelY: oldFeelY
+        }];
+      }
+      var last = activeRecordTask._trailFeelingsLog[activeRecordTask._trailFeelingsLog.length - 1];
+      var dx = Math.abs(activeRecordTask.feelings.x - last.feelX);
+      var dy = Math.abs(activeRecordTask.feelings.y - last.feelY);
+      if (dx > 0.01 || dy > 0.01) {
+        activeRecordTask._trailFeelingsLog.push({
+          atRotation: globalAngle,
+          feelX: activeRecordTask.feelings.x,
+          feelY: activeRecordTask.feelings.y
+        });
+        if (activeRecordTask._trailFeelingsLog.length > 200) {
+          var firstF = activeRecordTask._trailFeelingsLog[0];
+          activeRecordTask._trailFeelingsLog = [firstF].concat(
+            activeRecordTask._trailFeelingsLog.slice(-100)
+          );
+        }
+      }
+    }
+    saveTasks();
+  }
+}
+let padDragging = false;
+pad.addEventListener('mousedown', (e) => { padDragging = true; updatePadPosition(e.clientX, e.clientY); });
+window.addEventListener('mousemove', (e) => { if (padDragging) updatePadPosition(e.clientX, e.clientY); });
+window.addEventListener('mouseup', () => { padDragging = false; });
+pad.addEventListener('touchstart', (e) => {
+  padDragging = true;
+  const t = e.touches[0]; updatePadPosition(t.clientX, t.clientY);
+});
+window.addEventListener('touchmove', (e) => {
+  if (padDragging) { const t = e.touches[0]; updatePadPosition(t.clientX, t.clientY); }
+});
+window.addEventListener('touchend', () => { padDragging = false; });
+
+// ============= YEAR CARDS & TABS =============
+document.querySelectorAll('.year-head').forEach(head => {
+  head.addEventListener('click', () => head.parentElement.classList.toggle('collapsed'));
+});
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const filter = tab.dataset.tab; // 'in-progress' or 'archive'
+    document.querySelectorAll('.year-card').forEach(card => {
+      const section = card.dataset.section;
+      if (filter === 'in-progress') {
+        card.style.display = section === 'active' ? '' : 'none';
+      } else {
+        card.style.display = section === 'archived' ? '' : 'none';
+      }
+    });
+  });
+});
+
+// Initialize: show only in-progress (active) by default
+document.querySelectorAll('.year-card').forEach(card => {
+  if (card.dataset.section !== 'active') card.style.display = 'none';
+});
+
+// ============= PROJECT DRAG / PRESS DOCUMENT HANDLERS =============
+document.addEventListener('mousemove', function(e) {
+  if (currentProjPressTarget && !currentProjPressTarget.longFired) {
+    if (Math.hypot(e.clientX - currentProjPressTarget.startX, e.clientY - currentProjPressTarget.startY) > 5) {
+      clearTimeout(currentProjPressTarget.timer);
+      currentProjPressTarget = null;
+    }
+  }
+  if (projDrag) onProjDragMove(e);
+});
+
+document.addEventListener('touchmove', function(e) {
+  if (currentProjPressTarget && !currentProjPressTarget.longFired) {
+    var t = e.touches[0];
+    if (Math.hypot(t.clientX - currentProjPressTarget.startX, t.clientY - currentProjPressTarget.startY) > 5) {
+      clearTimeout(currentProjPressTarget.timer);
+      currentProjPressTarget = null;
+    }
+  }
+  if (projDrag && e.touches[0]) onProjDragMove(e.touches[0]);
+}, { passive: false });
+
+document.addEventListener('mouseup', function(e) {
+  if (currentProjPressTarget && !currentProjPressTarget.longFired) {
+    clearTimeout(currentProjPressTarget.timer);
+    var target = currentProjPressTarget;
+    currentProjPressTarget = null;
+    if (target.project.archived) {
+      openArchiveDetail(target.project);
+    } else {
+      selectProject(target.project.id);
+    }
+  }
+  if (projDrag) onProjDragEnd(e);
+});
+
+document.addEventListener('touchend', function(e) {
+  if (currentProjPressTarget && !currentProjPressTarget.longFired) {
+    clearTimeout(currentProjPressTarget.timer);
+    var target = currentProjPressTarget;
+    currentProjPressTarget = null;
+    if (target.project.archived) {
+      openArchiveDetail(target.project);
+    } else {
+      selectProject(target.project.id);
+    }
+  }
+  if (projDrag) onProjDragEnd(e);
+});
+
+// ============= INITIAL RENDER =============
+renderOutlinePanel();
+
+// ============= CREATE PROJECT — EXPANDABLE STORIES =============
+const sheetStoryPalette = ['#8C7354', '#5C7A6B', '#7A5C6B', '#7E8FA5'];
+
+function loadSheetStories() {
+  try {
+    const saved = localStorage.getItem('dormant-sheet-stories');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return [
+    { id: 'ss1', name: 'Research', color: '#8C7354', expanded: true, tasks: ['Competitor analysis', 'Mood board'] },
+    { id: 'ss2', name: 'Concept', color: '#5C7A6B', expanded: false, tasks: ['Logo exploration', 'Color study'] },
+    { id: 'ss3', name: 'Execution', color: '#7A5C6B', expanded: false, tasks: ['Final design', 'Spec sheet'] }
+  ];
+}
+
+function saveSheetStories() {
+  try { localStorage.setItem('dormant-sheet-stories', JSON.stringify(sheetStories)); } catch(e) {}
+}
+
+let sheetStories = loadSheetStories();
+let nextSheetStoryId = Math.max(...sheetStories.map(s => parseInt(s.id.replace('ss',''))), 4) + 1;
+
+function renderSheetStories() {
+  const container = document.getElementById('createStoriesContainer');
+
+  // Preserve focus if user is typing in an add-task input
+  const focused = document.activeElement;
+  const focusedStoryId = (focused && focused.classList.contains('add-task-input'))
+    ? focused.closest('.create-story-card')?.dataset.storyId : null;
+
+  container.innerHTML = '';
+
+  sheetStories.forEach(story => {
+    const card = document.createElement('div');
+    card.className = 'create-story-card' + (story.expanded ? ' expanded' : '');
+    card.dataset.storyId = story.id;
+    const safeName = story.name.replace(/"/g, '&quot;');
+    card.innerHTML = `
+      <div class="create-story-head">
+        <div class="story-dot-sm" style="background:${story.color};"></div>
+        <input class="create-story-name-input" value="${safeName}" />
+        <div class="create-story-count">${story.tasks.length} ${story.tasks.length === 1 ? 'task' : 'tasks'}</div>
+        <div class="create-story-toggle">▼</div>
+      </div>
+      <div class="create-story-body">
+        <div class="create-story-body-inner">
+          <div class="color-picker">
+            ${sheetStoryPalette.map(c =>
+              `<div class="swatch ${c === story.color ? 'selected' : ''}" data-color="${c}"></div>`
+            ).join('')}
+          </div>
+          <div class="task-list">
+            ${story.tasks.map((t, i) => `
+              <div class="create-task-pill">
+                <div class="task-dot-sm-light"></div>
+                <div class="create-task-name">${t}</div>
+                <div class="task-x" data-task-idx="${i}">×</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="add-task-row">
+            <input type="text" class="add-task-input" placeholder="+ add task" />
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  attachSheetStoryHandlers();
+
+  // Restore focus to add-task input if it was focused before
+  if (focusedStoryId) {
+    const card = container.querySelector(`.create-story-card[data-story-id="${focusedStoryId}"]`);
+    card?.querySelector('.add-task-input')?.focus();
+  }
+
+  saveSheetStories();
+}
+
+function attachSheetStoryHandlers() {
+  document.querySelectorAll('.create-story-card').forEach(card => {
+    const id = card.dataset.storyId;
+    const story = sheetStories.find(s => s.id === id);
+    if (!story) return;
+
+    // Toggle expand on header click (but not on name input)
+    card.querySelector('.create-story-head').addEventListener('click', (e) => {
+      if (e.target.classList.contains('create-story-name-input')) return;
+      story.expanded = !story.expanded;
+      renderSheetStories();
+    });
+
+    // Name input
+    const nameInput = card.querySelector('.create-story-name-input');
+    nameInput.addEventListener('click', e => e.stopPropagation());
+    nameInput.addEventListener('input', e => {
+      story.name = e.target.value;
+    });
+    nameInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); }
+    });
+
+    // Color picker
+    card.querySelectorAll('.swatch').forEach(s => {
+      s.addEventListener('click', (e) => {
+        e.stopPropagation();
+        story.color = s.dataset.color;
+        renderSheetStories();
+      });
+    });
+
+    // Task delete
+    card.querySelectorAll('.task-x').forEach(x => {
+      x.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(x.dataset.taskIdx);
+        story.tasks.splice(idx, 1);
+        renderSheetStories();
+      });
+    });
+
+    // Add task
+    const addInput = card.querySelector('.add-task-input');
+    if (addInput) {
+      addInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && addInput.value.trim()) {
+          story.tasks.push(addInput.value.trim());
+          addInput.value = '';
+          renderSheetStories();
+        }
+      });
+    }
+  });
+}
+
+// ADD STORY button
+document.getElementById('addStoryBtn').addEventListener('click', () => {
+  const usedColors = sheetStories.map(s => s.color);
+  const availColor = sheetStoryPalette.find(c => !usedColors.includes(c)) || sheetStoryPalette[0];
+  // Collapse all existing, expand the new one
+  sheetStories.forEach(s => s.expanded = false);
+  sheetStories.push({
+    id: 'ss' + (nextSheetStoryId++),
+    name: 'New Story',
+    color: availColor,
+    expanded: true,
+    tasks: []
+  });
+  renderSheetStories();
+
+  // Auto-focus the name input so user can rename right away
+  setTimeout(() => {
+    const newCard = document.querySelector('.create-story-card:last-child');
+    const input = newCard?.querySelector('.create-story-name-input');
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  }, 50);
+});
+
+renderSheetStories();
+
+</script>
+</body>
+</html>
