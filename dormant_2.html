@@ -1966,7 +1966,7 @@ function getFeelingsAtRotation(log, rotation) {
 }
 
 function organicWobble(angle, feelX, feelY) {
-  var amp = feelX * 6.0;
+  var amp = feelX * 20.0;
   var f = 3.0 + feelY * 8.0;
   return (
     Math.sin(angle * f * 1.0)       * 0.6 +
@@ -2060,6 +2060,34 @@ function drawRingFrame(angle, time) {
     const feelX = task.feelings?.x ?? 0.5;
     const feelY = task.feelings?.y ?? 0.5;
 
+    // Smooth wobble transition — prevent burrs when feelings change
+    if (task._displayFeelX === undefined) { task._displayFeelX = feelX; task._displayFeelY = feelY; }
+    if (task._lastFeelX === undefined) { task._lastFeelX = feelX; task._lastFeelY = feelY; }
+    if (Math.abs(task._lastFeelX - feelX) > 0.008 || Math.abs(task._lastFeelY - feelY) > 0.008) {
+      task._wobbleTransition = {
+        fromX: task._displayFeelX, toX: feelX,
+        fromY: task._displayFeelY, toY: feelY,
+        startAngle: angle
+      };
+    }
+    task._lastFeelX = feelX;
+    task._lastFeelY = feelY;
+
+    var useX, useY;
+    if (task._wobbleTransition && angle - task._wobbleTransition.startAngle < 0.4) {
+      var wT = (angle - task._wobbleTransition.startAngle) / 0.4;
+      useX = task._wobbleTransition.fromX + (task._wobbleTransition.toX - task._wobbleTransition.fromX) * wT;
+      useY = task._wobbleTransition.fromY + (task._wobbleTransition.toY - task._wobbleTransition.fromY) * wT;
+      task._displayFeelX = useX;
+      task._displayFeelY = useY;
+    } else {
+      useX = feelX;
+      useY = feelY;
+      task._displayFeelX = feelX;
+      task._displayFeelY = feelY;
+      task._wobbleTransition = null;
+    }
+
     // Status offset — staggered endpoint positions like a race
     var statusDrift = { smooth: 0.04, procrastinating: 0.0, stuck: -0.06 };
     if (task._statusOffset === undefined) task._statusOffset = 0;
@@ -2083,7 +2111,7 @@ function drawRingFrame(angle, time) {
 
     // ── 2. Compute organic wobble & push to history ──
     // The point carves its own path — radius = baseR + organic wobble
-    const wobble = organicWobble(angle, feelX, feelY);
+    const wobble = organicWobble(angle, useX, useY);
     const radius = baseR + wobble;
 
     if (!task._trailHistory) task._trailHistory = [];
@@ -2116,20 +2144,29 @@ function drawRingFrame(angle, time) {
     }
 
     if (visible.length >= 2) {
-      // ── 3a. Trail glow (wide, faint) ──
-      ctx.beginPath();
-      for (var v = 0; v < visible.length; v++) {
-        var vpt = visible[v];
-        var vsa = vpt.angle - angle + offset;
-        var vrx = RING_CX + Math.cos(vsa) * vpt.radius;
-        var vry = RING_CY + Math.sin(vsa) * vpt.radius;
-        v === 0 ? ctx.moveTo(vrx, vry) : ctx.lineTo(vrx, vry);
+      // ── 3a. Trail glow (wide, faint, fades with distance) ──
+      var glowSegStart = 0;
+      while (glowSegStart < visible.length - 1) {
+        var glowSegEnd = Math.min(glowSegStart + 25, visible.length);
+        if (glowSegEnd < visible.length) glowSegEnd++;
+        var glowMidSa = visible[glowSegStart].angle - angle + offset;
+        var glowDist = Math.max(0, -glowMidSa / TRAIL_SPAN);
+        var glowAlpha = (0.01 + 0.05 * Math.exp(-glowDist * 4.0)) * layerBright;
+        ctx.beginPath();
+        for (var gs = glowSegStart; gs < glowSegEnd; gs++) {
+          var gsv = visible[gs];
+          var gsvsa = gsv.angle - angle + offset;
+          var gsvx = RING_CX + Math.cos(gsvsa) * gsv.radius;
+          var gsvy = RING_CY + Math.sin(gsvsa) * gsv.radius;
+          gs === glowSegStart ? ctx.moveTo(gsvx, gsvy) : ctx.lineTo(gsvx, gsvy);
+        }
+        ctx.strokeStyle = INK;
+        ctx.globalAlpha = glowAlpha;
+        ctx.lineWidth = thick + 5;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        glowSegStart = Math.max(glowSegEnd - 1, glowSegStart + 1);
       }
-      ctx.strokeStyle = INK;
-      ctx.globalAlpha = 0.25 * layerBright;
-      ctx.lineWidth = thick + 5;
-      ctx.lineCap = 'round';
-      ctx.stroke();
 
       // ── 3b. Trail core — grouped by thickness ──
       var gStart = 0;
@@ -2143,7 +2180,7 @@ function drawRingFrame(angle, time) {
 
         var gMidSa = visible[gStart].angle - angle + offset;
         var gDist = Math.max(0, -gMidSa / TRAIL_SPAN);
-        var gCoreAlpha = (0.05 + 0.9 * Math.exp(-gDist * 3.2)) * layerBright;
+        var gCoreAlpha = (0.03 + 0.92 * Math.exp(-gDist * 5.0)) * layerBright;
 
         ctx.beginPath();
         for (var g = gStart; g < gEnd; g++) {
