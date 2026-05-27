@@ -465,8 +465,9 @@ body {
   bottom: 90px;
   width: 210px;
   background: var(--panel-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px 0 0 20px;
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.32, 0, 0.15, 1);
   z-index: 15;
@@ -480,7 +481,7 @@ body {
 .panel-title {
   font-family: 'Roboto Serif', serif;
   font-weight: 500;
-  font-size: 10px;
+  font-size: 12px;
   color: rgba(245, 241, 233, 0.8);
   margin-bottom: 18px;
   padding-left: 4px;
@@ -509,24 +510,24 @@ body {
 
 /* ============= TASK PILL (key layout fix) ============= */
 .task-pill {
-  background: rgba(18, 18, 18, 0.2);
-  border: 0.5px solid rgba(255, 255, 255, 0.3);
-  border-radius: 30px;
-  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 7px 10px 7px 14px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
   margin-bottom: 6px;
   font-family: 'Roboto Serif', serif;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 10px;
   color: var(--ink);
   cursor: pointer;
   transition: background 0.2s, transform 0.15s, border-color 0.2s;
-  flex-wrap: nowrap;
   user-select: none;
+  position: relative;
 }
-.task-pill:hover { background: rgba(18, 18, 18, 0.32); }
+.task-pill:hover { background: rgba(255, 255, 255, 0.1); }
 
 .task-pill.draggable {
   cursor: grab;
@@ -541,12 +542,14 @@ body {
   width: 8px;
   height: 14px;
   flex-shrink: 0;
+  align-self: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 1.5px;
   opacity: 0.5;
   cursor: grab;
+  margin-left: auto;
 }
 .drag-handle-grip::before,
 .drag-handle-grip::after {
@@ -565,8 +568,8 @@ body {
 }
 
 .task-dot {
-  width: 9px;
-  height: 9px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -575,21 +578,116 @@ body {
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
 }
 
-.in-ring-badge {
-  background: rgba(121, 121, 121, 0.9);
-  border-radius: 5px;
-  padding: 2px 7px;
-  font-family: 'Roboto Serif', serif;
-  font-weight: 500;
-  font-size: 6px;
-  color: var(--ink);
-  letter-spacing: 0.02em;
+.task-pill.in-ring {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* ============= OUTLINE EDIT CONTROLS ============= */
+.story-delete-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  white-space: nowrap;
+  transition: all 0.2s;
+  opacity: 0;
+  z-index: 1;
+}
+.create-story-card:hover .story-delete-btn {
+  opacity: 1;
+}
+.story-delete-btn:hover {
+  color: #EF4444;
+  background: rgba(239, 68, 68, 0.15);
+  opacity: 1;
+}
+
+.task-delete-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  opacity: 0;
+}
+.task-pill:hover .task-delete-btn,
+.create-task-pill:hover .task-delete-btn { opacity: 1; }
+.task-delete-btn:hover {
+  color: #EF4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.outline-add-story-form {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.outline-add-story-form input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--ink);
+  font-family: 'Roboto Serif', serif;
+  font-size: 11px;
+  padding: 6px 8px;
+  outline: none;
+}
+.outline-add-story-form input::placeholder {
+  color: rgba(245, 241, 233, 0.3);
+}
+
+.outline-form-confirm,
+.outline-form-cancel {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.outline-form-confirm {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ADE80;
+}
+.outline-form-cancel {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* ============= GHOST (dragged element preview) ============= */
@@ -646,8 +744,9 @@ body {
   bottom: 90px;
   width: 210px;
   background: var(--panel-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px 0 0 20px;
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.32, 0, 0.15, 1);
   z-index: 15;
@@ -663,10 +762,11 @@ body {
 .task-title {
   font-family: 'Roboto Serif', serif;
   font-weight: 500;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ink);
-  text-align: center;
+  text-align: left;
   margin-bottom: 14px;
+  padding-left: 4px;
 }
 .section-divider {
   height: 0.5px;
@@ -704,15 +804,8 @@ body {
 }
 .status-pill:hover { background: rgba(255, 255, 255, 0.06); }
 .status-pill.selected {
-  background: rgba(140, 115, 84, 0.25);
-  border-color: rgba(140, 115, 84, 0.5);
-}
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--story1);
-  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 .feeling-section { margin-bottom: 14px; }
 .pad-wrap { position: relative; padding: 18px 28px 14px 28px; }
@@ -782,8 +875,10 @@ body {
   left: 0;
   right: 0;
   height: calc(100% - 120px);
-  background: var(--bg-base);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--panel-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid rgba(255, 255, 255, 0.12);
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   transform: translateY(100%);
@@ -794,19 +889,6 @@ body {
   box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.4);
 }
 .create-sheet.open { transform: translateY(0); }
-.create-sheet::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(0,0,0,0.5) 42%);
-  opacity: 0.5;
-  pointer-events: none;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  z-index: 0;
-}
-.create-sheet > * { position: relative; z-index: 1; }
-
 .drag-handle {
   width: 49px;
   height: 4px;
@@ -904,11 +986,11 @@ body {
 
 /* Expandable story card in Create Project sheet */
 .create-story-card {
+  position: relative;
   background: rgba(159, 159, 159, 0.12);
   border: 0.5px solid rgba(255, 255, 255, 0.18);
   border-radius: 20px;
   margin-bottom: 8px;
-  overflow: hidden;
   transition: background 0.2s, border-color 0.2s;
 }
 .create-story-card.expanded {
@@ -920,6 +1002,7 @@ body {
   display: flex;
   align-items: center;
   padding: 12px 16px;
+  padding-right: 28px;
   cursor: pointer;
   gap: 10px;
   user-select: none;
@@ -949,7 +1032,7 @@ body {
 .create-story-name-input:focus { cursor: text; }
 
 .create-story-count {
-  font-size: 10px;
+  font-size: 8px;
   color: var(--ink2);
   flex-shrink: 0;
 }
@@ -974,28 +1057,8 @@ body {
 }
 
 .create-story-body-inner {
-  padding: 4px 14px 14px;
+  padding: 12px 14px 14px;
 }
-
-.color-picker {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-  padding-left: 4px;
-}
-.swatch {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 1.5px solid transparent;
-  transition: transform 0.15s, border-color 0.2s;
-  flex-shrink: 0;
-}
-.swatch.selected {
-  border-color: rgba(245, 241, 233, 0.9);
-}
-.swatch:hover { transform: scale(1.08); }
 
 .create-task-pill {
   background: rgba(255, 255, 255, 0.06);
@@ -1010,13 +1073,6 @@ body {
   font-weight: 400;
   font-size: 11px;
   color: var(--ink);
-}
-.task-dot-sm-light {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(245, 241, 233, 0.55);
-  flex-shrink: 0;
 }
 .create-task-name {
   flex: 1;
@@ -1302,7 +1358,18 @@ body {
 
   <!-- ============= OUTLINE PANEL ============= -->
   <div class="outline-panel" id="outlinePanel">
-    <div class="panel-title">Project Outline</div>
+    <div class="sheet-header" style="margin-bottom:20px;">
+      <div class="sheet-title" style="font-size:20px;">Project Outline</div>
+    </div>
+    <div class="stories-header">
+      <div class="label-small" style="margin-bottom:0;">STORIES</div>
+      <div class="add-story-btn" id="outlineAddStoryBtn"><span class="plus">+</span> ADD STORY</div>
+    </div>
+    <div class="outline-add-story-form" id="outlineAddStoryForm" style="display:none;margin-bottom:8px;">
+      <input type="text" placeholder="Story name..." id="outlineNewStoryInput" />
+      <button class="outline-form-confirm" id="outlineStoryConfirm">✓</button>
+      <button class="outline-form-cancel" id="outlineStoryCancel">×</button>
+    </div>
     <div id="taskList"></div>
   </div>
 
@@ -1312,10 +1379,10 @@ body {
     <div class="section-divider"></div>
     <div class="section-label">STATUS</div>
     <div class="status-list">
-      <div class="status-pill" data-status="smooth"><div class="status-dot"></div>Smooth</div>
-      <div class="status-pill selected" data-status="procrastinating"><div class="status-dot"></div>Procrastinating</div>
-      <div class="status-pill" data-status="stuck"><div class="status-dot"></div>Totally Stuck</div>
-      <div class="status-pill" data-status="done"><div class="status-dot"></div>Done</div>
+      <div class="status-pill" data-status="smooth">Smooth</div>
+      <div class="status-pill selected" data-status="procrastinating">Procrastinating</div>
+      <div class="status-pill" data-status="stuck">Totally Stuck</div>
+      <div class="status-pill" data-status="done">Done</div>
     </div>
     <div class="section-divider"></div>
     <div class="section-label">FEELING</div>
@@ -1362,7 +1429,7 @@ body {
 
 <script>
 // ============= TASK STATE =============
-const storyColorMap = {
+let storyColorMap = {
   research: '#8C7354',
   concept: '#5C7A6B',
   execution: '#7A5C6B'
@@ -1553,6 +1620,7 @@ function setActiveProject(projectId) {
   Array.prototype.push.apply(tasks, project.tasks);
   currentRingTasks = tasks.filter(t => t.inRing);
   localStorage.setItem('dormant-active-project', activeProjectId);
+  loadStoryMeta();
   saveProjects();
   renderOutlinePanel();
   updateRingHeader();
@@ -1585,8 +1653,68 @@ if (activeProjectId) {
   }
 }
 
-const storyOrder = ['research', 'concept', 'execution'];
-const storyNames = { research: 'Research', concept: 'Concept', execution: 'Execution' };
+const DEFAULT_STORY_ORDER = ['research', 'concept', 'execution'];
+const DEFAULT_STORY_NAMES = { research: 'Research', concept: 'Concept', execution: 'Execution' };
+const DEFAULT_STORY_COLORS = { research: '#8C7354', concept: '#5C7A6B', execution: '#7A5C6B' };
+const STORY_PALETTE = ['#8C7354', '#5C7A6B', '#7A5C6B', '#7E8FA5', '#6366F1', '#8B5CF6', '#A855F7', '#EC4899', '#F97316', '#22C55E'];
+
+let storyOrder = [...DEFAULT_STORY_ORDER];
+let storyNames = { ...DEFAULT_STORY_NAMES };
+loadStoryMeta();
+
+function loadStoryMeta() {
+  const active = getActiveProject();
+  if (active && active.storyMeta) {
+    storyOrder = active.storyMeta.order || [...DEFAULT_STORY_ORDER];
+    storyNames = active.storyMeta.names || { ...DEFAULT_STORY_NAMES };
+    storyColorMap = active.storyMeta.colors || { ...DEFAULT_STORY_COLORS };
+  } else {
+    storyOrder = [...DEFAULT_STORY_ORDER];
+    storyNames = { ...DEFAULT_STORY_NAMES };
+    storyColorMap = { ...DEFAULT_STORY_COLORS };
+  }
+}
+
+function saveStoryMeta() {
+  const active = getActiveProject();
+  if (active) {
+    active.storyMeta = { order: storyOrder, names: storyNames, colors: storyColorMap };
+    saveProjects();
+  }
+}
+
+function getNextStoryColor() {
+  const used = new Set(Object.values(storyColorMap));
+  for (var c = 0; c < STORY_PALETTE.length; c++) {
+    if (!used.has(STORY_PALETTE[c])) return STORY_PALETTE[c];
+  }
+  return STORY_PALETTE[storyOrder.length % STORY_PALETTE.length];
+}
+
+function addStoryToMeta(name) {
+  var key = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (!key) key = 'story' + (storyOrder.length + 1);
+  // Ensure unique key
+  var baseKey = key;
+  var n = 1;
+  while (storyOrder.indexOf(key) !== -1) {
+    key = baseKey + '-' + n;
+    n++;
+  }
+  storyOrder.push(key);
+  storyNames[key] = name;
+  storyColorMap[key] = getNextStoryColor();
+  saveStoryMeta();
+  return key;
+}
+
+function removeStoryFromMeta(storyKey) {
+  var idx = storyOrder.indexOf(storyKey);
+  if (idx !== -1) storyOrder.splice(idx, 1);
+  delete storyNames[storyKey];
+  delete storyColorMap[storyKey];
+  saveStoryMeta();
+}
 
 // ============= RENDER OUTLINE PANEL =============
 function renderOutlinePanel() {
@@ -1595,40 +1723,180 @@ function renderOutlinePanel() {
 
   storyOrder.forEach(storyKey => {
     const storyTasks = tasks.filter(t => t.story === storyKey);
-    if (storyTasks.length === 0) return;
+    const storyName = storyNames[storyKey] || storyKey;
+    const taskCount = storyTasks.length;
+    const card = document.createElement('div');
+    card.className = 'create-story-card expanded';
+    card.dataset.storyKey = storyKey;
 
-    const group = document.createElement('div');
-    group.className = 'story-group';
-
-    const header = document.createElement('div');
-    header.className = 'story-header';
-    header.innerHTML = `
-      <div class="story-dot" style="background:${storyColorMap[storyKey]};"></div>
-      <div class="story-name-lg">${storyNames[storyKey]}</div>
+    // Header
+    const head = document.createElement('div');
+    head.className = 'create-story-head';
+    const safeName = storyName.replace(/"/g, '&quot;');
+    head.innerHTML = `
+      <input class="create-story-name-input story-name-edit" value="${safeName}" data-story-key="${storyKey}" />
+      <div class="create-story-count">${taskCount} ${taskCount === 1 ? 'task' : 'tasks'}</div>
+      <button class="story-delete-btn" data-delete-story="${storyKey}" title="Delete story">×</button>
+      <div class="create-story-toggle">▼</div>
     `;
-    group.appendChild(header);
+    card.appendChild(head);
 
+    // Body
+    const body = document.createElement('div');
+    body.className = 'create-story-body';
+    const inner = document.createElement('div');
+    inner.className = 'create-story-body-inner';
+
+    // Task pills
     storyTasks.forEach(task => {
       const pill = document.createElement('div');
-      pill.className = 'task-pill' + (task.inRing ? '' : ' draggable');
+      pill.className = 'task-pill' + (task.inRing ? ' in-ring' : ' draggable');
       pill.dataset.taskId = task.id;
-      const statusDot = task.status && statusColors[task.status]
-        ? `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${statusColors[task.status]};margin-right:2px;flex-shrink:0;"></span>`
-        : '';
       pill.innerHTML = `
-        ${task.inRing ? '' : '<div class="drag-handle-grip"></div>'}
-        <div class="task-dot" style="background:${storyColorMap[storyKey]};"></div>
         <div class="task-name">${task.name}</div>
-        ${statusDot}
-        ${task.inRing ? '<div class="in-ring-badge">in ring</div>' : ''}
+        ${task.inRing ? '' : '<div class="drag-handle-grip"></div>'}
+        <button class="task-delete-btn" data-delete-task="${task.id}" title="Delete task">×</button>
       `;
-      group.appendChild(pill);
+      inner.appendChild(pill);
     });
 
-    list.appendChild(group);
+    // Add task input row
+    var addRow = document.createElement('div');
+    addRow.className = 'add-task-row';
+    addRow.innerHTML = `
+      <input type="text" class="add-task-input" placeholder="+ add task" data-story="${storyKey}" />
+    `;
+    inner.appendChild(addRow);
+
+    body.appendChild(inner);
+    card.appendChild(body);
+    list.appendChild(card);
   });
 
+  attachOutlineHandlers();
   attachDragHandlers();
+}
+
+function attachOutlineHandlers() {
+  // Delete task
+  document.querySelectorAll('#taskList .task-delete-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const taskId = this.dataset.deleteTask;
+      const idx = tasks.findIndex(t => t.id === taskId);
+      if (idx !== -1) {
+        tasks.splice(idx, 1);
+        saveTasks();
+        renderOutlinePanel();
+        updateRingHeader();
+      }
+    });
+  });
+
+  // Delete story (outline panel only)
+  document.querySelectorAll('#taskList .story-delete-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const storyKey = this.dataset.deleteStory;
+      if (confirm('Delete "' + (storyNames[storyKey] || storyKey) + '" and all its tasks?')) {
+        for (var i = tasks.length - 1; i >= 0; i--) {
+          if (tasks[i].story === storyKey) tasks.splice(i, 1);
+        }
+        removeStoryFromMeta(storyKey);
+        saveTasks();
+        renderOutlinePanel();
+        updateRingHeader();
+      }
+    });
+  });
+
+  // Toggle story collapse — click head to toggle expanded class
+  document.querySelectorAll('#taskList .create-story-head').forEach(head => {
+    head.addEventListener('click', function(e) {
+      if (e.target.closest('.story-delete-btn') || e.target.closest('.create-story-name-input')) return;
+      const card = this.closest('.create-story-card');
+      if (card) card.classList.toggle('expanded');
+    });
+  });
+
+  // Story name edit
+  document.querySelectorAll('#taskList .story-name-edit').forEach(input => {
+    input.addEventListener('click', function(e) { e.stopPropagation(); });
+    input.addEventListener('input', function(e) {
+      var key = this.dataset.storyKey;
+      if (key && storyNames[key] !== undefined) {
+        storyNames[key] = this.value;
+        saveStoryMeta();
+      }
+    });
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); this.blur(); }
+    });
+  });
+
+  // Add task input — Enter key
+  document.querySelectorAll('#taskList .add-task-input').forEach(input => {
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && this.value.trim()) {
+        const storyKey = this.dataset.story;
+        const newTask = {
+          id: 'task_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          name: this.value.trim(),
+          story: storyKey,
+          inRing: false,
+          status: null,
+          feelings: { x: 0.5, y: 0.5 }
+        };
+        tasks.push(newTask);
+        saveTasks();
+        renderOutlinePanel();
+        updateRingHeader();
+      }
+    });
+  });
+}
+
+// One-time setup for static add-story button
+function initOutlineAddStory() {
+  const addBtn = document.getElementById('outlineAddStoryBtn');
+  const addForm = document.getElementById('outlineAddStoryForm');
+  const addInput = document.getElementById('outlineNewStoryInput');
+  const confirmBtn = document.getElementById('outlineStoryConfirm');
+  const cancelBtn = document.getElementById('outlineStoryCancel');
+
+  if (!addBtn || !addForm) return;
+
+  addBtn.addEventListener('click', function() {
+    addBtn.style.display = 'none';
+    addForm.style.display = 'flex';
+    addInput.focus();
+  });
+
+  confirmBtn.addEventListener('click', function() {
+    if (addInput.value.trim()) {
+      addStoryToMeta(addInput.value.trim());
+      addInput.value = '';
+      addBtn.style.display = '';
+      addForm.style.display = 'none';
+      renderOutlinePanel();
+    }
+  });
+
+  cancelBtn.addEventListener('click', function() {
+    addInput.value = '';
+    addBtn.style.display = '';
+    addForm.style.display = 'none';
+  });
+
+  addInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && this.value.trim()) {
+      addStoryToMeta(this.value.trim());
+      this.value = '';
+      addBtn.style.display = '';
+      addForm.style.display = 'none';
+      renderOutlinePanel();
+    }
+  });
 }
 
 // ============= DRAG-TO-RING =============
@@ -1669,10 +1937,7 @@ function startDrag(e) {
 function createGhost(task, x, y) {
   const ghost = document.createElement('div');
   ghost.className = 'drag-ghost';
-  ghost.innerHTML = `
-    <div class="task-dot" style="background:${storyColorMap[task.story]};"></div>
-    <div>${task.name}</div>
-  `;
+  ghost.innerHTML = `<div>${task.name}</div>`;
   ghost.style.left = x + 'px';
   ghost.style.top = y + 'px';
   document.body.appendChild(ghost);
@@ -1827,7 +2092,6 @@ function onProjDragEnd(e) {
   }
 }
 
-// ============= PROJECT RINGS (small cards) =============
 function drawProjectMiniRing(canvas, project) {
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
@@ -1908,7 +2172,7 @@ let hoveredTaskId = null;
 let currentRingTasks = tasks.filter(t => t.inRing);
 let lastDrawTime = null;
 
-var statusThick = { smooth: 1.5, procrastinating: 3.0, stuck: 7.0 };
+var statusThick = { smooth: 1.0, procrastinating: 3.0, stuck: 7.0 };
 var statusSpeed = { smooth: 1.5, procrastinating: 1.0, stuck: 0.3 };
 
 function getRingCenterScreen() {
@@ -2014,7 +2278,7 @@ function drawRingFrame(angle, time) {
   const TRAIL_SPAN = Math.PI * 1.72;
   const t = time || 0;
   const INK = '#F5F1E9';
-  const statusThick = { smooth: 1.5, procrastinating: 3.0, stressed: 5.0, stuck: 7.0 };
+  const statusThick = { smooth: 1.0, procrastinating: 3.0, stressed: 5.0, stuck: 7.0 };
 
   for (let i = 0; i < taskCount; i++) {
     const task = ringTasks[i];
@@ -2022,6 +2286,7 @@ function drawRingFrame(angle, time) {
 
     const baseR = RING_MIN_R + i * gap;
     const layerBright = 0.7 + (i / Math.max(taskCount, 1)) * 0.3;
+    const hoverBoost = task.id === hoveredTaskId ? 2.5 : 1.0;
 
     // Initialize trail logs for archive
     if (!task._trailStatusLog || task._trailStatusLog.length === 0) {
@@ -2074,7 +2339,7 @@ function drawRingFrame(angle, time) {
     ) * (feelX * 20.0);
 
     // Status offset — staggered endpoint positions like a race
-    var statusDrift = { smooth: 0.04, procrastinating: 0.0, stuck: -0.06 };
+    var statusDrift = { smooth: 0.04, procrastinating: -0.03, stuck: -0.06 };
     if (task._statusOffset === undefined) task._statusOffset = 0;
     if (task._lastAngle !== undefined) {
       var angleDelta = angle - task._lastAngle;
@@ -2090,7 +2355,7 @@ function drawRingFrame(angle, time) {
     // ── 1. Faint guide circle (ideal circle reference) ──
     ctx.beginPath();
     ctx.arc(RING_CX, RING_CY, baseR, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(245,241,233,' + (0.06 * layerBright).toFixed(3) + ')';
+    ctx.strokeStyle = 'rgba(245,241,233,' + (0.06 * layerBright * hoverBoost).toFixed(3) + ')';
     ctx.lineWidth = 0.5;
     ctx.stroke();
 
@@ -2152,7 +2417,7 @@ function drawRingFrame(angle, time) {
         ctx.beginPath();
         ctx.moveTo(ax, ay);
         ctx.lineTo(bx, by);
-        ctx.strokeStyle = 'rgba(' + rr + ',' + gg + ',' + bb + ',' + Math.max(0.001, alpha * 0.12).toFixed(3) + ')';
+        ctx.strokeStyle = 'rgba(' + rr + ',' + gg + ',' + bb + ',' + Math.max(0.001, alpha * 0.12 * hoverBoost).toFixed(3) + ')';
         ctx.lineWidth = hptA.thickness + 6;
         ctx.lineCap = 'round';
         ctx.stroke();
@@ -2161,7 +2426,7 @@ function drawRingFrame(angle, time) {
         ctx.beginPath();
         ctx.moveTo(ax, ay);
         ctx.lineTo(bx, by);
-        ctx.strokeStyle = 'rgba(' + rr + ',' + gg + ',' + bb + ',' + Math.max(0.003, alpha).toFixed(3) + ')';
+        ctx.strokeStyle = 'rgba(' + rr + ',' + gg + ',' + bb + ',' + Math.max(0.003, alpha * hoverBoost).toFixed(3) + ')';
         ctx.lineWidth = hptA.thickness;
         ctx.lineCap = 'round';
         ctx.stroke();
@@ -2176,21 +2441,21 @@ function drawRingFrame(angle, time) {
     var penY = RING_CY + Math.sin(penScreenAngle) * radius;
 
     var pulse = 1 + 0.25 * Math.sin(t * 3.5 + i * 0.7);
-    var glowR = 16 * pulse * layerBright;
+    var glowR = 16 * pulse * layerBright * (hoverBoost > 1 ? 1.5 : 1);
 
     var penGlow = ctx.createRadialGradient(penX, penY, 0, penX, penY, glowR);
-    penGlow.addColorStop(0, 'rgba(245,241,233,0.6)');
-    penGlow.addColorStop(0.35, 'rgba(245,241,233,0.15)');
+    penGlow.addColorStop(0, 'rgba(245,241,233,' + (0.6 * hoverBoost).toFixed(2) + ')');
+    penGlow.addColorStop(0.35, 'rgba(245,241,233,' + (0.15 * hoverBoost).toFixed(2) + ')');
     penGlow.addColorStop(1, 'rgba(245,241,233,0)');
     ctx.beginPath();
     ctx.arc(penX, penY, glowR, 0, Math.PI * 2);
     ctx.fillStyle = penGlow;
     ctx.fill();
 
-    var dotR = 5 + 0.4 * Math.sin(t * 3.5 + i * 0.7);
+    var dotR = (5 + 0.4 * Math.sin(t * 3.5 + i * 0.7)) * (hoverBoost > 1 ? 1.3 : 1);
     ctx.beginPath();
     ctx.arc(penX, penY, dotR, 0, Math.PI * 2);
-    ctx.fillStyle = INK;
+    ctx.fillStyle = hoverBoost > 1 ? '#FFFFFF' : INK;
     ctx.fill();
 
     ctx.beginPath();
@@ -2507,6 +2772,7 @@ function closeAllOverlays() {
 function openOutline() {
   if (currentPage !== 'ring') switchPage('ring');
   closeAllOverlays();
+  renderOutlinePanel();
   outlinePanel.classList.add('open');
   scrim.classList.add('active');
 }
@@ -2556,6 +2822,7 @@ document.getElementById('generate3dBtn').addEventListener('click', function() {
 });
 
 
+// ============= RENDER PROJECTS PAGE (BUBBLE LAYOUT) =============
 // ============= RENDER PROJECTS PAGE =============
 function renderProjectsPage() {
   const yearStack = document.getElementById('yearStack');
@@ -2694,6 +2961,8 @@ function renderProjectsPage() {
   // Draw mini rings after DOM update
   setTimeout(() => drawAllProjectMiniRings(), 50);
 }
+
+
 
 scrim.addEventListener('click', closeAllOverlays);
 document.getElementById('closeRecord').addEventListener('click', () => {
@@ -2841,10 +3110,6 @@ window.addEventListener('touchmove', (e) => {
 });
 window.addEventListener('touchend', () => { padDragging = false; });
 
-// ============= YEAR CARDS & TABS =============
-document.querySelectorAll('.year-head').forEach(head => {
-  head.addEventListener('click', () => head.parentElement.classList.toggle('collapsed'));
-});
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -2865,6 +3130,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 document.querySelectorAll('.year-card').forEach(card => {
   if (card.dataset.section !== 'active') card.style.display = 'none';
 });
+
 
 // ============= PROJECT DRAG / PRESS DOCUMENT HANDLERS =============
 document.addEventListener('mousemove', function(e) {
@@ -2917,6 +3183,7 @@ document.addEventListener('touchend', function(e) {
 });
 
 // ============= INITIAL RENDER =============
+initOutlineAddStory();
 renderOutlinePanel();
 
 // ============= CREATE PROJECT — EXPANDABLE STORIES =============
@@ -2958,22 +3225,16 @@ function renderSheetStories() {
     const safeName = story.name.replace(/"/g, '&quot;');
     card.innerHTML = `
       <div class="create-story-head">
-        <div class="story-dot-sm" style="background:${story.color};"></div>
         <input class="create-story-name-input" value="${safeName}" />
         <div class="create-story-count">${story.tasks.length} ${story.tasks.length === 1 ? 'task' : 'tasks'}</div>
+        <button class="story-delete-btn" data-delete-story-id="${story.id}" title="Delete story">×</button>
         <div class="create-story-toggle">▼</div>
       </div>
       <div class="create-story-body">
         <div class="create-story-body-inner">
-          <div class="color-picker">
-            ${sheetStoryPalette.map(c =>
-              `<div class="swatch ${c === story.color ? 'selected' : ''}" data-color="${c}"></div>`
-            ).join('')}
-          </div>
           <div class="task-list">
             ${story.tasks.map((t, i) => `
               <div class="create-task-pill">
-                <div class="task-dot-sm-light"></div>
                 <div class="create-task-name">${t}</div>
                 <div class="task-x" data-task-idx="${i}">×</div>
               </div>
@@ -3005,12 +3266,26 @@ function attachSheetStoryHandlers() {
     const story = sheetStories.find(s => s.id === id);
     if (!story) return;
 
-    // Toggle expand on header click (but not on name input)
+    // Toggle expand on header click (but not on name input or delete btn)
     card.querySelector('.create-story-head').addEventListener('click', (e) => {
-      if (e.target.classList.contains('create-story-name-input')) return;
+      if (e.target.classList.contains('create-story-name-input') || e.target.closest('.story-delete-btn')) return;
       story.expanded = !story.expanded;
       renderSheetStories();
     });
+
+    // Story delete
+    const storyDelBtn = card.querySelector('.story-delete-btn');
+    if (storyDelBtn) {
+      storyDelBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const storyId = storyDelBtn.dataset.deleteStoryId;
+        const idx = sheetStories.findIndex(s => s.id === storyId);
+        if (idx !== -1 && sheetStories.length > 1) {
+          sheetStories.splice(idx, 1);
+          renderSheetStories();
+        }
+      });
+    }
 
     // Name input
     const nameInput = card.querySelector('.create-story-name-input');
@@ -3020,15 +3295,6 @@ function attachSheetStoryHandlers() {
     });
     nameInput.addEventListener('keydown', e => {
       if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); }
-    });
-
-    // Color picker
-    card.querySelectorAll('.swatch').forEach(s => {
-      s.addEventListener('click', (e) => {
-        e.stopPropagation();
-        story.color = s.dataset.color;
-        renderSheetStories();
-      });
     });
 
     // Task delete
