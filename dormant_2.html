@@ -231,9 +231,14 @@ body {
   padding: 16px 20px 20px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
   flex-shrink: 0;
   gap: 12px;
+}
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 .projects-title {
   font-family: 'Roboto Serif', serif;
@@ -271,112 +276,205 @@ body {
 }
 .tab.active { background: rgba(255, 255, 255, 0.2); }
 
-/* ============= PROJECTS MAIN AREA ============= */
-.projects-main {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0 20px 12px;
-  scrollbar-width: none;
-}
-.projects-main::-webkit-scrollbar { display: none; }
+/* ============= PROJECTS BUBBLE AREA ============= */
+	.archive-area {
+	  flex: 1;
+	  position: relative;
+	  overflow: hidden;
+	}
+	.archive-area::before {
+	  content: '';
+	  position: absolute;
+	  inset: 0;
+	  background:
+	    radial-gradient(ellipse at 28% 38%, rgba(255,255,255,0.03) 0%, transparent 55%),
+	    radial-gradient(ellipse at 72% 68%, rgba(255,255,255,0.02) 0%, transparent 50%),
+	    radial-gradient(ellipse at 60% 20%, rgba(255,255,255,0.02) 0%, transparent 45%);
+	  pointer-events: none;
+	  z-index: 0;
+	}
 
-.year-stack { display: flex; flex-direction: column; gap: 10px; }
+	.archive-bubble {
+	  position: absolute;
+	  border-radius: 50%;
+	  cursor: pointer;
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  justify-content: center;
+	  transform: translate(-50%, -50%);
+	  transition: filter 0.2s, transform 0.2s;
+	  background:
+	    radial-gradient(circle at 30% 22%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 25%, transparent 50%),
+	    radial-gradient(circle at 65% 70%, rgba(255,255,255,0.04) 0%, transparent 40%),
+	    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 100%);
+	  backdrop-filter: blur(16px);
+	  -webkit-backdrop-filter: blur(16px);
+	  border: 0.5px solid rgba(255,255,255,0.18);
+	  box-shadow:
+	    0 8px 32px rgba(0,0,0,0.35),
+	    0 2px 8px rgba(0,0,0,0.25),
+	    inset 0 0 20px rgba(255,255,255,0.08),
+	    inset 0 0 40px rgba(0,0,0,0.12),
+	    inset 0 1px 2px rgba(255,255,255,0.12);
+	}
+	.archive-bubble::before {
+	  content: '';
+	  position: absolute;
+	  top: 14%;
+	  left: 18%;
+	  width: 32%;
+	  height: 24%;
+	  background: radial-gradient(ellipse at 40% 35%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.15) 30%, transparent 70%);
+	  border-radius: 50%;
+	  transform: rotate(-25deg);
+	  pointer-events: none;
+	  z-index: 2;
+	}
+	.archive-bubble:hover {
+	  animation: none !important;
+	  transform: translate(-50%, -50%) scale(1.09) !important;
+	  z-index: 20 !important;
+	  background:
+	    radial-gradient(circle at 30% 22%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.08) 25%, transparent 50%),
+	    radial-gradient(circle at 65% 70%, rgba(255,255,255,0.06) 0%, transparent 40%),
+	    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 100%);
+	  border: 0.5px solid rgba(255,255,255,0.28);
+	  box-shadow:
+	    0 12px 40px rgba(0,0,0,0.4),
+	    0 4px 12px rgba(0,0,0,0.3),
+	    inset 0 0 24px rgba(255,255,255,0.12),
+	    inset 0 0 48px rgba(0,0,0,0.1),
+	    inset 0 1px 2px rgba(255,255,255,0.18);
+	}
 
-.year-card {
-  background: var(--card-bg);
-  border: 0.5px solid var(--card-stroke);
-  border-radius: 20px;
-  overflow: hidden;
-}
-.year-head {
-  padding: 11px 18px;
+	/* In-progress info bubble — smaller, text-only */
+	.archive-bubble.info-bubble {
+	  cursor: grab;
+	}
+	.archive-bubble.info-bubble:active {
+	  cursor: grabbing;
+	}
+	.info-bubble-inner {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  justify-content: center;
+	  gap: 2px;
+	  text-align: center;
+	  padding: 8px;
+	}
+	.info-bubble-name {
+	  font-family: 'Roboto Serif', serif;
+	  font-weight: 500;
+	  color: rgba(245, 241, 233, 0.8);
+	  text-transform: lowercase;
+	  letter-spacing: 0.03em;
+	  line-height: 1.2;
+	}
+	.info-bubble-count {
+	  font-family: 'Roboto Serif', serif;
+	  font-weight: 500;
+	  color: rgba(245, 241, 233, 0.4);
+	}
+
+	@keyframes fA { 0%,100% { transform: translate(-50%,-50%) translateY(0); } 50% { transform: translate(-50%,-50%) translateY(-7px); } }
+	@keyframes fB { 0%,100% { transform: translate(-50%,-50%) translateY(0); } 50% { transform: translate(-50%,-50%) translateY(-5px); } }
+	@keyframes fC { 0%,100% { transform: translate(-50%,-50%) translateY(0); } 50% { transform: translate(-50%,-50%) translateY(-9px); } }
+	@keyframes fD { 0%,100% { transform: translate(-50%,-50%) translateY(0); } 50% { transform: translate(-50%,-50%) translateY(-4px); } }
+	@keyframes fE { 0%,100% { transform: translate(-50%,-50%) translateY(0); } 50% { transform: translate(-50%,-50%) translateY(-6px); } }
+
+	.bubble-label {
+	  font-family: 'Roboto Serif', serif;
+	  font-weight: 500;
+	  color: rgba(245, 241, 233, 0.55);
+	  text-align: center;
+	  letter-spacing: 0.05em;
+	  text-transform: lowercase;
+	  margin-top: 4px;
+	  white-space: nowrap;
+	  pointer-events: none;
+	}
+
+	/* Year filter dropdown */
+	.year-select {
+	  background: rgba(255, 255, 255, 0.08);
+	  border: 0.5px solid rgba(255, 255, 255, 0.15);
+	  border-radius: 12px;
+	  color: var(--ink);
+	  font-family: 'Roboto Serif', serif;
+	  font-size: 9px;
+	  padding: 4px 10px;
+	  cursor: pointer;
+	  outline: none;
+	  -webkit-appearance: none;
+	  appearance: none;
+	}
+	.year-select option {
+	  background: #1A1A1A;
+	  color: var(--ink);
+	}
+
+/* Archive drop zone */
+.archive-drop-zone {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(255,255,255,0.04);
+  border-top: 1px dashed rgba(255,255,255,0.15);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-  min-height: 35px;
-}
-.year-head:hover { background: rgba(255,255,255,0.02); }
-.year-name {
-  font-family: 'Roboto Serif', serif;
-  font-weight: 500;
-  font-size: 13px;
-  color: var(--ink);
-}
-.year-count { font-size: 10px; color: var(--ink2); }
-.year-divider {
-  height: 0.5px;
-  background: rgba(245, 241, 233, 0.3);
-  transition: opacity 0.25s;
-}
-.year-card.collapsed .year-divider { opacity: 0; }
-.year-body {
-  max-height: 600px;
-  overflow: hidden;
-  transition: max-height 0.45s cubic-bezier(0.32, 0, 0.15, 1);
-}
-.year-card.collapsed .year-body { max-height: 0; }
-
-.projects-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding: 10px;
-}
-.proj-card {
-  background: var(--proj-bg);
-  border: 0.5px solid var(--proj-stroke);
-  border-radius: 12px;
-  aspect-ratio: 1;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 8px;
-  cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
-}
-.proj-card:hover {
-  transform: translateY(-2px);
-  background: rgba(237, 232, 219, 0.28);
-}
-.proj-ring { width: 76px; height: 76px; display: flex; align-items: center; justify-content: center; }
-.proj-name {
   font-family: 'Roboto Serif', serif;
-  font-weight: 500;
-  font-size: 8px;
-  color: var(--ink);
-  text-align: center;
-  letter-spacing: 0.04em;
-  text-transform: lowercase;
+  font-size: 10px;
+  color: rgba(245,241,233,0.3);
+  letter-spacing: 0.08em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, background 0.2s;
+  z-index: 50;
 }
-.proj-days {
-  font-family: 'Roboto Serif', serif;
-  font-weight: 500;
-  font-size: 8px;
-  color: rgba(245, 241, 233, 0.5);
+.archive-drop-zone.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
-.proj-card.add-card {
-  border: 0.5px solid rgba(28, 26, 20, 0.15);
-  background: rgba(245, 240, 232, 0.2);
+.archive-drop-zone.hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.4);
+  color: rgba(245,241,233,0.7);
 }
-.add-icon { font-size: 22px; color: var(--ink2); line-height: 1; }
-.add-label {
-  font-family: 'Roboto Serif', serif;
-  font-weight: 500;
-  font-size: 8px;
-  color: rgba(245, 241, 233, 0.5);
+
+/* Drag ghost */
+.drag-ghost {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.7;
+  transform: translate(-50%, -50%);
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transition: none;
 }
-.expand-indicator {
-  font-size: 8px;
-  color: var(--ink2);
-  transition: transform 0.25s;
-  margin-left: 4px;
+
+/* Resize edge indicator */
+.archive-bubble.resize-active {
+  cursor: nwse-resize;
 }
-.year-card.collapsed .expand-indicator { transform: rotate(-90deg); }
+.archive-bubble.resize-active::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  pointer-events: none;
+  z-index: 1;
+}
+
 
 /* ============= SHARED BOTTOM NAV ============= */
 .bnav-wrap {
@@ -1290,9 +1388,12 @@ body {
     <!-- ─────── PROJECTS PAGE ─────── -->
     <div class="page" data-page="projects">
       <div class="projects-header">
-        <div>
+        <div class="header-left">
           <div class="projects-title">Projects</div>
           <div class="projects-meta">7 PROJECTS</div>
+          <select class="year-select" id="yearFilter">
+            <option value="all">All</option>
+          </select>
         </div>
         <div class="tab-toggle">
           <button class="tab active" data-tab="in-progress">IN progress</button>
@@ -1300,9 +1401,8 @@ body {
         </div>
       </div>
 
-      <div class="projects-main">
-        <div class="year-stack" id="yearStack">
-        </div>
+      <div class="archive-area" id="archiveBubbles">
+        <div class="archive-drop-zone" id="archiveDropZone">Drop to Archive</div>
       </div>
     </div>
 
@@ -2092,70 +2192,6 @@ function onProjDragEnd(e) {
   }
 }
 
-function drawProjectMiniRing(canvas, project) {
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width;
-  const CX = W / 2, CY = W / 2;
-  ctx.clearRect(0, 0, W, W);
-
-  const ringTasks = project.tasks.filter(t => t.inRing);
-  const taskCount = ringTasks.length;
-  if (taskCount === 0) {
-    // Draw empty hint circles
-    for (let i = 0; i < 2; i++) {
-      const r = W * 0.18 + i * (W * 0.09);
-      ctx.beginPath();
-      ctx.arc(CX, CY, r, 0, Math.PI * 2);
-      ctx.setLineDash([2, 6]);
-      ctx.strokeStyle = 'rgba(245,241,233,0.15)';
-      ctx.lineWidth = 0.6;
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-    return;
-  }
-
-  const minR = W * 0.12, maxR = W * 0.44;
-  const gap = (maxR - minR) / Math.max(taskCount - 1, 1);
-
-  for (let i = 0; i < taskCount; i++) {
-    const task = ringTasks[i];
-    const r = minR + i * gap;
-    const alpha = 0.4 + (i / Math.max(taskCount, 1)) * 0.35;
-    const thick = task.status === 'stuck' ? 2.2 : task.status === 'procrastinating' ? 1.4 : 1.0;
-    const color = storyColorMap[task.story] || '#F5F1E9';
-
-    // Glow
-    ctx.beginPath();
-    ctx.arc(CX, CY, r, 0, Math.PI * 2);
-    ctx.strokeStyle = color;
-    ctx.globalAlpha = alpha * 0.3;
-    ctx.lineWidth = thick + 2.5;
-    ctx.lineCap = 'round';
-    ctx.stroke();
-
-    // Core
-    ctx.beginPath();
-    ctx.arc(CX, CY, r, 0, Math.PI * 2);
-    ctx.strokeStyle = color;
-    ctx.globalAlpha = alpha;
-    ctx.lineWidth = thick;
-    ctx.stroke();
-  }
-  ctx.globalAlpha = 1;
-}
-
-function drawAllProjectMiniRings() {
-  document.querySelectorAll('.proj-card:not(.add-card) canvas').forEach(canvas => {
-    const card = canvas.closest('.proj-card');
-    if (!card) return;
-    const projectId = card.dataset.projectId;
-    if (!projectId) return;
-    const project = projects.find(p => p.id === projectId);
-    if (project) drawProjectMiniRing(canvas, project);
-  });
-}
-
 // ============= MAIN RING ARCS (ANIMATED) =============
 const ringCanvas = document.getElementById('ringCanvas');
 const ringCtx = ringCanvas.getContext('2d');
@@ -2495,7 +2531,7 @@ function stopRingAnimation() {
 // Start animation
 currentRingTasks = tasks.filter(t => t.inRing);
 updateRingHeader();
-renderProjectsPage();
+try { renderProjectsPage(); } catch(e) { console.error('renderProjectsPage failed:', e); }
 drawRingFrame(globalAngle, 0);
 startRingAnimation();
 
@@ -2587,9 +2623,12 @@ function switchPage(pageName) {
   navItems.forEach(n => n.classList.toggle('active', n.dataset.nav === pageName));
   closeAllOverlays();
   if (pageName === 'projects') {
+    startPhysics();
     const activeCount = projects.filter(p => !p.archived).length;
     document.querySelector('.projects-meta').textContent = activeCount + ' ACTIVE PROJECTS';
     renderProjectsPage();
+  } else {
+    stopPhysics();
   }
 }
 
@@ -2823,146 +2862,518 @@ document.getElementById('generate3dBtn').addEventListener('click', function() {
 
 
 // ============= RENDER PROJECTS PAGE (BUBBLE LAYOUT) =============
-// ============= RENDER PROJECTS PAGE =============
+var currentProjectsTab = 'in-progress';
+var currentYearFilter = 'all';
+
+function drawBubbleRing(canvas, project, wobble) {
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, CX = W / 2, CY = W / 2;
+  ctx.clearRect(0, 0, W, W);
+  var ringTasks = project.tasks.filter(function(t) { return t.inRing; });
+  var taskCount = ringTasks.length;
+  if (taskCount === 0) return;
+  var palette = ['rgba(255,255,255,0.55)', 'rgba(255,255,255,0.35)', 'rgba(255,255,255,0.2)'];
+  var minR = W * 0.12, maxR = W * 0.44;
+  var gap = (maxR - minR) / Math.max(taskCount - 1, 1);
+  for (var i = 0; i < taskCount; i++) {
+    var r = minR + i * gap;
+    var col = palette[Math.floor(i / Math.ceil(taskCount / palette.length)) % palette.length];
+    var w = wobble * (0.7 + Math.sin(i * 2.3) * 0.3);
+    var thick = 0.9 + (i % 3) * 0.6;
+    for (var li = 0; li < 2; li++) {
+      var al = li === 0 ? 0.15 : 0.75;
+      var ex = li === 0 ? 2.5 : 0;
+      ctx.beginPath();
+      for (var p = 0; p <= 100; p++) {
+        var a = (p / 100) * Math.PI * 2 - Math.PI / 2;
+        var ww = Math.sin(a * 6 + w * 12) * w * (W * 0.018);
+        var rx = CX + Math.cos(a) * (r + ww);
+        var ry = CY + Math.sin(a) * (r + ww);
+        p === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = col;
+      ctx.globalAlpha = al;
+      ctx.lineWidth = thick + ex;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+// More centered bubble positions
+var BUBBLE_POSITIONS = [
+  { cx: 42, cy: 48 }, { cx: 58, cy: 38 }, { cx: 35, cy: 34 },
+  { cx: 62, cy: 55 }, { cx: 45, cy: 62 }, { cx: 33, cy: 56 },
+  { cx: 55, cy: 45 }, { cx: 40, cy: 55 }, { cx: 50, cy: 42 },
+  { cx: 65, cy: 44 }
+];
+var BUBBLE_ANIMS = ['fA', 'fB', 'fC', 'fD', 'fE'];
+
 function renderProjectsPage() {
-  const yearStack = document.getElementById('yearStack');
-  if (!yearStack) return;
+  if (!currentProjectsTab) currentProjectsTab = 'in-progress';
+  var area = document.getElementById('archiveBubbles');
+  if (!area) return;
 
-  const activeProjects = projects.filter(p => !p.archived);
-  const archivedProjects = projects.filter(p => p.archived);
-
-  function groupByYear(projList) {
-    const byYear = {};
-    projList.forEach(p => {
-      const year = new Date(p.createdAt).getFullYear();
-      if (!byYear[year]) byYear[year] = [];
-      byYear[year].push(p);
-    });
-    return byYear;
-  }
-
-  function renderYearSection(year, yearProjects, isActive) {
-    const yearCard = document.createElement('div');
-    yearCard.className = 'year-card' + (isActive ? '' : ' collapsed');
-    yearCard.dataset.year = year;
-    yearCard.dataset.section = isActive ? 'active' : 'archived';
-
-    yearCard.innerHTML = `
-      <div class="year-head">
-        <div class="year-name">${year}</div>
-        <div style="display:flex;align-items:center;gap:4px;">
-          <div class="year-count">${yearProjects.length} project${yearProjects.length !== 1 ? 's' : ''}</div>
-          <div class="expand-indicator">▼</div>
-        </div>
-      </div>
-      <div class="year-divider"></div>
-      <div class="year-body">
-        <div class="projects-grid">
-          ${yearProjects.map(p => `
-            <div class="proj-card" data-project-id="${p.id}">
-              <div class="proj-ring"><canvas width="76" height="76"></canvas></div>
-              <div class="proj-name">${p.name.toLowerCase()}</div>
-              <div class="proj-days">${p.tasks.length} tasks</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-    yearStack.appendChild(yearCard);
-  }
-
-  yearStack.innerHTML = '';
-
-  // Active section
-  const activeByYear = groupByYear(activeProjects);
-  const activeYears = Object.keys(activeByYear).sort((a, b) => b - a);
-  if (activeYears.length > 0) {
-    activeYears.forEach(year => renderYearSection(year, activeByYear[year], true));
+  // Filter by tab
+  var tabProjects;
+  if (currentProjectsTab === 'archive') {
+    tabProjects = projects.filter(function(p) { return p.archived; });
   } else {
-    // Show empty state for active
-    const emptyCard = document.createElement('div');
-    emptyCard.className = 'year-card';
-    emptyCard.dataset.section = 'active';
-    emptyCard.innerHTML = `
-      <div class="year-head"><div class="year-name">No active projects</div></div>
-      <div class="year-divider"></div>
-      <div class="year-body"><div class="projects-grid"></div></div>
-    `;
-    yearStack.appendChild(emptyCard);
+    tabProjects = projects.filter(function(p) { return !p.archived; });
   }
 
-  // Add new project button in active section
-  if (activeYears.length > 0) {
-    const lastActiveCard = yearStack.querySelector('.year-card[data-section="active"]:last-of-type .projects-grid');
-    if (lastActiveCard) {
-      const addCard = document.createElement('div');
-      addCard.className = 'proj-card add-card';
-      addCard.id = 'newProjBtn';
-      addCard.innerHTML = '<div class="add-icon">+</div><div class="add-label">New Project</div>';
-      lastActiveCard.appendChild(addCard);
+  // Filter by year
+  var displayProjects = tabProjects;
+  if (currentYearFilter !== 'all') {
+    displayProjects = tabProjects.filter(function(p) {
+      return new Date(p.createdAt).getFullYear().toString() === currentYearFilter;
+    });
+  }
+
+  // Update year dropdown options
+  var yearSelect = document.getElementById('yearFilter');
+  if (yearSelect) {
+    var years = {};
+    tabProjects.forEach(function(p) {
+      var y = new Date(p.createdAt).getFullYear().toString();
+      years[y] = true;
+    });
+    var selectedYear = yearSelect.value;
+    yearSelect.innerHTML = '<option value="all">All</option>';
+    Object.keys(years).sort(function(a, b) { return b - a; }).forEach(function(y) {
+      yearSelect.innerHTML += '<option value="' + y + '"' + (y === selectedYear ? ' selected' : '') + '>' + y + '</option>';
+    });
+  }
+
+  // Update meta
+  var metaEl = document.querySelector('[data-page="projects"] .projects-meta');
+  if (metaEl) {
+    metaEl.textContent = displayProjects.length + (currentProjectsTab === 'archive' ? ' ARCHIVED' : ' ACTIVE');
+  }
+
+  // Preserve drop zone
+  var dropZone = document.getElementById('archiveDropZone');
+  area.innerHTML = '';
+  if (dropZone) area.appendChild(dropZone);
+
+  if (displayProjects.length === 0) {
+    var emptyMsg = document.createElement('div');
+    emptyMsg.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:"Roboto Serif",serif;font-size:13px;color:var(--ink2);text-align:center;';
+    emptyMsg.textContent = 'No projects';
+    area.appendChild(emptyMsg);
+    bubblePhysics = [];
+    return;
+  }
+
+  bubblePhysics = [];
+
+  displayProjects.forEach(function(p, idx) {
+    if (!p.tasks || !Array.isArray(p.tasks)) return;
+    var ringTasks = p.tasks.filter(function(t) { return t && t.inRing; });
+    var taskCount = ringTasks.length || p.tasks.length;
+    var isArchived = p.archived;
+    var defaultSize = isArchived ? Math.max(80, Math.min(140, 60 + taskCount * 12)) : Math.max(60, Math.min(85, 50 + Math.min(taskCount, 8) * 4));
+    var size = p.bubbleSize || defaultSize;
+    var pos = BUBBLE_POSITIONS[idx % BUBBLE_POSITIONS.length];
+    var animKey = BUBBLE_ANIMS[idx % BUBBLE_ANIMS.length];
+    var dur = (3.0 + (idx * 0.7) % 2.2).toFixed(1);
+    var delay = ((idx * 0.6) % 2.0).toFixed(1);
+    var wobble = 0.4 + (taskCount / 20);
+
+    var bubble = document.createElement('div');
+    bubble.className = 'archive-bubble' + (isArchived ? '' : ' info-bubble');
+    bubble.setAttribute('data-project-id', p.id);
+    bubble.style.cssText =
+      'left:' + pos.cx + '%; top:' + pos.cy + '%;' +
+      'width:' + size + 'px; height:' + size + 'px;' +
+      'animation: ' + animKey + ' ' + dur + 's ease-in-out ' + delay + 's infinite;' +
+      'z-index:' + idx + ';';
+
+    if (isArchived) {
+      var csz = Math.round(size * 0.7);
+      var canvas = document.createElement('canvas');
+      canvas.width = csz; canvas.height = csz;
+      canvas.style.cssText = 'border-radius:50%;display:block;';
+
+      var label = document.createElement('div');
+      label.className = 'bubble-label';
+      label.style.fontSize = (size * 0.085).toFixed(1) + 'px';
+      label.textContent = (p.name || 'untitled').toLowerCase();
+
+      bubble.appendChild(canvas);
+      bubble.appendChild(label);
+      area.appendChild(bubble);
+
+      requestAnimationFrame(function() {
+        drawBubbleRing(canvas, p, wobble);
+      });
+    } else {
+      var inner = document.createElement('div');
+      inner.className = 'info-bubble-inner';
+      inner.innerHTML =
+        '<div class="info-bubble-name" style="font-size:' + (size * 0.09).toFixed(1) + 'px">' + (p.name || 'untitled').toLowerCase() + '</div>' +
+        '<div class="info-bubble-count" style="font-size:' + (size * 0.08).toFixed(1) + 'px">' + taskCount + ' task' + (taskCount !== 1 ? 's' : '') + '</div>';
+
+      bubble.appendChild(inner);
+      area.appendChild(bubble);
+    }
+
+    // Register for physics
+    bubblePhysics.push({
+      el: bubble,
+      x: pos.cx,
+      y: pos.cy,
+      vx: 0, vy: 0,
+      restX: pos.cx,
+      restY: pos.cy,
+      projectId: p.id,
+      isArchived: isArchived
+    });
+  });
+}
+
+// ============= PHYSICS GRAVITY SIMULATION =============
+var physicsRunning = false;
+
+function getBubbleRadiusPercent(el) {
+  if (!el) return 7;
+  var area = document.getElementById('archiveBubbles');
+  var areaWidth = area ? area.clientWidth : 375;
+  var bubbleWidth = parseFloat(el.style.width) || 80;
+  return (bubbleWidth / 2) / areaWidth * 100;
+}
+
+function startPhysics() {
+  if (physicsRunning) return;
+  physicsRunning = true;
+  requestAnimationFrame(physicsTick);
+}
+
+function stopPhysics() {
+  physicsRunning = false;
+}
+
+function physicsTick() {
+  if (!physicsRunning) return;
+  var cx = 50, cy = 50;
+  var G = 0.00012;
+  var springK = 0.0005;
+  var damping = 0.945;
+
+  for (var i = 0; i < bubblePhysics.length; i++) {
+    var b = bubblePhysics[i];
+    if (!b.el || !b.el.isConnected || b._dragging) continue;
+    var dx = cx - b.x;
+    var dy = cy - b.y;
+    var dist = Math.sqrt(dx * dx + dy * dy) + 0.3;
+    var force = G / (dist * 0.01);
+    b.vx += dx * force * 0.01;
+    b.vy += dy * force * 0.01;
+    b.vx += (b.restX - b.x) * springK;
+    b.vy += (b.restY - b.y) * springK;
+    for (var j = i + 1; j < bubblePhysics.length; j++) {
+      var b2 = bubblePhysics[j];
+      if (!b2.el || !b2.el.isConnected || b2._dragging) continue;
+      var rx = b.x - b2.x;
+      var ry = b.y - b2.y;
+      var rd = Math.sqrt(rx * rx + ry * ry) + 0.01;
+      var minDist = (getBubbleRadiusPercent(b.el) + getBubbleRadiusPercent(b2.el)) * 1.05;
+      if (rd < minDist && rd > 0.001) {
+        var overlap = minDist - rd;
+        var rf = overlap / minDist * 0.08;
+        b.vx += rx / rd * rf;
+        b.vy += ry / rd * rf;
+        b2.vx -= rx / rd * rf;
+        b2.vy -= ry / rd * rf;
+      }
+    }
+    b.vx *= damping;
+    b.vy *= damping;
+    var speed = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+    if (speed > 0.4) { b.vx *= 0.4 / speed; b.vy *= 0.4 / speed; }
+    b.x += b.vx;
+    b.y += b.vy;
+    b.x = Math.max(8, Math.min(92, b.x));
+    b.y = Math.max(8, Math.min(92, b.y));
+    b.el.style.left = b.x + '%';
+    b.el.style.top = b.y + '%';
+  }
+  requestAnimationFrame(physicsTick);
+}
+
+// Start physics when projects page is visible
+var physicsObserver = new MutationObserver(function() {
+  var projectsPage = document.querySelector('[data-page="projects"]');
+  if (projectsPage && projectsPage.classList.contains('active')) {
+    startPhysics();
+  } else {
+    stopPhysics();
+  }
+});
+var projectsPageEl = document.querySelector('[data-page="projects"]');
+if (projectsPageEl) {
+  physicsObserver.observe(projectsPageEl, { attributes: true, attributeFilter: ['class'] });
+}
+if (projectsPageEl && projectsPageEl.classList.contains('active')) {
+  startPhysics();
+}
+
+// ============= POINTER EVENTS: DRAG TO ARCHIVE + EDGE RESIZE =============
+var pointerState = {
+  active: false,
+  bubble: null,
+  projectId: null,
+  mode: null, // 'drag' | 'resize'
+  startX: 0, startY: 0,
+  origSize: 0,
+  origLeft: 0, origTop: 0,
+  moved: false,
+  ghost: null
+};
+
+function getBubbleFromTarget(el) {
+  return el ? el.closest('.archive-bubble') : null;
+}
+
+function findProjectById(id) {
+  for (var i = 0; i < projects.length; i++) {
+    if (projects[i].id === id) return projects[i];
+  }
+  return null;
+}
+
+function getDistanceToCenter(el, clientX, clientY) {
+  var rect = el.getBoundingClientRect();
+  var cx = rect.left + rect.width / 2;
+  var cy = rect.top + rect.height / 2;
+  return Math.sqrt(Math.pow(clientX - cx, 2) + Math.pow(clientY - cy, 2));
+}
+
+function isNearEdge(el, clientX, clientY) {
+  var rect = el.getBoundingClientRect();
+  var radius = rect.width / 2;
+  var dist = getDistanceToCenter(el, clientX, clientY);
+  return dist > radius * 0.7;
+}
+
+document.addEventListener('pointerdown', function(e) {
+  var bubble = getBubbleFromTarget(e.target);
+  if (!bubble) return;
+  var projectId = bubble.getAttribute('data-project-id');
+  if (!projectId) return;
+  var project = findProjectById(projectId);
+  if (!project) return;
+
+  var isEdge = isNearEdge(bubble, e.clientX, e.clientY);
+
+  if (isEdge) {
+    // Edge resize mode
+    pointerState.active = true;
+    pointerState.bubble = bubble;
+    pointerState.projectId = projectId;
+    pointerState.mode = 'resize';
+    pointerState.startX = e.clientX;
+    pointerState.startY = e.clientY;
+    pointerState.origSize = parseInt(bubble.style.width) || 80;
+    pointerState.origLeft = parseFloat(bubble.style.left) || 50;
+    pointerState.origTop = parseFloat(bubble.style.top) || 50;
+    pointerState.moved = false;
+    bubble._dragging = true;
+    bubble.classList.add('resize-active');
+    bubble.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  } else if (!project.archived) {
+    // Inner: track for click vs drag (only in-progress bubbles can be dragged)
+    pointerState.active = true;
+    pointerState.bubble = bubble;
+    pointerState.projectId = projectId;
+    pointerState.mode = 'drag';
+    pointerState.startX = e.clientX;
+    pointerState.startY = e.clientY;
+    pointerState.moved = false;
+    pointerState.ghost = null;
+    bubble._dragging = true;
+    bubble.setPointerCapture(e.pointerId);
+  }
+});
+
+document.addEventListener('pointermove', function(e) {
+  if (!pointerState.active) return;
+
+  var dx = e.clientX - pointerState.startX;
+  var dy = e.clientY - pointerState.startY;
+  var dist = Math.sqrt(dx * dx + dy * dy);
+
+  if (dist > 4) {
+    pointerState.moved = true;
+  }
+
+  if (pointerState.mode === 'resize') {
+    var bubble = pointerState.bubble;
+    var distanceFromCenter = getDistanceToCenter(bubble, e.clientX, e.clientY);
+    var newSize = Math.round(Math.max(50, Math.min(180, distanceFromCenter * 2)));
+    bubble.style.width = newSize + 'px';
+    bubble.style.height = newSize + 'px';
+    // Update text sizes
+    var nameEl = bubble.querySelector('.info-bubble-name');
+    var countEl = bubble.querySelector('.info-bubble-count');
+    var labelEl = bubble.querySelector('.bubble-label');
+    if (nameEl) nameEl.style.fontSize = (newSize * 0.09).toFixed(1) + 'px';
+    if (countEl) countEl.style.fontSize = (newSize * 0.08).toFixed(1) + 'px';
+    if (labelEl) labelEl.style.fontSize = (newSize * 0.085).toFixed(1) + 'px';
+    // Update canvas if archived
+    var canvas = bubble.querySelector('canvas');
+    if (canvas) {
+      var csz = Math.round(newSize * 0.7);
+      canvas.width = csz;
+      canvas.height = csz;
+      var project = findProjectById(pointerState.projectId);
+      if (project) {
+        var ringTasks = project.tasks.filter(function(t) { return t && t.inRing; });
+        var taskCount = ringTasks.length || project.tasks.length;
+        var wobble = 0.4 + (taskCount / 20);
+        drawBubbleRing(canvas, project, wobble);
+      }
+    }
+  } else if (pointerState.mode === 'drag' && pointerState.moved) {
+    // Show archive drop zone
+    var dropZone = document.getElementById('archiveDropZone');
+    if (dropZone) dropZone.classList.add('visible');
+
+    // Create ghost if needed
+    if (!pointerState.ghost) {
+      pointerState.ghost = document.createElement('div');
+      pointerState.ghost.className = 'drag-ghost';
+      var origSize = parseInt(pointerState.bubble.style.width) || 80;
+      pointerState.ghost.style.width = origSize + 'px';
+      pointerState.ghost.style.height = origSize + 'px';
+      document.body.appendChild(pointerState.ghost);
+      pointerState.bubble.style.opacity = '0.4';
+    }
+
+    // Move ghost
+    pointerState.ghost.style.left = e.clientX + 'px';
+    pointerState.ghost.style.top = e.clientY + 'px';
+
+    // Check hover over drop zone
+    if (dropZone) {
+      var dzRect = dropZone.getBoundingClientRect();
+      if (e.clientX >= dzRect.left && e.clientX <= dzRect.right &&
+          e.clientY >= dzRect.top && e.clientY <= dzRect.bottom) {
+        dropZone.classList.add('hover');
+      } else {
+        dropZone.classList.remove('hover');
+      }
+    }
+  }
+});
+
+document.addEventListener('pointerup', function(e) {
+  if (!pointerState.active) return;
+
+  var dropZone = document.getElementById('archiveDropZone');
+  var archiving = false;
+
+  if (pointerState.mode === 'drag' && pointerState.moved && dropZone) {
+    var dzRect = dropZone.getBoundingClientRect();
+    if (e.clientX >= dzRect.left && e.clientX <= dzRect.right &&
+        e.clientY >= dzRect.top && e.clientY <= dzRect.bottom) {
+      // Archive the project
+      var project = findProjectById(pointerState.projectId);
+      if (project) {
+        project.archived = true;
+        saveProjects();
+        archiving = true;
+      }
     }
   }
 
-  // Archived section
-  const archivedByYear = groupByYear(archivedProjects);
-  const archivedYears = Object.keys(archivedByYear).sort((a, b) => b - a);
-  if (archivedYears.length > 0) {
-    archivedYears.forEach(year => renderYearSection(year, archivedByYear[year], false));
-  } else {
-    const emptyCard = document.createElement('div');
-    emptyCard.className = 'year-card collapsed';
-    emptyCard.dataset.section = 'archived';
-    emptyCard.innerHTML = `
-      <div class="year-head"><div class="year-name">No archived projects</div></div>
-      <div class="year-divider"></div>
-      <div class="year-body"><div class="projects-grid"></div></div>
-    `;
-    yearStack.appendChild(emptyCard);
+  // Cleanup ghost
+  if (pointerState.ghost) {
+    pointerState.ghost.remove();
+    pointerState.ghost = null;
   }
 
-  // Attach handlers
-  document.querySelectorAll('.year-head').forEach(head => {
-    head.addEventListener('click', () => {
-      head.parentElement.classList.toggle('collapsed');
-    });
-  });
+  // Reset bubble opacity and dragging flag
+  if (pointerState.bubble) {
+    pointerState.bubble.style.opacity = '';
+    pointerState.bubble._dragging = false;
+    pointerState.bubble.classList.remove('resize-active');
+  }
 
-  document.querySelectorAll('.proj-card:not(.add-card)').forEach(card => {
-    var projId = card.dataset.projectId;
-    var project = projects.find(function(p) { return p.id === projId; });
-    if (!project) return;
+  // Hide drop zone
+  if (dropZone) {
+    dropZone.classList.remove('visible', 'hover');
+  }
 
-    card.addEventListener('mousedown', function(e) {
-      if (e.button !== 0) return;
-      currentProjPressTarget = { card: card, project: project, startX: e.clientX, startY: e.clientY, longFired: false };
-      if (!project.archived) {
-        currentProjPressTarget.timer = setTimeout(function() {
-          currentProjPressTarget.longFired = true;
-          startProjDrag(card, project, e.clientX, e.clientY);
-        }, 400);
+  // Handle click (no movement)
+  if (!pointerState.moved) {
+    var project = findProjectById(pointerState.projectId);
+    if (project) {
+      if (pointerState.mode === 'drag' || project.archived) {
+        // Was a click on inner area
+        if (project.archived) {
+          openArchiveDetail(project);
+        } else {
+          selectProject(project.id);
+        }
       }
-    });
+    }
+  }
 
-    card.addEventListener('touchstart', function(e) {
-      var t = e.touches[0];
-      currentProjPressTarget = { card: card, project: project, startX: t.clientX, startY: t.clientY, longFired: false };
-      if (!project.archived) {
-        currentProjPressTarget.timer = setTimeout(function() {
-          currentProjPressTarget.longFired = true;
-          startProjDrag(card, project, t.clientX, t.clientY);
-        }, 400);
-      }
-    }, { passive: false });
-  });
+  // Save size after resize
+  if (pointerState.mode === 'resize' && pointerState.moved) {
+    var project = findProjectById(pointerState.projectId);
+    if (project) {
+      var newSize = parseInt(pointerState.bubble.style.width) || pointerState.origSize;
+      project.bubbleSize = newSize;
+      saveProjects();
+    }
+  }
 
-  const newBtn = document.getElementById('newProjBtn');
-  if (newBtn) newBtn.addEventListener('click', openCreate);
+  // Release pointer capture
+  if (pointerState.bubble && pointerState.bubble.hasPointerCapture) {
+    try { pointerState.bubble.releasePointerCapture(e.pointerId); } catch(ex) {}
+  }
 
-  // Draw mini rings after DOM update
-  setTimeout(() => drawAllProjectMiniRings(), 50);
-}
+  pointerState.active = false;
+  pointerState.bubble = null;
+  pointerState.projectId = null;
+  pointerState.mode = null;
+  pointerState.moved = false;
 
+  // Re-render if archived
+  if (archiving) {
+    renderProjectsPage();
+  }
+});
 
+// Hover cursor hint for edge resize
+document.addEventListener('pointermove', function(e) {
+  if (pointerState.active) return;
+  var bubble = getBubbleFromTarget(e.target);
+  if (!bubble) {
+    // Reset any lingering cursor
+    var allBubbles = document.querySelectorAll('.archive-bubble');
+    for (var i = 0; i < allBubbles.length; i++) {
+      allBubbles[i].style.cursor = '';
+    }
+    return;
+  }
+  // Update cursor for all bubbles
+  var allBubbles = document.querySelectorAll('.archive-bubble');
+  for (var i = 0; i < allBubbles.length; i++) {
+    if (allBubbles[i] === bubble && isNearEdge(bubble, e.clientX, e.clientY)) {
+      allBubbles[i].style.cursor = 'nwse-resize';
+    } else if (allBubbles[i].classList.contains('info-bubble')) {
+      allBubbles[i].style.cursor = 'grab';
+    } else {
+      allBubbles[i].style.cursor = 'pointer';
+    }
+  }
+});
 
 scrim.addEventListener('click', closeAllOverlays);
 document.getElementById('closeRecord').addEventListener('click', () => {
@@ -3110,26 +3521,30 @@ window.addEventListener('touchmove', (e) => {
 });
 window.addEventListener('touchend', () => { padDragging = false; });
 
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    const filter = tab.dataset.tab; // 'in-progress' or 'archive'
-    document.querySelectorAll('.year-card').forEach(card => {
-      const section = card.dataset.section;
-      if (filter === 'in-progress') {
-        card.style.display = section === 'active' ? '' : 'none';
-      } else {
-        card.style.display = section === 'archived' ? '' : 'none';
-      }
+// Tab toggle — scoped to projects page
+var projectsPageEl = document.querySelector('[data-page="projects"]');
+if (projectsPageEl) {
+  projectsPageEl.querySelectorAll('.tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      projectsPageEl.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      currentProjectsTab = tab.dataset.tab;
+      renderProjectsPage();
     });
   });
-});
+  // Init currentProjectsTab from active tab
+  var activeTab = projectsPageEl.querySelector('.tab.active');
+  if (activeTab) currentProjectsTab = activeTab.dataset.tab || 'in-progress';
+}
 
-// Initialize: show only in-progress (active) by default
-document.querySelectorAll('.year-card').forEach(card => {
-  if (card.dataset.section !== 'active') card.style.display = 'none';
-});
+// Year filter change handler
+var yearFilterEl = document.getElementById('yearFilter');
+if (yearFilterEl) {
+  yearFilterEl.addEventListener('change', function() {
+    currentYearFilter = yearFilterEl.value;
+    renderProjectsPage();
+  });
+}
 
 
 // ============= PROJECT DRAG / PRESS DOCUMENT HANDLERS =============
