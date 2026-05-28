@@ -6,7 +6,7 @@
 <title>Dormant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -29,7 +29,7 @@
 
 html, body {
   height: 100%;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Roboto Serif', serif;
   background: #2A2520;
   color: var(--ink);
   overflow: hidden;
@@ -218,28 +218,6 @@ body {
   text-transform: uppercase;
   pointer-events: none;
   transition: opacity 0.3s;
-}
-.legend {
-  position: absolute;
-  bottom: 32px;
-  left: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-}
-.lg-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 8px;
-  color: var(--ink2);
-  letter-spacing: 0.18em;
-}
-.lg-dash {
-  width: 14px;
-  height: 2px;
-  border-radius: 1px;
 }
 .ring-tap-target {
   position: absolute;
@@ -644,6 +622,21 @@ body {
   width: 8px;
   height: 8px;
 }
+.proj-ghost {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 2px !important;
+  padding: 10px 14px !important;
+  border-radius: 16px !important;
+}
+.tab.drop-target {
+  background: rgba(212, 165, 120, 0.3) !important;
+  transition: background 0.3s;
+}
+.tab.drop-hover {
+  background: rgba(212, 165, 120, 0.55) !important;
+  box-shadow: 0 0 12px rgba(212, 165, 120, 0.4);
+}
 
 /* ============= RECORD PANEL ============= */
 .record-panel {
@@ -722,7 +715,7 @@ body {
   flex-shrink: 0;
 }
 .feeling-section { margin-bottom: 14px; }
-.pad-wrap { position: relative; padding: 16px 0 8px; }
+.pad-wrap { position: relative; padding: 18px 28px 14px 28px; }
 .pad {
   width: 103px;
   height: 103px;
@@ -749,17 +742,18 @@ body {
   pointer-events: none;
   box-shadow: 0 0 8px rgba(255,255,255,0.5);
 }
-.pad-label-tl, .pad-label-tr, .pad-label-bl, .pad-label-br {
+.pad-label-top, .pad-label-bottom, .pad-label-left, .pad-label-right {
   position: absolute;
   font-family: 'Roboto Serif', serif;
   font-weight: 500;
   font-size: 8px;
   color: rgba(245, 241, 233, 0.5);
+  white-space: nowrap;
 }
-.pad-label-tl { top: 5px; left: 4px; }
-.pad-label-tr { top: 5px; right: 4px; }
-.pad-label-bl { bottom: 8px; left: 4px; }
-.pad-label-br { bottom: 8px; right: 4px; }
+.pad-label-top { top: 4px; left: 50%; transform: translateX(-50%); }
+.pad-label-bottom { bottom: 2px; left: 50%; transform: translateX(-50%); }
+.pad-label-left { left: 2px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+.pad-label-right { right: 2px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
 
 .back-btn {
   background: rgba(245, 241, 233, 0.2);
@@ -1092,6 +1086,85 @@ body {
 .begin-btn:active { transform: scale(0.98); }
 .begin-btn .plus { font-size: 18px; }
 
+/* ─────── ARCHIVE DETAIL PAGE ─────── */
+.archive-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 12px;
+  scrollbar-width: none;
+}
+.archive-main::-webkit-scrollbar { display: none; }
+
+.archive-ring-section {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+}
+.archive-ring-section canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.archive-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+.archive-stat {
+  background: var(--card-bg);
+  border: 0.5px solid var(--card-stroke);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.stat-value {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--ink);
+}
+.stat-label {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: var(--ink2);
+  letter-spacing: 0.08em;
+}
+.archive-emotion-section {
+  background: var(--card-bg);
+  border: 0.5px solid var(--card-stroke);
+  border-radius: 16px;
+  padding: 14px 18px;
+}
+.archive-emotion-section canvas {
+  width: 100%;
+  height: 60px;
+}
+.archive-bottom {
+  padding: 16px 0 8px;
+}
+.generate-3d-btn {
+  width: 100%;
+  background: rgba(245, 241, 233, 0.15);
+  border: 0.5px solid rgba(245, 241, 233, 0.25);
+  border-radius: 30px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.generate-3d-btn:hover { background: rgba(245, 241, 233, 0.25); }
+
 </style>
 </head>
 <body>
@@ -1123,11 +1196,6 @@ body {
         </div>
         <div class="ring-tap-target" id="ringTap"></div>
         <div class="hint" id="ringHint">TAP A RING TO INTERACT</div>
-        <div class="legend">
-          <div class="lg-item"><div class="lg-dash" style="background:var(--story1);"></div>RESEARCH</div>
-          <div class="lg-item"><div class="lg-dash" style="background:var(--story2);"></div>CONCEPT</div>
-          <div class="lg-item"><div class="lg-dash" style="background:var(--story3);"></div>EXECUTION</div>
-        </div>
       </div>
     </div>
 
@@ -1177,92 +1245,40 @@ body {
       </div>
 
       <div class="projects-main">
-        <div class="year-stack">
+        <div class="year-stack" id="yearStack">
+        </div>
+      </div>
+    </div>
 
-          <div class="year-card" data-year="2026">
-            <div class="year-head">
-              <div class="year-name">2026</div>
-              <div style="display:flex;align-items:center;gap:4px;">
-                <div class="year-count">3 projects</div>
-                <div class="expand-indicator">▼</div>
-              </div>
-            </div>
-            <div class="year-divider"></div>
-            <div class="year-body">
-              <div class="projects-grid">
-                <div class="proj-card" data-name="Motion Reel" data-tasks="5">
-                  <div class="proj-ring"><canvas width="76" height="76" data-ring="0"></canvas></div>
-                  <div class="proj-name">motion reel</div>
-                  <div class="proj-days">18 days</div>
-                </div>
-                <div class="proj-card" data-name="Brand Identity" data-tasks="6">
-                  <div class="proj-ring"><canvas width="76" height="76" data-ring="1"></canvas></div>
-                  <div class="proj-name">brand identity</div>
-                  <div class="proj-days">23 days</div>
-                </div>
-                <div class="proj-card" data-name="Poster Series" data-tasks="4">
-                  <div class="proj-ring"><canvas width="76" height="76" data-ring="2"></canvas></div>
-                  <div class="proj-name">poster series</div>
-                  <div class="proj-days">14 days</div>
-                </div>
-                <div class="proj-card add-card" id="newProjBtn">
-                  <div class="add-icon">+</div>
-                  <div class="add-label">New Project</div>
-                </div>
-              </div>
-            </div>
+    <!-- ─────── ARCHIVE DETAIL PAGE ─────── -->
+    <div class="page" data-page="archive-detail">
+      <div class="projects-header">
+        <div>
+          <div class="projects-title" id="archiveDetailTitle">Project Name</div>
+          <div class="projects-meta" id="archiveDetailMeta">ARCHIVED</div>
+        </div>
+        <div class="menu-btn" id="archiveBackBtn">←</div>
+      </div>
+      <div class="archive-main">
+        <div class="archive-ring-section">
+          <canvas id="archiveRingCanvas" width="540" height="540"></canvas>
+        </div>
+        <div class="archive-analysis">
+          <div class="archive-stat">
+            <div class="stat-value" id="archiveBrewDays">--</div>
+            <div class="stat-label">DAYS BREWING</div>
           </div>
-
-          <div class="year-card collapsed" data-year="2025">
-            <div class="year-head">
-              <div class="year-name">2025</div>
-              <div style="display:flex;align-items:center;gap:4px;">
-                <div class="year-count">2 projects</div>
-                <div class="expand-indicator">▼</div>
-              </div>
-            </div>
-            <div class="year-divider"></div>
-            <div class="year-body">
-              <div class="projects-grid">
-                <div class="proj-card" data-name="Type Specimen" data-tasks="3">
-                  <div class="proj-ring"><canvas width="76" height="76" data-ring="3"></canvas></div>
-                  <div class="proj-name">type specimen</div>
-                  <div class="proj-days">9 days</div>
-                </div>
-                <div class="proj-card" data-name="UX Research" data-tasks="8">
-                  <div class="proj-ring"><canvas width="76" height="76" data-ring="4"></canvas></div>
-                  <div class="proj-name">ux research</div>
-                  <div class="proj-days">31 days</div>
-                </div>
-              </div>
-            </div>
+          <div class="archive-stat">
+            <div class="stat-value" id="archiveTaskCount">--</div>
+            <div class="stat-label">TASKS CLOSED</div>
           </div>
-
-          <div class="year-card collapsed" data-year="2024">
-            <div class="year-head">
-              <div class="year-name">2024</div>
-              <div style="display:flex;align-items:center;gap:4px;">
-                <div class="year-count">2 projects</div>
-                <div class="expand-indicator">▼</div>
-              </div>
-            </div>
-            <div class="year-divider"></div>
-            <div class="year-body">
-              <div class="projects-grid">
-                <div class="proj-card" data-name="Grad Thesis" data-tasks="11">
-                  <div class="proj-ring"><canvas width="76" height="76" data-ring="5"></canvas></div>
-                  <div class="proj-name">grad thesis</div>
-                  <div class="proj-days">68 days</div>
-                </div>
-                <div class="proj-card" data-name="Photo Series" data-tasks="3">
-                  <div class="proj-ring"><canvas width="76" height="76" data-ring="6"></canvas></div>
-                  <div class="proj-name">photo series</div>
-                  <div class="proj-days">12 days</div>
-                </div>
-              </div>
-            </div>
+          <div class="archive-emotion-section">
+            <div class="stat-label" style="margin-bottom:8px;">EMOTION TREND</div>
+            <canvas id="archiveEmotionCanvas" width="320" height="60"></canvas>
           </div>
-
+        </div>
+        <div class="archive-bottom">
+          <button class="generate-3d-btn" id="generate3dBtn">Generate 3D model →</button>
         </div>
       </div>
     </div>
@@ -1298,7 +1314,6 @@ body {
     <div class="status-list">
       <div class="status-pill" data-status="smooth"><div class="status-dot"></div>Smooth</div>
       <div class="status-pill selected" data-status="procrastinating"><div class="status-dot"></div>Procrastinating</div>
-      <div class="status-pill" data-status="stressed"><div class="status-dot"></div>Stressed</div>
       <div class="status-pill" data-status="stuck"><div class="status-dot"></div>Totally Stuck</div>
       <div class="status-pill" data-status="done"><div class="status-dot"></div>Done</div>
     </div>
@@ -1306,13 +1321,13 @@ body {
     <div class="section-label">FEELING</div>
     <div class="feeling-section">
       <div class="pad-wrap">
-        <div class="pad-label-tl">Anxious</div>
-        <div class="pad-label-tr">Motivated</div>
+        <div class="pad-label-top">Motivated</div>
+        <div class="pad-label-left">Anxious</div>
         <div class="pad" id="emotionPad">
           <div class="pad-handle" id="padHandle"></div>
         </div>
-        <div class="pad-label-bl">Unmotivated</div>
-        <div class="pad-label-br">Calm</div>
+        <div class="pad-label-right">Calm</div>
+        <div class="pad-label-bottom">Unmotivated</div>
       </div>
     </div>
     <div class="back-btn" id="closeRecord"><span class="arrow">←</span> Back to Ring</div>
@@ -1356,7 +1371,6 @@ const storyColorMap = {
 const statusColors = {
   smooth: '#4ADE80',
   procrastinating: '#FBBF24',
-  stressed: '#F87171',
   stuck: '#EF4444',
   done: '#60A5FA'
 };
@@ -1364,39 +1378,210 @@ const statusColors = {
 const statusLabels = {
   smooth: 'Smooth',
   procrastinating: 'Procrastinating',
-  stressed: 'Stressed',
   stuck: 'Totally Stuck',
   done: 'Done'
 };
 
-// Load from localStorage or use defaults
-function loadTasks() {
+// ============= PROJECT STATE =============
+let projects = [];
+let activeProjectId = null;
+let tasks = [];
+
+function loadProjects() {
   try {
-    const saved = localStorage.getItem('dormant-tasks');
+    const saved = localStorage.getItem('dormant-projects');
     if (saved) {
       const parsed = JSON.parse(saved);
-      // Migrate: ensure all tasks have feelings
-      parsed.forEach(t => {
-        if (!t.feelings) t.feelings = { x: 0.5, y: 0.5 };
+      parsed.forEach(p => {
+        p.tasks.forEach(t => {
+          if (!t.feelings) t.feelings = { x: 0.5, y: 0.5 };
+        });
       });
       return parsed;
     }
   } catch(e) {}
-  return [
-    { id: 't1', name: 'Market research', story: 'research', inRing: true, status: 'smooth', feelings: { x: 0.5, y: 0.5 } },
-    { id: 't2', name: 'Mood board', story: 'research', inRing: true, status: 'procrastinating', feelings: { x: 0.5, y: 0.5 } },
-    { id: 't3', name: 'Competitor analysis', story: 'research', inRing: false, status: null, feelings: { x: 0.5, y: 0.5 } },
-    { id: 't4', name: 'Logo exploration', story: 'concept', inRing: true, status: 'stressed', feelings: { x: 0.5, y: 0.5 } },
-    { id: 't5', name: 'Color study', story: 'concept', inRing: false, status: null, feelings: { x: 0.5, y: 0.5 } },
-    { id: 't6', name: 'Final design', story: 'execution', inRing: false, status: null, feelings: { x: 0.5, y: 0.5 } }
-  ];
+  return null;
+}
+
+function saveProjects() {
+  try { localStorage.setItem('dormant-projects', JSON.stringify(projects)); } catch(e) {}
 }
 
 function saveTasks() {
-  try { localStorage.setItem('dormant-tasks', JSON.stringify(tasks)); } catch(e) {}
+  const active = getActiveProject();
+  if (active) {
+    active.tasks.length = 0;
+    Array.prototype.push.apply(active.tasks, tasks);
+  }
+  saveProjects();
 }
 
-const tasks = loadTasks();
+function checkAutoArchive() {
+  const active = getActiveProject();
+  if (!active || active.archived) return;
+  const allDone = active.tasks.every(t => t.status === 'done');
+  if (allDone && active.tasks.length > 0) {
+    active.archived = true;
+    saveProjects();
+    renderProjectsPage();
+  }
+}
+
+function migrateFromLegacyTasks() {
+  try {
+    const saved = localStorage.getItem('dormant-tasks');
+    if (saved) {
+      const legacyTasks = JSON.parse(saved);
+      legacyTasks.forEach(t => {
+        if (!t.feelings) t.feelings = { x: 0.5, y: 0.5 };
+      });
+      const project = {
+        id: 'proj_legacy_' + Date.now(),
+        name: 'Brand Identity',
+        tasks: legacyTasks,
+        createdAt: '2026-01-15'
+      };
+      projects.push(project);
+      localStorage.removeItem('dormant-tasks');
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+function createDefaultProjects() {
+  const defaults = [
+    { name: 'Motion Reel', year: '2026', stories: [
+      { name: 'concept', tasks: ['Storyboard draft', 'Reference gathering', 'Style frames'] },
+      { name: 'execution', tasks: ['Rough cut', 'Final edit'] }
+    ]},
+    { name: 'Brand Identity', year: '2026', stories: [
+      { name: 'research', tasks: ['Market research', 'Mood board', 'Competitor analysis'] },
+      { name: 'concept', tasks: ['Logo exploration', 'Color study'] },
+      { name: 'execution', tasks: ['Final design'] }
+    ]},
+    { name: 'Poster Series', year: '2026', stories: [
+      { name: 'concept', tasks: ['Concept sketches', 'Typography study'] },
+      { name: 'execution', tasks: ['Layout exploration', 'Final print prep'] }
+    ]},
+    { name: 'Type Specimen', year: '2025', stories: [
+      { name: 'research', tasks: ['Font selection'] },
+      { name: 'execution', tasks: ['Layout design', 'Print test'] }
+    ]},
+    { name: 'UX Research', year: '2025', stories: [
+      { name: 'research', tasks: ['User interviews', 'Survey design', 'Competitive audit', 'Persona creation'] },
+      { name: 'concept', tasks: ['Journey mapping', 'Wireframes'] },
+      { name: 'execution', tasks: ['Prototype', 'Usability test'] }
+    ]},
+    { name: 'Grad Thesis', year: '2024', stories: [
+      { name: 'research', tasks: ['Literature review', 'Case studies', 'Survey', 'Field research'] },
+      { name: 'concept', tasks: ['Thesis outline', 'Methodology', 'Visual framework'] },
+      { name: 'execution', tasks: ['Draft 1', 'Draft 2', 'Final draft', 'Presentation'] }
+    ]},
+    { name: 'Photo Series', year: '2024', stories: [
+      { name: 'concept', tasks: ['Location scout'] },
+      { name: 'execution', tasks: ['Shoot day', 'Edit selects'] }
+    ]}
+  ];
+
+  defaults.forEach((def, idx) => {
+    const projTasks = [];
+    def.stories.forEach(story => {
+      story.tasks.forEach(taskName => {
+        projTasks.push({
+          id: 't' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          name: taskName,
+          story: story.name.toLowerCase(),
+          inRing: false,
+          status: null,
+          feelings: { x: 0.5, y: 0.5 }
+        });
+      });
+    });
+    // Brand Identity (idx=1) gets some in-ring tasks matching original defaults
+    if (idx === 1) {
+      projTasks[0].inRing = true; projTasks[0].status = 'smooth';
+      projTasks[1].inRing = true; projTasks[1].status = 'procrastinating';
+      projTasks[2].inRing = false; projTasks[2].status = null;
+      projTasks[3].inRing = true; projTasks[3].status = 'stuck';
+      projTasks[4].inRing = false; projTasks[4].status = null;
+      projTasks[5].inRing = false; projTasks[5].status = null;
+    }
+    projects.push({
+      id: 'proj_' + Date.now() + '_' + idx,
+      name: def.name,
+      tasks: projTasks,
+      createdAt: def.year + '-06-01',
+      archived: def.year !== '2026'
+    });
+  });
+}
+
+// Initialize projects
+projects = loadProjects();
+if (!projects) {
+  projects = [];
+  const migrated = migrateFromLegacyTasks();
+  if (!migrated) {
+    createDefaultProjects();
+  } else {
+    createDefaultProjects();
+    // Deduplicate Brand Identity
+    const seen = new Set();
+    projects = projects.filter(p => {
+      if (seen.has(p.name)) return false;
+      seen.add(p.name);
+      return true;
+    });
+  }
+  saveProjects();
+}
+
+// Set active project
+activeProjectId = localStorage.getItem('dormant-active-project') || (projects.length > 0 ? projects[0].id : null);
+
+function setActiveProject(projectId) {
+  const project = projects.find(p => p.id === projectId);
+  if (!project) return;
+  activeProjectId = projectId;
+  tasks.length = 0;
+  project.tasks.forEach(function(t) {
+    delete t._ringRotation;
+  });
+  Array.prototype.push.apply(tasks, project.tasks);
+  currentRingTasks = tasks.filter(t => t.inRing);
+  localStorage.setItem('dormant-active-project', activeProjectId);
+  saveProjects();
+  renderOutlinePanel();
+  updateRingHeader();
+}
+
+function getActiveProject() {
+  return projects.find(p => p.id === activeProjectId) || null;
+}
+
+function updateRingHeader() {
+  const active = getActiveProject();
+  if (!active) return;
+  const inRingCount = active.tasks.filter(t => t.inRing).length;
+  document.getElementById('ringProjTitle').textContent = active.name;
+  document.getElementById('ringProjMeta').textContent = active.tasks.length + ' TASKS · ' + inRingCount + ' IN RING';
+  document.getElementById('ringHint').style.display = inRingCount > 0 ? 'none' : 'block';
+}
+
+// Initialize tasks from active project
+if (activeProjectId) {
+  const active = projects.find(p => p.id === activeProjectId);
+  if (active) {
+    tasks.length = 0;
+    Array.prototype.push.apply(tasks, active.tasks);
+  } else if (projects.length > 0) {
+    activeProjectId = projects[0].id;
+    tasks.length = 0;
+    Array.prototype.push.apply(tasks, projects[0].tasks);
+    localStorage.setItem('dormant-active-project', activeProjectId);
+  }
+}
 
 const storyOrder = ['research', 'concept', 'execution'];
 const storyNames = { research: 'Research', concept: 'Concept', execution: 'Execution' };
@@ -1446,6 +1631,8 @@ function renderOutlinePanel() {
 
 // ============= DRAG-TO-RING =============
 let drag = null;
+let projDrag = null;
+let currentProjPressTarget = null;
 
 function attachDragHandlers() {
   document.querySelectorAll('.task-pill.draggable').forEach(pill => {
@@ -1570,55 +1757,138 @@ function onDragEnd(e) {
   }
 }
 
-// ============= PROJECT RINGS (small cards) =============
-const ringConfigs = [
-  { rings: 5, palette: ['#8C7354', '#5C7A6B', '#7A5C6B'], wobble: 0.6 },
-  { rings: 6, palette: ['#8C7354', '#7A5C6B', '#5C7A6B'], wobble: 0.5 },
-  { rings: 4, palette: ['#5C7A6B', '#7E8FA5', '#7A5C6B'], wobble: 0.7 },
-  { rings: 3, palette: ['#7E8FA5', '#8C7354'], wobble: 0.4 },
-  { rings: 8, palette: ['#7A5C6B', '#8C7354', '#5C7A6B', '#7E8FA5'], wobble: 0.55 },
-  { rings: 11, palette: ['#7A5C6B', '#8C7354', '#5C7A6B'], wobble: 0.6 },
-  { rings: 3, palette: ['#5C7A6B', '#8C7354'], wobble: 0.5 },
-];
+// ============= PROJECT DRAG-TO-ARCHIVE =============
+function startProjDrag(card, project, clientX, clientY) {
+  projDrag = { card: card, project: project, ghost: null };
+  projDrag.ghost = createProjGhost(project, clientX, clientY);
+  card.style.opacity = '0.3';
+  var archiveTab = document.querySelector('.tab[data-tab="archive"]');
+  if (archiveTab) archiveTab.classList.add('drop-target');
+}
 
-function drawProjectRing(canvas, config) {
+function createProjGhost(project, x, y) {
+  var ghost = document.createElement('div');
+  ghost.className = 'drag-ghost proj-ghost';
+  ghost.innerHTML = '<div style="font-family:\'Roboto Serif\',serif;font-size:11px;white-space:nowrap;">'
+    + project.name.toLowerCase() + '</div>'
+    + '<div style="font-size:8px;opacity:0.5;">' + project.tasks.length + ' tasks</div>';
+  ghost.style.left = x + 'px';
+  ghost.style.top = y + 'px';
+  document.body.appendChild(ghost);
+  return ghost;
+}
+
+function onProjDragMove(point) {
+  if (!projDrag || !projDrag.ghost) return;
+  projDrag.ghost.style.left = (point.clientX || point.x) + 'px';
+  projDrag.ghost.style.top = (point.clientY || point.y) + 'px';
+
+  var archiveTab = document.querySelector('.tab[data-tab="archive"]');
+  var overArchive = false;
+  if (archiveTab) {
+    var r = archiveTab.getBoundingClientRect();
+    overArchive = (point.clientX || point.x) >= r.left && (point.clientX || point.x) <= r.right
+               && (point.clientY || point.y) >= r.top && (point.clientY || point.y) <= r.bottom;
+  }
+  if (archiveTab) archiveTab.classList.toggle('drop-hover', overArchive);
+}
+
+function onProjDragEnd(e) {
+  if (!projDrag) return;
+  var archiveTab = document.querySelector('.tab[data-tab="archive"]');
+  var overArchive = archiveTab && archiveTab.classList.contains('drop-hover');
+  if (archiveTab) archiveTab.classList.remove('drop-target', 'drop-hover');
+
+  if (overArchive && projDrag.ghost) {
+    var r = archiveTab.getBoundingClientRect();
+    projDrag.ghost.style.left = (r.left + r.width / 2) + 'px';
+    projDrag.ghost.style.top = (r.top + r.height / 2) + 'px';
+    setTimeout(function() {
+      projDrag.ghost.classList.add('success');
+    }, 50);
+    setTimeout(function() {
+      if (projDrag.ghost) projDrag.ghost.remove();
+      projDrag.project.tasks.forEach(function(t) { t.status = 'done'; });
+      projDrag.project.archived = true;
+      saveProjects();
+      if (projDrag.card) projDrag.card.style.opacity = '';
+      projDrag = null;
+      renderProjectsPage();
+    }, 550);
+  } else {
+    if (projDrag.ghost) {
+      projDrag.ghost.style.opacity = '0';
+      setTimeout(function() { if (projDrag && projDrag.ghost) projDrag.ghost.remove(); }, 300);
+    }
+    if (projDrag.card) projDrag.card.style.opacity = '';
+    projDrag = null;
+  }
+}
+
+// ============= PROJECT RINGS (small cards) =============
+function drawProjectMiniRing(canvas, project) {
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
   const CX = W / 2, CY = W / 2;
   ctx.clearRect(0, 0, W, W);
+
+  const ringTasks = project.tasks.filter(t => t.inRing);
+  const taskCount = ringTasks.length;
+  if (taskCount === 0) {
+    // Draw empty hint circles
+    for (let i = 0; i < 2; i++) {
+      const r = W * 0.18 + i * (W * 0.09);
+      ctx.beginPath();
+      ctx.arc(CX, CY, r, 0, Math.PI * 2);
+      ctx.setLineDash([2, 6]);
+      ctx.strokeStyle = 'rgba(245,241,233,0.15)';
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    return;
+  }
+
   const minR = W * 0.12, maxR = W * 0.44;
-  const taskCount = config.rings;
   const gap = (maxR - minR) / Math.max(taskCount - 1, 1);
 
   for (let i = 0; i < taskCount; i++) {
+    const task = ringTasks[i];
     const r = minR + i * gap;
-    const wobble = config.wobble * (0.7 + Math.random() * 0.6);
-    const thick = 0.9 + Math.random() * 1.1;
     const alpha = 0.4 + (i / Math.max(taskCount, 1)) * 0.35;
+    const thick = task.status === 'stuck' ? 2.2 : task.status === 'procrastinating' ? 1.4 : 1.0;
+    const color = storyColorMap[task.story] || '#F5F1E9';
 
-    [{ a: alpha * 0.25, extra: 2.5 }, { a: alpha, extra: 0 }].forEach(({ a, extra }) => {
-      ctx.beginPath();
-      for (let p = 0; p <= 100; p++) {
-        const ang = (p / 100) * Math.PI * 2 - Math.PI / 2;
-        const w = Math.sin(ang * 6 + wobble * 12) * wobble * (W * 0.018);
-        const rx = CX + Math.cos(ang) * (r + w);
-        const ry = CY + Math.sin(ang) * (r + w);
-        p === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
-      }
-      ctx.closePath();
-      ctx.strokeStyle = '#F5F1E9';
-      ctx.globalAlpha = a;
-      ctx.lineWidth = thick + extra;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-    });
+    // Glow
+    ctx.beginPath();
+    ctx.arc(CX, CY, r, 0, Math.PI * 2);
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = alpha * 0.3;
+    ctx.lineWidth = thick + 2.5;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Core
+    ctx.beginPath();
+    ctx.arc(CX, CY, r, 0, Math.PI * 2);
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = thick;
+    ctx.stroke();
   }
   ctx.globalAlpha = 1;
 }
 
-document.querySelectorAll('canvas[data-ring]').forEach(canvas => {
-  drawProjectRing(canvas, ringConfigs[parseInt(canvas.dataset.ring)]);
-});
+function drawAllProjectMiniRings() {
+  document.querySelectorAll('.proj-card:not(.add-card) canvas').forEach(canvas => {
+    const card = canvas.closest('.proj-card');
+    if (!card) return;
+    const projectId = card.dataset.projectId;
+    if (!projectId) return;
+    const project = projects.find(p => p.id === projectId);
+    if (project) drawProjectMiniRing(canvas, project);
+  });
+}
 
 // ============= MAIN RING ARCS (ANIMATED) =============
 const ringCanvas = document.getElementById('ringCanvas');
@@ -1628,235 +1898,270 @@ const RING_CX = -90;
 const RING_CY = 270;
 const RING_MIN_R = 130;
 const RING_MAX_R = 260;
-const PEN_ANGLE = 0; // Pen at rightmost point of ring — visible in phone frame
-const ROTATION_SPEED = 0.22; // rad/s — faster for visible undulation
-
+const PEN_ANGLE = 0;
 let ringRotation = 0;
+
 let ringAnimFrame = null;
+let hoveredTaskId = null;
 let currentRingTasks = tasks.filter(t => t.inRing);
+let lastDrawTime = null;
+
+var statusThick = { smooth: 1.5, procrastinating: 3.0, stuck: 7.0 };
+var statusSpeed = { smooth: 1.5, procrastinating: 1.0, stuck: 0.3 };
 
 function getRingCenterScreen() {
   const wrap = document.querySelector('.ring-canvas-wrap');
   const rect = wrap.getBoundingClientRect();
-  // RING_CX = -90 means the center is 90px left of canvas left edge
-  // Canvas left edge is at wrap.left
   const scaleX = rect.width / CANVAS_W;
   const scaleY = rect.height / CANVAS_W;
   return {
-    x: rect.left + (RING_CX + CANVAS_W/2) * scaleX,
+    x: rect.left + RING_CX * scaleX,
     y: rect.top + RING_CY * scaleY,
     scale: Math.min(scaleX, scaleY)
   };
 }
 
+function getThicknessAtRotation(log, rotation) {
+  if (!log || log.length === 0) return 1.5;
+  var BLEND = 0.4;
+  var before = log[0];
+  for (var i = 0; i < log.length; i++) {
+    if (log[i].atRotation <= rotation) {
+      before = log[i];
+    } else {
+      var after = log[i];
+      var blendStart = after.atRotation - BLEND;
+      if (rotation >= blendStart) {
+        var t = (rotation - blendStart) / BLEND;
+        return before.thickness + (after.thickness - before.thickness) * t;
+      }
+      return before.thickness;
+    }
+  }
+  return before.thickness;
+}
+
+function getFeelingsAtRotation(log, rotation) {
+  if (!log || log.length === 0) return { feelX: 0.5, feelY: 0.5 };
+  var BLEND = 0.4;
+  var before = log[0];
+  for (var i = 0; i < log.length; i++) {
+    if (log[i].atRotation <= rotation) {
+      before = log[i];
+    } else {
+      var after = log[i];
+      var blendStart = after.atRotation - BLEND;
+      if (rotation >= blendStart) {
+        var t = (rotation - blendStart) / BLEND;
+        return {
+          feelX: before.feelX + (after.feelX - before.feelX) * t,
+          feelY: before.feelY + (after.feelY - before.feelY) * t
+        };
+      }
+      return { feelX: before.feelX, feelY: before.feelY };
+    }
+  }
+  return { feelX: before.feelX, feelY: before.feelY };
+}
+
 function drawRingFrame(rotation, time) {
-	  const ctx = ringCtx;
-	  const W = CANVAS_W;
-	  ctx.clearRect(0, 0, W, W);
+  const ctx = ringCtx;
+  const W = CANVAS_W;
+  ctx.clearRect(0, 0, W, W);
 
-	  const ringTasks = currentRingTasks;
-	  const taskCount = ringTasks.length;
+  const ringTasks = currentRingTasks;
+  const taskCount = ringTasks.length;
 
-	  if (taskCount === 0) {
-	    for (let i = 0; i < 3; i++) {
-	      const r = RING_MIN_R + i * 50;
-	      ctx.beginPath();
-	      ctx.arc(RING_CX, RING_CY, r, 0, Math.PI * 2);
-	      ctx.setLineDash([4, 10]);
-	      ctx.strokeStyle = 'rgba(245,241,233,0.12)';
-	      ctx.lineWidth = 1;
-	      ctx.stroke();
-	      ctx.setLineDash([]);
-	    }
-	    return;
-	  }
+  if (taskCount === 0) {
+    for (let i = 0; i < 3; i++) {
+      const r = RING_MIN_R + i * 50;
+      ctx.beginPath();
+      ctx.arc(RING_CX, RING_CY, r, 0, Math.PI * 2);
+      ctx.setLineDash([4, 10]);
+      ctx.strokeStyle = 'rgba(245,241,233,0.12)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    return;
+  }
 
-	  // Check if ALL in-ring tasks are done → show complete tree ring
-	  const allDone = ringTasks.every(t => t.status === 'done');
-	  if (allDone) {
-	    const gap = (RING_MAX_R - RING_MIN_R) / Math.max(taskCount - 1, 1);
-	    for (let i = 0; i < taskCount; i++) {
-	      const r = RING_MIN_R + i * gap;
-	      // Complete, pristine circle — no wobble
-	      ctx.beginPath();
-	      ctx.arc(RING_CX, RING_CY, r, 0, Math.PI * 2);
-	      ctx.strokeStyle = 'rgba(245,241,233,0.55)';
-	      ctx.lineWidth = 1.8;
-	      ctx.shadowColor = 'rgba(245,241,233,0.3)';
-	      ctx.shadowBlur = 6;
-	      ctx.stroke();
-	      ctx.shadowBlur = 0;
-	    }
-	    return;
-	  }
+  // Check if ALL in-ring tasks are done
+  const allDone = ringTasks.every(t => t.status === 'done');
+  if (allDone) {
+    const gap = (RING_MAX_R - RING_MIN_R) / Math.max(taskCount - 1, 1);
+    for (let i = 0; i < taskCount; i++) {
+      const r = RING_MIN_R + i * gap;
+      ctx.beginPath();
+      ctx.arc(RING_CX, RING_CY, r, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(245,241,233,0.55)';
+      ctx.lineWidth = 1.8;
+      ctx.shadowColor = 'rgba(245,241,233,0.3)';
+      ctx.shadowBlur = 6;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+    return;
+  }
 
-	  // Filter out done tasks
-	  const activeTasks = ringTasks.filter(t => t.status !== 'done');
-	  const activeCount = activeTasks.length;
-	  if (activeCount === 0) return;
+  // Filter out done tasks
+  const activeTasks = ringTasks.filter(t => t.status !== 'done');
+  const activeCount = activeTasks.length;
+  if (activeCount === 0) return;
 
-	  const gap = (RING_MAX_R - RING_MIN_R) / Math.max(taskCount - 1, 1);
-	  const TRAIL_SPAN = Math.PI * 1.72;
-	  const TRAIL_CHUNKS = 16;
-	  const t = time || 0;
-	  const INK = '#F5F1E9';
+  const gap = (RING_MAX_R - RING_MIN_R) / Math.max(taskCount - 1, 1);
+  const TRAIL_SPAN = Math.PI * 1.72;
+  const TRAIL_CHUNKS = 16;
+  const t = time || 0;
+  const INK = '#F5F1E9';
 
-	  // Status → thickness + speed
-	  const statusThick = { smooth: 1.5, procrastinating: 3.0, stressed: 5.0, stuck: 7.0 };
-	  const statusSpeed = { smooth: 1.5, procrastinating: 1.0, stressed: 0.6, stuck: 0.3 };
+  // Status → thickness + speed
+  const statusThick = { smooth: 1.5, procrastinating: 3.0, stressed: 5.0, stuck: 7.0 };
+  const statusSpeed = { smooth: 1.5, procrastinating: 1.0, stressed: 0.6, stuck: 0.3 };
 
-	  for (let i = 0; i < taskCount; i++) {
-	    const task = ringTasks[i];
-	    if (task.status === 'done') continue; // Done tasks invisible
+  for (let i = 0; i < taskCount; i++) {
+    const task = ringTasks[i];
+    if (task.status === 'done') continue;
 
-	    const r = RING_MIN_R + i * gap;
-	    const baseWobble = 0.5 + (i / Math.max(taskCount, 1)) * 0.2;
+    const r = RING_MIN_R + i * gap;
+    const baseWobble = 0.5 + (i / Math.max(taskCount, 1)) * 0.2;
 
-	    // Status-driven thickness
-	    const thick = (statusThick[task.status] || 2.5);
+    // Initialize trail logs for archive
+    if (!task._trailStatusLog || task._trailStatusLog.length === 0) {
+      task._trailStatusLog = [{ atRotation: rotation, thickness: statusThick[task.status || 'smooth'] || 1.5 }];
+    }
+    if (!task._trailFeelingsLog || task._trailFeelingsLog.length === 0) {
+      task._trailFeelingsLog = [{ atRotation: rotation, feelX: task.feelings?.x ?? 0.5, feelY: task.feelings?.y ?? 0.5 }];
+    }
 
-	    // Feelings-driven oscillation
-	    const feelX = task.feelings?.x ?? 0.5;
-	    const feelY = task.feelings?.y ?? 0.5;
-	    const ampDeg = 2 + feelX * 33;                     // 2° ~ 35°
-	    const ampRad = ampDeg * Math.PI / 180;
-	    const freq = 0.5 + feelY * 2.5;                    // 0.5 ~ 3 Hz
-	    const spd = statusSpeed[task.status] || 1.0;
-	    const oscillation = Math.sin(t * freq * spd + i * 0.7) * ampRad;
-	    const penAngle = PEN_ANGLE + oscillation;
+    // Status-driven thickness
+    const thick = (statusThick[task.status] || 2.5);
 
-	    // Layer brightness: outer rings slightly brighter
-	    const layerBright = 0.7 + (i / Math.max(taskCount, 1)) * 0.3;
+    // Feelings-driven oscillation
+    const feelX = task.feelings?.x ?? 0.5;
+    const feelY = task.feelings?.y ?? 0.5;
+    const ampDeg = 2 + feelX * 33;
+    const ampRad = ampDeg * Math.PI / 180;
+    const freq = 0.5 + feelY * 2.5;
+    const spd = statusSpeed[task.status] || 1.0;
+    const oscillation = Math.sin(t * freq * spd + i * 0.7) * ampRad;
+    const penAngle = PEN_ANGLE + oscillation;
 
-	    // ── 1. Faint guide track ──
-	    ctx.beginPath();
-	    ctx.arc(RING_CX, RING_CY, r, 0, Math.PI * 2);
-	    ctx.strokeStyle = 'rgba(245,241,233,' + (0.06 * layerBright).toFixed(3) + ')';
-	    ctx.lineWidth = 0.5;
-	    ctx.stroke();
+    // Layer brightness: outer rings slightly brighter
+    const layerBright = 0.7 + (i / Math.max(taskCount, 1)) * 0.3;
 
-	    // ── 2. Trail glow (wide, faint) ──
-	    for (let c = 0; c < TRAIL_CHUNKS; c++) {
-	      const tStart = c / TRAIL_CHUNKS;
-	      const tEnd = (c + 1) / TRAIL_CHUNKS;
-	      const distFromPen = (tStart + tEnd) / 2;
-	      const alpha = (0.03 + 0.22 * Math.exp(-distFromPen * 3.8)) * layerBright;
-	      const wobbleDecay = 0.25 + 0.75 * Math.exp(-distFromPen * 2.8);
-	      const wobble = baseWobble * wobbleDecay;
+    // ── 1. Faint guide track ──
+    ctx.beginPath();
+    ctx.arc(RING_CX, RING_CY, r, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(245,241,233,' + (0.06 * layerBright).toFixed(3) + ')';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
 
-	      const steps = 16;
-	      ctx.beginPath();
-	      for (let p = 0; p <= steps; p++) {
-	        const tt = tStart + (p / steps) * (tEnd - tStart);
-	        const a = penAngle - tt * TRAIL_SPAN;
-	        const w = Math.sin(a * 6 + baseWobble * 12 + rotation + i * 0.3) * wobble * 3.0;
-	        const rx = RING_CX + Math.cos(a) * (r + w);
-	        const ry = RING_CY + Math.sin(a) * (r + w);
-	        p === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
-	      }
-	      ctx.strokeStyle = INK;
-	      ctx.globalAlpha = alpha;
-	      ctx.lineWidth = thick + 5;
-	      ctx.lineCap = 'round';
-	      ctx.stroke();
-	    }
+    // ── 2. Trail glow (wide, faint) ──
+    for (let c = 0; c < TRAIL_CHUNKS; c++) {
+      const tStart = c / TRAIL_CHUNKS;
+      const tEnd = (c + 1) / TRAIL_CHUNKS;
+      const distFromPen = (tStart + tEnd) / 2;
+      const alpha = (0.03 + 0.22 * Math.exp(-distFromPen * 3.8)) * layerBright;
+      const wobbleDecay = 0.25 + 0.75 * Math.exp(-distFromPen * 2.8);
+      const wobble = baseWobble * wobbleDecay;
 
-	    // ── 3. Trail core (sharp, fading backward from pen) ──
-	    for (let c = 0; c < TRAIL_CHUNKS; c++) {
-	      const tStart = c / TRAIL_CHUNKS;
-	      const tEnd = (c + 1) / TRAIL_CHUNKS;
-	      const distFromPen = (tStart + tEnd) / 2;
-	      const alpha = (0.05 + 0.9 * Math.exp(-distFromPen * 3.2)) * layerBright;
-	      const wobbleDecay = 0.25 + 0.75 * Math.exp(-distFromPen * 2.8);
-	      const wobble = baseWobble * wobbleDecay;
+      const steps = 16;
+      ctx.beginPath();
+      for (let p = 0; p <= steps; p++) {
+        const tt = tStart + (p / steps) * (tEnd - tStart);
+        const a = penAngle - tt * TRAIL_SPAN;
+        const w = Math.sin(a * 6 + baseWobble * 12 + rotation + i * 0.3) * wobble * 3.0;
+        const rx = RING_CX + Math.cos(a) * (r + w);
+        const ry = RING_CY + Math.sin(a) * (r + w);
+        p === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
+      }
+      ctx.strokeStyle = INK;
+      ctx.globalAlpha = alpha;
+      ctx.lineWidth = thick + 5;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
 
-	      const steps = 18;
-	      ctx.beginPath();
-	      for (let p = 0; p <= steps; p++) {
-	        const tt = tStart + (p / steps) * (tEnd - tStart);
-	        const a = penAngle - tt * TRAIL_SPAN;
-	        const w = Math.sin(a * 6 + baseWobble * 12 + rotation + i * 0.3) * wobble * 2.8;
-	        const rx = RING_CX + Math.cos(a) * (r + w);
-	        const ry = RING_CY + Math.sin(a) * (r + w);
-	        p === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
-	      }
-	      ctx.strokeStyle = INK;
-	      ctx.globalAlpha = alpha;
-	      ctx.lineWidth = thick;
-	      ctx.lineCap = 'round';
-	      ctx.stroke();
-	    }
+    // ── 3. Trail core (sharp, fading backward from pen) ──
+    for (let c = 0; c < TRAIL_CHUNKS; c++) {
+      const tStart = c / TRAIL_CHUNKS;
+      const tEnd = (c + 1) / TRAIL_CHUNKS;
+      const distFromPen = (tStart + tEnd) / 2;
+      const alpha = (0.05 + 0.9 * Math.exp(-distFromPen * 3.2)) * layerBright;
+      const wobbleDecay = 0.25 + 0.75 * Math.exp(-distFromPen * 2.8);
+      const wobble = baseWobble * wobbleDecay;
 
-	    ctx.globalAlpha = 1;
+      const steps = 18;
+      ctx.beginPath();
+      for (let p = 0; p <= steps; p++) {
+        const tt = tStart + (p / steps) * (tEnd - tStart);
+        const a = penAngle - tt * TRAIL_SPAN;
+        const w = Math.sin(a * 6 + baseWobble * 12 + rotation + i * 0.3) * wobble * 2.8;
+        const rx = RING_CX + Math.cos(a) * (r + w);
+        const ry = RING_CY + Math.sin(a) * (r + w);
+        p === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
+      }
+      ctx.strokeStyle = INK;
+      ctx.globalAlpha = alpha;
+      ctx.lineWidth = thick;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
 
-	    // ── 4. Pen dot (oscillating tangentially, pulsing glow) ──
-	    const penX = RING_CX + Math.cos(penAngle) * r;
-	    const penY = RING_CY + Math.sin(penAngle) * r;
+    ctx.globalAlpha = 1;
 
-	    const pulse = 1 + 0.25 * Math.sin(t * 3.5 + i * 0.7);
-	    const glowR = 16 * pulse * layerBright;
+    // ── 4. Pen dot (oscillating tangentially, pulsing glow) ──
+    const penX = RING_CX + Math.cos(penAngle) * r;
+    const penY = RING_CY + Math.sin(penAngle) * r;
 
-	    const penGlow = ctx.createRadialGradient(penX, penY, 0, penX, penY, glowR);
-	    penGlow.addColorStop(0, 'rgba(245,241,233,0.6)');
-	    penGlow.addColorStop(0.35, 'rgba(245,241,233,0.15)');
-	    penGlow.addColorStop(1, 'rgba(245,241,233,0)');
-	    ctx.beginPath();
-	    ctx.arc(penX, penY, glowR, 0, Math.PI * 2);
-	    ctx.fillStyle = penGlow;
-	    ctx.fill();
+    const pulse = 1 + 0.25 * Math.sin(t * 3.5 + i * 0.7);
+    const glowR = 16 * pulse * layerBright;
 
-	    // Solid dot
-	    const dotR = 5 + 0.4 * Math.sin(t * 3.5 + i * 0.7);
-	    ctx.beginPath();
-	    ctx.arc(penX, penY, dotR, 0, Math.PI * 2);
-	    ctx.fillStyle = INK;
-	    ctx.fill();
+    const penGlow = ctx.createRadialGradient(penX, penY, 0, penX, penY, glowR);
+    penGlow.addColorStop(0, 'rgba(245,241,233,0.6)');
+    penGlow.addColorStop(0.35, 'rgba(245,241,233,0.15)');
+    penGlow.addColorStop(1, 'rgba(245,241,233,0)');
+    ctx.beginPath();
+    ctx.arc(penX, penY, glowR, 0, Math.PI * 2);
+    ctx.fillStyle = penGlow;
+    ctx.fill();
 
-	    // Inner highlight
-	    ctx.beginPath();
-	    ctx.arc(penX - 1.2, penY - 1.2, dotR * 0.4, 0, Math.PI * 2);
-	    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-	    ctx.fill();
+    // Solid dot
+    const dotR = 5 + 0.4 * Math.sin(t * 3.5 + i * 0.7);
+    ctx.beginPath();
+    ctx.arc(penX, penY, dotR, 0, Math.PI * 2);
+    ctx.fillStyle = INK;
+    ctx.fill();
 
-	    // ── 5. Status dot ──
-	    if (task.status && statusColors[task.status]) {
-	      const statAngle = penAngle + 0.3;
-	      const sx = RING_CX + Math.cos(statAngle) * r;
-	      const sy = RING_CY + Math.sin(statAngle) * r;
+    // Inner highlight
+    ctx.beginPath();
+    ctx.arc(penX - 1.2, penY - 1.2, dotR * 0.4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fill();
 
-	      ctx.beginPath();
-	      ctx.arc(sx, sy, 3.2, 0, Math.PI * 2);
-	      ctx.fillStyle = statusColors[task.status];
-	      ctx.globalAlpha = 0.9;
-	      ctx.fill();
-	      ctx.strokeStyle = 'rgba(0,0,0,0.25)';
-	      ctx.lineWidth = 0.5;
-	      ctx.stroke();
-	    }
-
-	    ctx.globalAlpha = 1;
-	  }
-	}
+    ctx.globalAlpha = 1;
+  }
+}
 
 function startRingAnimation() {
-	  if (ringAnimFrame) return;
-	  let lastTime = null;
-	  let animTime = 0;
-	  function animate(time) {
-	    const tSec = time / 1000;
-	    if (lastTime !== null) {
-	      const dt = Math.min(tSec - lastTime, 0.1);
-	      animTime += dt;
-	      ringRotation = (ringRotation - ROTATION_SPEED * dt + Math.PI * 2) % (Math.PI * 2);
-	    }
-	    lastTime = tSec;
-	    currentRingTasks = tasks.filter(t => t.inRing);
-	    drawRingFrame(ringRotation, animTime);
-	    ringAnimFrame = requestAnimationFrame(animate);
-	  }
-	  ringAnimFrame = requestAnimationFrame(animate);
-	}
-
+  if (ringAnimFrame) return;
+  let lastTime = null;
+  let animTime = 0;
+  function animate(time) {
+    const tSec = time / 1000;
+    if (lastTime !== null) {
+      const dt = Math.min(tSec - lastTime, 0.1);
+      animTime += dt;
+      ringRotation += 0.22 * dt;
+    }
+    lastTime = tSec;
+    currentRingTasks = tasks.filter(t => t.inRing);
+    drawRingFrame(ringRotation, animTime);
+    ringAnimFrame = requestAnimationFrame(animate);
+  }
+  ringAnimFrame = requestAnimationFrame(animate);
+}
 function stopRingAnimation() {
   if (ringAnimFrame) {
     cancelAnimationFrame(ringAnimFrame);
@@ -1866,7 +2171,9 @@ function stopRingAnimation() {
 
 // Start animation
 currentRingTasks = tasks.filter(t => t.inRing);
-drawRingFrame(0, 0);
+updateRingHeader();
+renderProjectsPage();
+drawRingFrame(ringRotation, 0);
 startRingAnimation();
 
 // ============= RING TAP DETECTION =============
@@ -1899,6 +2206,45 @@ ringTap.addEventListener('click', (e) => {
       return;
     }
   }
+  // Fallback: no specific ring was hit, open first ring task
+  openRecordForTask(ringTasks[0]);
+});
+
+// Hover detection — highlight ring under cursor
+ringTap.addEventListener('mousemove', (e) => {
+  if (currentPage !== 'ring') return;
+  const ringTasks = tasks.filter(t => t.inRing);
+  if (ringTasks.length === 0) {
+    hoveredTaskId = null;
+    ringTap.style.cursor = 'default';
+    return;
+  }
+  const center = getRingCenterScreen();
+  const cx = center.x;
+  const cy = center.y;
+  const sc = center.scale;
+  const dx = e.clientX - cx;
+  const dy = e.clientY - cy;
+  const dist = Math.sqrt(dx * dx + dy * dy) / sc;
+  const gap = (RING_MAX_R - RING_MIN_R) / Math.max(ringTasks.length - 1, 1);
+  const HIT_RADIUS = Math.max(gap * 0.6, 12);
+  let found = null;
+  let bestDist = Infinity;
+  for (let i = 0; i < ringTasks.length; i++) {
+    const r = RING_MIN_R + i * gap;
+    const d = Math.abs(dist - r);
+    if (d <= HIT_RADIUS && d < bestDist) {
+      found = ringTasks[i].id;
+      bestDist = d;
+    }
+  }
+  hoveredTaskId = found;
+  ringTap.style.cursor = found ? 'pointer' : 'default';
+});
+
+ringTap.addEventListener('mouseleave', () => {
+  hoveredTaskId = null;
+  ringTap.style.cursor = 'default';
 });
 
 // Also handle touch on ring tap
@@ -1917,6 +2263,11 @@ function switchPage(pageName) {
   pages.forEach(p => p.classList.toggle('active', p.dataset.page === pageName));
   navItems.forEach(n => n.classList.toggle('active', n.dataset.nav === pageName));
   closeAllOverlays();
+  if (pageName === 'projects') {
+    const activeCount = projects.filter(p => !p.archived).length;
+    document.querySelector('.projects-meta').textContent = activeCount + ' ACTIVE PROJECTS';
+    renderProjectsPage();
+  }
 }
 
 navItems.forEach(item => {
@@ -1927,26 +2278,160 @@ navItems.forEach(item => {
 });
 
 // ============= PROJECT SWITCHING =============
-function selectProject(name, taskCount) {
+function selectProject(projectId) {
+  const project = projects.find(p => p.id === projectId);
+  if (!project) return;
   document.getElementById('ringProjTitle').style.opacity = '0';
   document.getElementById('ringProjMeta').style.opacity = '0';
   setTimeout(() => {
-    document.getElementById('ringProjTitle').textContent = name;
-    document.getElementById('ringProjMeta').textContent = taskCount + ' TASKS · IN PROGRESS';
+    setActiveProject(projectId);
     document.getElementById('ringProjTitle').style.opacity = '1';
     document.getElementById('ringProjMeta').style.opacity = '1';
-    // Regenerate ring tasks for this project
-    const inRing = tasks.filter(t => t.inRing).length;
-    document.getElementById('ringHint').style.display = inRing > 0 ? 'none' : 'block';
-  }, 250);
+  }, 200);
   switchPage('ring');
 }
 
-document.querySelectorAll('.proj-card:not(.add-card)').forEach(card => {
-  card.addEventListener('click', () => {
-    selectProject(card.dataset.name, parseInt(card.dataset.tasks));
+// ============= ARCHIVE DETAIL =============
+var archiveDetailProject = null;
+
+function openArchiveDetail(project) {
+  archiveDetailProject = project;
+  switchPage('archive-detail');
+  document.getElementById('archiveDetailTitle').textContent = project.name;
+  document.getElementById('archiveDetailMeta').textContent = 'ARCHIVED';
+  document.getElementById('archiveBrewDays').textContent = computeBrewDays(project);
+  document.getElementById('archiveTaskCount').textContent = project.tasks.length;
+  setTimeout(function() {
+    renderArchiveRing(project);
+    renderEmotionTrend(project);
+  }, 50);
+}
+
+function computeBrewDays(project) {
+  var created = new Date(project.createdAt);
+  var now = new Date();
+  var days = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+  return days || '--';
+}
+
+function renderEmotionTrend(project) {
+  var canvas = document.getElementById('archiveEmotionCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var allFeelings = [];
+  project.tasks.forEach(function(task) {
+    if (task._trailFeelingsLog) {
+      task._trailFeelingsLog.forEach(function(e) {
+        allFeelings.push(e);
+      });
+    }
   });
-});
+  allFeelings.sort(function(a, b) { return a.atRotation - b.atRotation; });
+
+  if (allFeelings.length < 2) {
+    ctx.fillStyle = 'rgba(245,241,233,0.3)';
+    ctx.font = '10px "Roboto Serif"';
+    ctx.textAlign = 'center';
+    ctx.fillText('Not enough data', W / 2, H / 2);
+    return;
+  }
+
+  var pad = 8;
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(212,165,120,0.8)';
+  ctx.lineWidth = 1.5;
+  for (var i = 0; i < allFeelings.length; i++) {
+    var x = pad + (i / Math.max(allFeelings.length - 1, 1)) * (W - pad * 2);
+    var y = pad + (1 - allFeelings[i].feelX) * (H - pad * 2);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+function renderArchiveRing(project) {
+  var canvas = document.getElementById('archiveRingCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var CX = W / 2, CY = H / 2;
+  ctx.clearRect(0, 0, W, H);
+
+  var tasks = project.tasks;
+  var taskCount = tasks.length;
+  if (taskCount === 0) return;
+
+  var MIN_R = 60, MAX_R = 240;
+  var gap = taskCount > 1 ? (MAX_R - MIN_R) / (taskCount - 1) : 0;
+  var statusThick = { smooth: 1.5, procrastinating: 3.0, stuck: 5.0, done: 0.8 };
+
+  for (var i = 0; i < taskCount; i++) {
+    var task = tasks[i];
+    var baseR = MIN_R + i * gap;
+    var storyColor = storyColorMap[task.story] || '#F5F1E9';
+
+    if (!task._trailFeelingsLog || task._trailFeelingsLog.length === 0) {
+      task._trailFeelingsLog = [{ atRotation: 0, feelX: task.feelings?.x ?? 0.5, feelY: task.feelings?.y ?? 0.5 }];
+    }
+    if (!task._trailStatusLog || task._trailStatusLog.length === 0) {
+      task._trailStatusLog = [{ atRotation: 0, thickness: statusThick[task.status || 'done'] || 1.5 }];
+    }
+
+    var flog = task._trailFeelingsLog;
+    var slog = task._trailStatusLog;
+    var minR = flog[0].atRotation;
+    var maxR = flog[flog.length - 1].atRotation;
+    var rotRange = Math.max(maxR - minR, Math.PI * 2);
+
+    // Initialize phase from first log entry
+    var f0 = flog[0];
+    var phase = {
+      p1: minR * (0.8 + f0.feelY * 0.8) + i * 0.5,
+      p2: minR * (1.5 + f0.feelY * 1.5) + i * 1.2 + 1.7,
+      p3: minR * (3.0 + f0.feelY * 2.5) + i * 2.1 + 3.1
+    };
+
+    var angleStep = 0.02;
+    var dAngle = angleStep * rotRange / (Math.PI * 2);
+
+    ctx.beginPath();
+    for (var a = 0; a <= Math.PI * 2 + angleStep * 0.5; a += angleStep) {
+      var rot = minR + a * rotRange / (Math.PI * 2);
+      var feels = getFeelingsAtRotation(flog, rot);
+      var f1 = 0.8 + feels.feelY * 0.8;
+      var f2 = 1.5 + feels.feelY * 1.5;
+      var f3 = 3.0 + feels.feelY * 2.5;
+      var a1 = 1.0 + feels.feelX * 8;
+      var a2 = 0.8 + feels.feelX * 5;
+      var a3 = 0.2 + feels.feelX * 2;
+
+      if (a > 0) {
+        phase.p1 += f1 * dAngle;
+        phase.p2 += f2 * dAngle;
+        phase.p3 += f3 * dAngle;
+      }
+      var rad = baseR +
+        Math.sin(phase.p1) * a1 +
+        Math.sin(phase.p2) * a2 +
+        Math.sin(phase.p3) * a3;
+      var rx = CX + Math.cos(a) * rad;
+      var ry = CY + Math.sin(a) * rad;
+      a === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = storyColor;
+    ctx.globalAlpha = 0.7;
+    ctx.lineWidth = 2.0;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// Card click handlers are attached dynamically in renderProjectsPage()
+
 
 // ============= OVERLAYS =============
 const scrim = document.getElementById('scrim');
@@ -1992,13 +2477,6 @@ function openRecordForTask(task) {
   scrim.classList.add('active');
 }
 
-function openRecord() {
-  if (currentPage !== 'ring') return;
-  const ringTasks = tasks.filter(t => t.inRing);
-  if (ringTasks.length === 0) return;
-  // Default to first in-ring task
-  openRecordForTask(ringTasks[0]);
-}
 function openCreate() {
   const needsSwitch = currentPage !== 'ring';
   if (needsSwitch) switchPage('ring');
@@ -2011,10 +2489,153 @@ function openCreate() {
 
 document.getElementById('menuBtn').addEventListener('click', openOutline);
 document.getElementById('addBtn').addEventListener('click', openCreate);
-document.getElementById('ringTap').addEventListener('click', () => {
-  if (currentPage === 'ring') openRecord();
+document.getElementById('archiveBackBtn').addEventListener('click', function() {
+  archiveDetailProject = null;
+  switchPage('projects');
 });
-document.getElementById('newProjBtn').addEventListener('click', openCreate);
+document.getElementById('generate3dBtn').addEventListener('click', function() {
+  alert('3D model export coming soon');
+});
+
+
+// ============= RENDER PROJECTS PAGE =============
+function renderProjectsPage() {
+  const yearStack = document.getElementById('yearStack');
+  if (!yearStack) return;
+
+  const activeProjects = projects.filter(p => !p.archived);
+  const archivedProjects = projects.filter(p => p.archived);
+
+  function groupByYear(projList) {
+    const byYear = {};
+    projList.forEach(p => {
+      const year = new Date(p.createdAt).getFullYear();
+      if (!byYear[year]) byYear[year] = [];
+      byYear[year].push(p);
+    });
+    return byYear;
+  }
+
+  function renderYearSection(year, yearProjects, isActive) {
+    const yearCard = document.createElement('div');
+    yearCard.className = 'year-card' + (isActive ? '' : ' collapsed');
+    yearCard.dataset.year = year;
+    yearCard.dataset.section = isActive ? 'active' : 'archived';
+
+    yearCard.innerHTML = `
+      <div class="year-head">
+        <div class="year-name">${year}</div>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <div class="year-count">${yearProjects.length} project${yearProjects.length !== 1 ? 's' : ''}</div>
+          <div class="expand-indicator">▼</div>
+        </div>
+      </div>
+      <div class="year-divider"></div>
+      <div class="year-body">
+        <div class="projects-grid">
+          ${yearProjects.map(p => `
+            <div class="proj-card" data-project-id="${p.id}">
+              <div class="proj-ring"><canvas width="76" height="76"></canvas></div>
+              <div class="proj-name">${p.name.toLowerCase()}</div>
+              <div class="proj-days">${p.tasks.length} tasks</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    yearStack.appendChild(yearCard);
+  }
+
+  yearStack.innerHTML = '';
+
+  // Active section
+  const activeByYear = groupByYear(activeProjects);
+  const activeYears = Object.keys(activeByYear).sort((a, b) => b - a);
+  if (activeYears.length > 0) {
+    activeYears.forEach(year => renderYearSection(year, activeByYear[year], true));
+  } else {
+    // Show empty state for active
+    const emptyCard = document.createElement('div');
+    emptyCard.className = 'year-card';
+    emptyCard.dataset.section = 'active';
+    emptyCard.innerHTML = `
+      <div class="year-head"><div class="year-name">No active projects</div></div>
+      <div class="year-divider"></div>
+      <div class="year-body"><div class="projects-grid"></div></div>
+    `;
+    yearStack.appendChild(emptyCard);
+  }
+
+  // Add new project button in active section
+  if (activeYears.length > 0) {
+    const lastActiveCard = yearStack.querySelector('.year-card[data-section="active"]:last-of-type .projects-grid');
+    if (lastActiveCard) {
+      const addCard = document.createElement('div');
+      addCard.className = 'proj-card add-card';
+      addCard.id = 'newProjBtn';
+      addCard.innerHTML = '<div class="add-icon">+</div><div class="add-label">New Project</div>';
+      lastActiveCard.appendChild(addCard);
+    }
+  }
+
+  // Archived section
+  const archivedByYear = groupByYear(archivedProjects);
+  const archivedYears = Object.keys(archivedByYear).sort((a, b) => b - a);
+  if (archivedYears.length > 0) {
+    archivedYears.forEach(year => renderYearSection(year, archivedByYear[year], false));
+  } else {
+    const emptyCard = document.createElement('div');
+    emptyCard.className = 'year-card collapsed';
+    emptyCard.dataset.section = 'archived';
+    emptyCard.innerHTML = `
+      <div class="year-head"><div class="year-name">No archived projects</div></div>
+      <div class="year-divider"></div>
+      <div class="year-body"><div class="projects-grid"></div></div>
+    `;
+    yearStack.appendChild(emptyCard);
+  }
+
+  // Attach handlers
+  document.querySelectorAll('.year-head').forEach(head => {
+    head.addEventListener('click', () => {
+      head.parentElement.classList.toggle('collapsed');
+    });
+  });
+
+  document.querySelectorAll('.proj-card:not(.add-card)').forEach(card => {
+    var projId = card.dataset.projectId;
+    var project = projects.find(function(p) { return p.id === projId; });
+    if (!project) return;
+
+    card.addEventListener('mousedown', function(e) {
+      if (e.button !== 0) return;
+      currentProjPressTarget = { card: card, project: project, startX: e.clientX, startY: e.clientY, longFired: false };
+      if (!project.archived) {
+        currentProjPressTarget.timer = setTimeout(function() {
+          currentProjPressTarget.longFired = true;
+          startProjDrag(card, project, e.clientX, e.clientY);
+        }, 400);
+      }
+    });
+
+    card.addEventListener('touchstart', function(e) {
+      var t = e.touches[0];
+      currentProjPressTarget = { card: card, project: project, startX: t.clientX, startY: t.clientY, longFired: false };
+      if (!project.archived) {
+        currentProjPressTarget.timer = setTimeout(function() {
+          currentProjPressTarget.longFired = true;
+          startProjDrag(card, project, t.clientX, t.clientY);
+        }, 400);
+      }
+    }, { passive: false });
+  });
+
+  const newBtn = document.getElementById('newProjBtn');
+  if (newBtn) newBtn.addEventListener('click', openCreate);
+
+  // Draw mini rings after DOM update
+  setTimeout(() => drawAllProjectMiniRings(), 50);
+}
 
 scrim.addEventListener('click', closeAllOverlays);
 document.getElementById('closeRecord').addEventListener('click', () => {
@@ -2037,21 +2658,27 @@ document.getElementById('closeCreate').addEventListener('click', closeAllOverlay
             name: taskName.trim(),
             story: story.name.toLowerCase(),
             inRing: true,
-            status: null,
+            status: 'smooth',
             feelings: { x: 0.5, y: 0.5 }
           });
         }
       });
     });
 
-    // Add to global tasks
-    tasks.push(...newTasks);
+    if (newTasks.length === 0) return;
 
-    // Save
-    saveTasks();
+    // Create new project
+    const newProject = {
+      id: 'proj_' + Date.now(),
+      name: projectName,
+      tasks: newTasks,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+    projects.push(newProject);
 
-    // Update ring
-    currentRingTasks = tasks.filter(t => t.inRing);
+    // Save and set as active
+    saveProjects();
+    setActiveProject(newProject.id);
 
     // Close sheet and switch to ring
     closeAllOverlays();
@@ -2059,6 +2686,9 @@ document.getElementById('closeCreate').addEventListener('click', closeAllOverlay
 
     // Clear input for next use
     nameInput.value = '';
+
+    // Update projects page
+    renderProjectsPage();
   });
 
 
@@ -2069,7 +2699,26 @@ document.querySelectorAll('.status-pill').forEach(pill => {
     pill.classList.add('selected');
     // Save status to active task
     if (activeRecordTask) {
+      var oldStatus = activeRecordTask.status;
       activeRecordTask.status = pill.dataset.status;
+      if (activeRecordTask.inRing) {
+        if (!activeRecordTask._trailStatusLog || activeRecordTask._trailStatusLog.length === 0) {
+          activeRecordTask._trailStatusLog = [{
+            atRotation: ringRotation,
+            thickness: statusThick[oldStatus || 'smooth'] || 1.5
+          }];
+        }
+        activeRecordTask._trailStatusLog.push({
+          atRotation: ringRotation,
+          thickness: statusThick[activeRecordTask.status] || 1.5
+        });
+        if (activeRecordTask._trailStatusLog.length > 200) {
+          var firstS = activeRecordTask._trailStatusLog[0];
+          activeRecordTask._trailStatusLog = [firstS].concat(
+            activeRecordTask._trailStatusLog.slice(-100)
+          );
+        }
+      }
       saveTasks();
     }
   });
@@ -2087,9 +2736,37 @@ function updatePadPosition(clientX, clientY) {
   padHandle.style.top = y + '%';
   // Save feelings to active task (x: anxious->calm, y: motivated->unmotivated)
   if (activeRecordTask) {
+    var oldFeelX = activeRecordTask.feelings?.x ?? 0.5;
+    var oldFeelY = activeRecordTask.feelings?.y ?? 0.5;
     activeRecordTask.feelings = activeRecordTask.feelings || {};
     activeRecordTask.feelings.x = 1 - x / 100;
     activeRecordTask.feelings.y = 1 - y / 100;
+    // Record feelings change in trail log
+    if (activeRecordTask.inRing) {
+      if (!activeRecordTask._trailFeelingsLog || activeRecordTask._trailFeelingsLog.length === 0) {
+        activeRecordTask._trailFeelingsLog = [{
+          atRotation: ringRotation,
+          feelX: oldFeelX,
+          feelY: oldFeelY
+        }];
+      }
+      var last = activeRecordTask._trailFeelingsLog[activeRecordTask._trailFeelingsLog.length - 1];
+      var dx = Math.abs(activeRecordTask.feelings.x - last.feelX);
+      var dy = Math.abs(activeRecordTask.feelings.y - last.feelY);
+      if (dx > 0.01 || dy > 0.01) {
+        activeRecordTask._trailFeelingsLog.push({
+          atRotation: ringRotation,
+          feelX: activeRecordTask.feelings.x,
+          feelY: activeRecordTask.feelings.y
+        });
+        if (activeRecordTask._trailFeelingsLog.length > 200) {
+          var firstF = activeRecordTask._trailFeelingsLog[0];
+          activeRecordTask._trailFeelingsLog = [firstF].concat(
+            activeRecordTask._trailFeelingsLog.slice(-100)
+          );
+        }
+      }
+    }
     saveTasks();
   }
 }
@@ -2114,22 +2791,71 @@ document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    // Filter year cards by tab
     const filter = tab.dataset.tab; // 'in-progress' or 'archive'
     document.querySelectorAll('.year-card').forEach(card => {
-      const year = card.dataset.year;
+      const section = card.dataset.section;
       if (filter === 'in-progress') {
-        card.style.display = year === '2026' ? '' : 'none';
+        card.style.display = section === 'active' ? '' : 'none';
       } else {
-        card.style.display = year !== '2026' ? '' : 'none';
+        card.style.display = section === 'archived' ? '' : 'none';
       }
     });
   });
 });
 
-// Initialize: show only in-progress (2026) by default
+// Initialize: show only in-progress (active) by default
 document.querySelectorAll('.year-card').forEach(card => {
-  if (card.dataset.year !== '2026') card.style.display = 'none';
+  if (card.dataset.section !== 'active') card.style.display = 'none';
+});
+
+// ============= PROJECT DRAG / PRESS DOCUMENT HANDLERS =============
+document.addEventListener('mousemove', function(e) {
+  if (currentProjPressTarget && !currentProjPressTarget.longFired) {
+    if (Math.hypot(e.clientX - currentProjPressTarget.startX, e.clientY - currentProjPressTarget.startY) > 5) {
+      clearTimeout(currentProjPressTarget.timer);
+      currentProjPressTarget = null;
+    }
+  }
+  if (projDrag) onProjDragMove(e);
+});
+
+document.addEventListener('touchmove', function(e) {
+  if (currentProjPressTarget && !currentProjPressTarget.longFired) {
+    var t = e.touches[0];
+    if (Math.hypot(t.clientX - currentProjPressTarget.startX, t.clientY - currentProjPressTarget.startY) > 5) {
+      clearTimeout(currentProjPressTarget.timer);
+      currentProjPressTarget = null;
+    }
+  }
+  if (projDrag && e.touches[0]) onProjDragMove(e.touches[0]);
+}, { passive: false });
+
+document.addEventListener('mouseup', function(e) {
+  if (currentProjPressTarget && !currentProjPressTarget.longFired) {
+    clearTimeout(currentProjPressTarget.timer);
+    var target = currentProjPressTarget;
+    currentProjPressTarget = null;
+    if (target.project.archived) {
+      openArchiveDetail(target.project);
+    } else {
+      selectProject(target.project.id);
+    }
+  }
+  if (projDrag) onProjDragEnd(e);
+});
+
+document.addEventListener('touchend', function(e) {
+  if (currentProjPressTarget && !currentProjPressTarget.longFired) {
+    clearTimeout(currentProjPressTarget.timer);
+    var target = currentProjPressTarget;
+    currentProjPressTarget = null;
+    if (target.project.archived) {
+      openArchiveDetail(target.project);
+    } else {
+      selectProject(target.project.id);
+    }
+  }
+  if (projDrag) onProjDragEnd(e);
 });
 
 // ============= INITIAL RENDER =============

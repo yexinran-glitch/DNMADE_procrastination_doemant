@@ -476,6 +476,125 @@ body {
 }
 
 
+/* ============= PROFILE PAGE ============= */
+.profile-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 12px;
+  scrollbar-width: none;
+}
+.profile-scroll::-webkit-scrollbar { display: none; }
+
+.portrait-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0 16px;
+}
+.portrait-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(245, 241, 233, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Roboto Serif', serif;
+  font-size: 28px;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.portrait-name {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.portrait-stats {
+  display: flex;
+  gap: 24px;
+}
+.portrait-stat-item {
+  text-align: center;
+}
+.portrait-stat-num {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--ink);
+}
+.portrait-stat-lbl {
+  font-size: 7px;
+  color: var(--ink2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.portrait-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.portrait-card {
+  background: var(--card-bg);
+  border: 0.5px solid var(--card-stroke);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.portrait-card-label {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 7.5px;
+  color: var(--ink2);
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.portrait-card-text {
+  font-family: 'Roboto Serif', serif;
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.settings-section {
+  margin-bottom: 16px;
+}
+.settings-label {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: var(--ink2);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.settings-list {
+  background: var(--card-bg);
+  border: 0.5px solid var(--card-stroke);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-family: 'Roboto Serif', serif;
+  font-size: 13px;
+  color: var(--ink);
+  transition: background 0.15s;
+}
+.settings-row:hover { background: rgba(255, 255, 255, 0.04); }
+.settings-row + .settings-row { border-top: 0.5px solid rgba(255, 255, 255, 0.06); }
+.settings-val {
+  font-size: 11px;
+  color: var(--ink2);
+}
+
 /* ============= SHARED BOTTOM NAV ============= */
 .bnav-wrap {
   flex-shrink: 0;
@@ -485,12 +604,13 @@ body {
 .bnav {
   background: rgba(217, 217, 217, 0.2);
   border: 0.5px solid rgba(254, 254, 254, 0.3);
-  border-radius: 20px;
+  border-radius: 28px;
   height: 52px;
   display: flex;
   justify-content: space-around;
   align-items: center;
   padding: 0 24px;
+  margin-right: 60px;
   position: relative;
 }
 .nav-item {
@@ -515,13 +635,11 @@ body {
   text-transform: uppercase;
 }
 .nav-item.active .lbl { color: var(--ink); }
-.nav-gap { flex: 0 0 56px; }
 
 .add-floating {
   position: absolute;
-  left: 50%;
-  bottom: 30px;
-  transform: translateX(-50%);
+  right: 24px;
+  bottom: 24px;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -538,8 +656,8 @@ body {
   z-index: 5;
   transition: transform 0.2s;
 }
-.add-floating:hover { transform: translateX(-50%) scale(1.06); }
-.add-floating:active { transform: translateX(-50%) scale(0.95); }
+.add-floating:hover { transform: scale(1.06); }
+.add-floating:active { transform: scale(0.95); }
 
 /* ============= SCRIM ============= */
 .scrim {
@@ -552,9 +670,11 @@ body {
 }
 .scrim.active {
   background: rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+}
+.scrim.blurred {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  pointer-events: auto;
 }
 
 /* ============= OUTLINE PANEL ============= */
@@ -844,8 +964,6 @@ body {
   bottom: 90px;
   width: 210px;
   background: var(--panel-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border-radius: 20px 0 0 20px;
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.32, 0, 0.15, 1);
@@ -1254,13 +1372,13 @@ body {
 .begin-btn .plus { font-size: 18px; }
 
 /* ─────── ARCHIVE DETAIL PAGE ─────── */
-.archive-main {
+.archive-detail-scroll {
   flex: 1;
   overflow-y: auto;
   padding: 0 20px 12px;
   scrollbar-width: none;
 }
-.archive-main::-webkit-scrollbar { display: none; }
+.archive-detail-scroll::-webkit-scrollbar { display: none; }
 
 .archive-ring-section {
   display: flex;
@@ -1272,47 +1390,118 @@ body {
   height: auto;
 }
 
-.archive-analysis {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 16px;
-}
-.archive-stat {
-  background: var(--card-bg);
-  border: 0.5px solid var(--card-stroke);
-  border-radius: 16px;
-  padding: 16px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.stat-value {
-  font-family: 'Roboto Serif', serif;
-  font-weight: 700;
-  font-size: 26px;
-  color: var(--ink);
-}
-.stat-label {
-  font-family: 'Roboto Serif', serif;
-  font-weight: 500;
-  font-size: 8px;
-  color: var(--ink2);
-  letter-spacing: 0.08em;
-}
-.archive-emotion-section {
+/* Project info card */
+.archive-info-card {
   background: var(--card-bg);
   border: 0.5px solid var(--card-stroke);
   border-radius: 16px;
   padding: 14px 18px;
+  margin-bottom: 14px;
 }
-.archive-emotion-section canvas {
-  width: 100%;
-  height: 60px;
+.archive-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
 }
-.archive-bottom {
-  padding: 16px 0 8px;
+.archive-info-row + .archive-info-row {
+  border-top: 0.5px solid rgba(255,255,255,0.08);
 }
+.archive-info-label {
+  font-family: 'Roboto Serif', serif;
+  font-size: 11px;
+  color: var(--ink2);
+  letter-spacing: 0.04em;
+}
+.archive-info-value {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+/* Analysis cards */
+.archive-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.analysis-card {
+  background: var(--card-bg);
+  border: 0.5px solid var(--card-stroke);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.analysis-card.suggestion-card {
+  border-color: rgba(140, 115, 84, 0.35);
+  background: rgba(140, 115, 84, 0.12);
+}
+.analysis-label {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 7.5px;
+  color: var(--ink2);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.analysis-content {
+  font-family: 'Roboto Serif', serif;
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.analysis-content .story-emotion-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+}
+.analysis-content .story-name {
+  text-transform: capitalize;
+  font-size: 11px;
+  color: var(--ink2);
+}
+.analysis-content .story-emotion {
+  font-size: 10px;
+  font-weight: 500;
+}
+.analysis-content .emotion-smooth { color: #4ADE80; }
+.analysis-content .emotion-procrastinating { color: #FBBF24; }
+.analysis-content .emotion-stuck { color: #F87171; }
+.analysis-content .emotion-done { color: #60A5FA; }
+.analysis-content .highlight-task {
+  display: inline-block;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin: 2px 0;
+  font-size: 11px;
+}
+
+/* Action buttons */
+.archive-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.archive-action-btn {
+  flex: 1;
+  background: rgba(245, 241, 233, 0.12);
+  border: 0.5px solid rgba(245, 241, 233, 0.22);
+  border-radius: 24px;
+  padding: 13px 16px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s;
+}
+.archive-action-btn:hover { background: rgba(245, 241, 233, 0.18); }
+
+/* Generate 3D button (shared) */
 .generate-3d-btn {
   width: 100%;
   background: rgba(245, 241, 233, 0.15);
@@ -1331,6 +1520,131 @@ body {
   transition: background 0.2s;
 }
 .generate-3d-btn:hover { background: rgba(245, 241, 233, 0.25); }
+
+/* ============= EXPORT 3D BOTTOM SHEET ============= */
+.export-3d-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(100% - 100px);
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid rgba(255, 255, 255, 0.12);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.32, 0, 0.15, 1);
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.5);
+}
+.export-3d-sheet.open { transform: translateY(0); }
+
+.export-preview-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0 12px;
+}
+.export-preview-area canvas {
+  max-width: 100%;
+  max-height: 240px;
+  border-radius: 12px;
+}
+
+.export-quote {
+  font-family: 'Roboto Serif', serif;
+  font-style: italic;
+  font-size: 17px;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 6px;
+}
+.export-subtitle {
+  font-size: 10px;
+  color: var(--ink2);
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 18px;
+  padding: 0 8px;
+}
+
+.export-engraving {
+  margin-bottom: 8px;
+}
+.engraving-label {
+  font-family: 'Roboto Serif', serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: var(--ink2);
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 8px;
+}
+.engraving-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  outline: none;
+  padding: 4px 0 10px;
+  font-family: 'Roboto Serif', serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--ink);
+}
+.engraving-input::placeholder { color: rgba(245, 241, 233, 0.25); }
+
+/* ============= SHARE POSTER ============= */
+.poster-preview {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.32, 0, 0.15, 1);
+  margin-top: 0;
+}
+.poster-preview.expanded {
+  max-height: 800px;
+  margin-top: 12px;
+}
+.poster-card {
+  background: #F5F0E8;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+}
+.poster-card canvas {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+.poster-actions {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0 4px;
+  justify-content: center;
+}
+.poster-btn {
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: 0.5px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.1);
+  color: var(--ink);
+  font-family: 'Roboto Serif', serif;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.poster-btn:hover { background: rgba(255,255,255,0.18); }
+.poster-btn-close {
+  background: transparent;
+  border-color: rgba(255,255,255,0.12);
+  color: var(--ink2);
+}
 
 </style>
 </head>
@@ -1366,34 +1680,39 @@ body {
       </div>
     </div>
 
-    <!-- ─────── IDENTITY PAGE ─────── -->
-    <div class="page" data-page="identity">
-      <div class="projects-header">
-        <div>
-          <div class="projects-title">Identity</div>
-          <div class="projects-meta">YOUR WORK IDENTITY</div>
-        </div>
-      </div>
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-        <div style="text-align:center;opacity:0.4;">
-          <div style="font-size:40px;margin-bottom:12px;">✦</div>
-          <div style="font-family:'Roboto Serif',serif;font-size:13px;color:var(--ink2);">Coming Soon</div>
-        </div>
-      </div>
-    </div>
-
     <!-- ─────── PROFILE PAGE ─────── -->
     <div class="page" data-page="profile">
       <div class="projects-header">
         <div>
           <div class="projects-title">Profile</div>
-          <div class="projects-meta">YOUR SETTINGS</div>
+          <div class="projects-meta">CREATOR PORTRAIT</div>
         </div>
       </div>
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-        <div style="text-align:center;opacity:0.4;">
-          <div style="font-size:40px;margin-bottom:12px;">○</div>
-          <div style="font-family:'Roboto Serif',serif;font-size:13px;color:var(--ink2);">Coming Soon</div>
+      <div class="profile-scroll">
+        <!-- Creator Portrait -->
+        <div class="portrait-section">
+          <div class="portrait-avatar" id="portraitAvatar">C</div>
+          <div class="portrait-name" id="portraitName">Creator</div>
+          <div class="portrait-stats" id="portraitStats"></div>
+        </div>
+
+        <!-- Analysis cards -->
+        <div class="portrait-analysis" id="portraitAnalysis"></div>
+
+        <!-- Settings -->
+        <div class="settings-section">
+          <div class="settings-label">SETTINGS</div>
+          <div class="settings-list">
+            <div class="settings-row" data-action="language">
+              <span>Language</span><span class="settings-val">English</span>
+            </div>
+            <div class="settings-row" data-action="backup">
+              <span>Backup</span><span class="settings-val">Export data →</span>
+            </div>
+            <div class="settings-row" data-action="feedback">
+              <span>Feedback</span><span class="settings-val">Send email →</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1428,26 +1747,67 @@ body {
         </div>
         <div class="menu-btn" id="archiveBackBtn">←</div>
       </div>
-      <div class="archive-main">
+      <div class="archive-detail-scroll">
+        <!-- Ring visualization -->
         <div class="archive-ring-section">
           <canvas id="archiveRingCanvas" width="540" height="540"></canvas>
         </div>
-        <div class="archive-analysis">
-          <div class="archive-stat">
-            <div class="stat-value" id="archiveBrewDays">--</div>
-            <div class="stat-label">DAYS BREWING</div>
+
+        <!-- Project basic info -->
+        <div class="archive-info-card">
+          <div class="archive-info-row">
+            <span class="archive-info-label">Time span</span>
+            <span class="archive-info-value" id="archiveTimeSpan">--</span>
           </div>
-          <div class="archive-stat">
-            <div class="stat-value" id="archiveTaskCount">--</div>
-            <div class="stat-label">TASKS CLOSED</div>
-          </div>
-          <div class="archive-emotion-section">
-            <div class="stat-label" style="margin-bottom:8px;">EMOTION TREND</div>
-            <canvas id="archiveEmotionCanvas" width="320" height="60"></canvas>
+          <div class="archive-info-row">
+            <span class="archive-info-label">Total tasks</span>
+            <span class="archive-info-value" id="archiveTaskCount">--</span>
           </div>
         </div>
-        <div class="archive-bottom">
-          <button class="generate-3d-btn" id="generate3dBtn">Generate 3D model →</button>
+
+        <!-- Analysis cards -->
+        <div class="archive-analysis" id="archiveAnalysis">
+          <!-- Story Review -->
+          <div class="analysis-card">
+            <div class="analysis-label">STORY REVIEW</div>
+            <div class="analysis-content" id="analysisStoryReview"></div>
+          </div>
+
+          <!-- Task Review -->
+          <div class="analysis-card">
+            <div class="analysis-label">TASK REVIEW</div>
+            <div class="analysis-content" id="analysisTaskReview"></div>
+          </div>
+
+          <!-- Overall Rhythm -->
+          <div class="analysis-card">
+            <div class="analysis-label">OVERALL RHYTHM</div>
+            <div class="analysis-content" id="analysisRhythm"></div>
+          </div>
+
+          <!-- Suggestion -->
+          <div class="analysis-card suggestion-card">
+            <div class="analysis-label">FOR YOUR NEXT PROJECT</div>
+            <div class="analysis-content" id="analysisSuggestion"></div>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="archive-actions">
+          <button class="archive-action-btn" id="openExport3dBtn">Export 3D Model</button>
+          <button class="archive-action-btn" id="openPosterBtn">Share Poster</button>
+        </div>
+
+        <!-- Poster preview (expandable) -->
+        <div class="poster-preview" id="posterPreview">
+          <div class="poster-card" id="posterCard">
+            <canvas id="posterCanvas" width="750" height="1200"></canvas>
+          </div>
+          <div class="poster-actions">
+            <button class="poster-btn" id="savePosterBtn">Save to Photos</button>
+            <button class="poster-btn" id="sharePosterBtn">Share</button>
+            <button class="poster-btn poster-btn-close" id="collapsePosterBtn">Collapse ↑</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1459,8 +1819,6 @@ body {
     <div class="bnav">
       <div class="nav-item active" data-nav="ring"><div class="ico">◎</div><div class="lbl">Ring</div></div>
       <div class="nav-item" data-nav="projects"><div class="ico">⊞</div><div class="lbl">Projects</div></div>
-      <div class="nav-gap"></div>
-      <div class="nav-item" data-nav="identity"><div class="ico">✦</div><div class="lbl">Identity</div></div>
       <div class="nav-item" data-nav="profile"><div class="ico">○</div><div class="lbl">Profile</div></div>
     </div>
     <button class="add-floating" id="addBtn">+</button>
@@ -1544,6 +1902,29 @@ body {
     </div>
     <div class="sheet-footer">
       <div class="begin-btn"><span class="plus">+</span> begin this project</div>
+    </div>
+  </div>
+
+  <!-- ============= EXPORT 3D MODEL BOTTOM SHEET ============= -->
+  <div class="export-3d-sheet" id="export3dSheet">
+    <div class="drag-handle"></div>
+    <div class="sheet-content">
+      <div class="sheet-header">
+        <span class="sheet-title">Export 3D Model</span>
+        <button class="close-btn" id="closeExport3d">✕</button>
+      </div>
+      <div class="export-preview-area">
+        <canvas id="export3dCanvas" width="600" height="400"></canvas>
+      </div>
+      <div class="export-quote">Your journey is now an object.</div>
+      <div class="export-subtitle">This model is generated from your project's ring data — every ripple reflects your creative journey.</div>
+      <div class="export-engraving">
+        <label class="engraving-label">BACK ENGRAVING</label>
+        <input class="engraving-input" id="engravingText" type="text" />
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <button class="generate-3d-btn" id="downloadStlFromSheet">Download STL ↓</button>
     </div>
   </div>
 
@@ -2709,10 +3090,106 @@ function switchPage(pageName) {
     const activeCount = projects.filter(p => !p.archived).length;
     document.querySelector('.projects-meta').textContent = activeCount + ' ACTIVE PROJECTS';
     renderProjectsPage();
+  } else if (pageName === 'profile') {
+    stopPhysics();
+    renderProfilePage();
   } else {
     stopPhysics();
   }
 }
+
+// ============= PROFILE PAGE RENDERING =============
+function computeCreatorProfile() {
+  var all = { totalProjects: projects.length, totalTasks: 0, totalInRing: 0 };
+  var statusCount = { smooth: 0, procrastinating: 0, stuck: 0, done: 0 };
+  var storyCount = {};
+  var dominantEmotion = '—';
+  var topStory = '—';
+
+  projects.forEach(function(p) {
+    all.totalTasks += p.tasks.length;
+    p.tasks.forEach(function(t) {
+      if (t.inRing) all.totalInRing++;
+      if (t.status && statusCount[t.status] !== undefined) statusCount[t.status]++;
+      if (t.story) {
+        if (!storyCount[t.story]) storyCount[t.story] = 0;
+        storyCount[t.story]++;
+      }
+    });
+  });
+
+  // Dominant emotion
+  var maxStatus = 0;
+  var statusLabels = { smooth: 'Smooth', procrastinating: 'Procrastinating', stuck: 'Stuck', done: 'Done' };
+  for (var st in statusCount) {
+    if (statusCount[st] > maxStatus) { maxStatus = statusCount[st]; dominantEmotion = statusLabels[st]; }
+  }
+
+  // Top story phase
+  var maxStory = 0;
+  for (var sy in storyCount) {
+    if (storyCount[sy] > maxStory) { maxStory = storyCount[sy]; topStory = sy; }
+  }
+  topStory = topStory.charAt(0).toUpperCase() + topStory.slice(1);
+
+  // Rhythm characterization
+  var struggleRatio = (statusCount.procrastinating + statusCount.stuck) / Math.max(all.totalInRing, 1);
+  var smoothRatio = (statusCount.smooth + statusCount.done) / Math.max(all.totalInRing, 1);
+  var rhythmChar = '';
+  if (smoothRatio > 0.6) rhythmChar = 'You tend to find your flow quickly — most projects progress smoothly.';
+  else if (struggleRatio > 0.5) rhythmChar = 'You thrive through struggle — challenge fuels your best work.';
+  else rhythmChar = 'Your rhythm shifts with each project — adaptable and responsive to the work.';
+
+  return {
+    totalProjects: all.totalProjects,
+    totalTasks: all.totalTasks,
+    totalInRing: all.totalInRing,
+    dominantEmotion: dominantEmotion,
+    topStory: topStory,
+    rhythmChar: rhythmChar
+  };
+}
+
+function renderProfilePage() {
+  var profile = computeCreatorProfile();
+  document.getElementById('portraitStats').innerHTML =
+    '<div class="portrait-stat-item"><div class="portrait-stat-num">' + profile.totalProjects + '</div><div class="portrait-stat-lbl">Projects</div></div>' +
+    '<div class="portrait-stat-item"><div class="portrait-stat-num">' + profile.totalInRing + '</div><div class="portrait-stat-lbl">In Ring</div></div>' +
+    '<div class="portrait-stat-item"><div class="portrait-stat-num">' + profile.totalTasks + '</div><div class="portrait-stat-lbl">Tasks</div></div>';
+
+  document.getElementById('portraitAnalysis').innerHTML =
+    '<div class="portrait-card">' +
+      '<div class="portrait-card-label">COMMON EMOTION</div>' +
+      '<div class="portrait-card-text">Your most common state is <strong>' + profile.dominantEmotion + '</strong> across all projects.</div>' +
+    '</div>' +
+    '<div class="portrait-card">' +
+      '<div class="portrait-card-label">MOST ACTIVE PHASE</div>' +
+      '<div class="portrait-card-text">You spend the most time in <strong>' + profile.topStory + '</strong> — this is where your ideas take shape.</div>' +
+    '</div>' +
+    '<div class="portrait-card">' +
+      '<div class="portrait-card-label">CREATIVE RHYTHM</div>' +
+      '<div class="portrait-card-text">' + profile.rhythmChar + '</div>' +
+    '</div>';
+}
+
+// Settings click handlers
+document.querySelectorAll('.settings-row').forEach(function(row) {
+  row.addEventListener('click', function() {
+    var action = this.dataset.action;
+    if (action === 'backup') {
+      var data = JSON.stringify({ projects: projects, exportedAt: new Date().toISOString() }, null, 2);
+      var blob = new Blob([data], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'dormant_backup_' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(url);
+    } else if (action === 'feedback') {
+      window.location.href = 'mailto:dormant-feedback@pm.me?subject=Dormant Feedback';
+    }
+    // language is a placeholder
+  });
+});
 
 navItems.forEach(item => {
   item.addEventListener('click', () => {
@@ -2743,12 +3220,25 @@ function openArchiveDetail(project) {
   switchPage('archive-detail');
   document.getElementById('archiveDetailTitle').textContent = project.name;
   document.getElementById('archiveDetailMeta').textContent = 'ARCHIVED';
-  document.getElementById('archiveBrewDays').textContent = computeBrewDays(project);
-  document.getElementById('archiveTaskCount').textContent = project.tasks.length;
+
+  var created = new Date(project.createdAt);
+  var now = new Date();
+  document.getElementById('archiveTimeSpan').textContent = formatDate(created) + ' → ' + formatDate(now);
+  var ringTasks = project.tasks.filter(function(t) { return t.inRing; });
+  document.getElementById('archiveTaskCount').textContent = ringTasks.length + ' in ring / ' + project.tasks.length + ' total';
+
+  document.getElementById('posterPreview').classList.remove('expanded');
+
   setTimeout(function() {
     renderArchiveRing(project);
-    renderEmotionTrend(project);
+    renderAnalysis(project);
   }, 50);
+}
+
+function formatDate(d) {
+  var y = d.getFullYear();
+  var m = ('0' + (d.getMonth() + 1)).slice(-2);
+  return y + '.' + m;
 }
 
 function computeBrewDays(project) {
@@ -2756,43 +3246,6 @@ function computeBrewDays(project) {
   var now = new Date();
   var days = Math.floor((now - created) / (1000 * 60 * 60 * 24));
   return days || '--';
-}
-
-function renderEmotionTrend(project) {
-  var canvas = document.getElementById('archiveEmotionCanvas');
-  if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  var W = canvas.width, H = canvas.height;
-  ctx.clearRect(0, 0, W, H);
-
-  var allFeelings = [];
-  project.tasks.forEach(function(task) {
-    if (task._trailFeelingsLog) {
-      task._trailFeelingsLog.forEach(function(e) {
-        allFeelings.push(e);
-      });
-    }
-  });
-  allFeelings.sort(function(a, b) { return a.atRotation - b.atRotation; });
-
-  if (allFeelings.length < 2) {
-    ctx.fillStyle = 'rgba(245,241,233,0.3)';
-    ctx.font = '10px "Roboto Serif"';
-    ctx.textAlign = 'center';
-    ctx.fillText('Not enough data', W / 2, H / 2);
-    return;
-  }
-
-  var pad = 8;
-  ctx.beginPath();
-  ctx.strokeStyle = 'rgba(212,165,120,0.8)';
-  ctx.lineWidth = 1.5;
-  for (var i = 0; i < allFeelings.length; i++) {
-    var x = pad + (i / Math.max(allFeelings.length - 1, 1)) * (W - pad * 2);
-    var y = pad + (1 - allFeelings[i].feelX) * (H - pad * 2);
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  }
-  ctx.stroke();
 }
 
 function renderArchiveRing(project) {
@@ -2843,20 +3296,127 @@ function renderArchiveRing(project) {
   }
 }
 
-// Card click handlers are attached dynamically in renderProjectsPage()
+// ============= PROJECT ANALYSIS ENGINE =============
+function generateProjectAnalysis(project) {
+  var ringTasks = project.tasks.filter(function(t) { return t.inRing; });
+  var result = { storyReview: [], longestTask: null, mostStuckTask: null, rhythm: '', suggestion: '' };
 
+  var storyStatuses = {};
+  ringTasks.forEach(function(t) {
+    if (!t.story || !t.status) return;
+    if (!storyStatuses[t.story]) storyStatuses[t.story] = {};
+    if (!storyStatuses[t.story][t.status]) storyStatuses[t.story][t.status] = 0;
+    storyStatuses[t.story][t.status]++;
+  });
+  var statusLabels = { smooth: 'Steady', procrastinating: 'Procrastinating', stuck: 'Stuck', done: 'Done' };
+  for (var story in storyStatuses) {
+    var counts = storyStatuses[story];
+    var dominant = null, maxCount = 0;
+    for (var st in counts) {
+      if (counts[st] > maxCount) { maxCount = counts[st]; dominant = st; }
+    }
+    result.storyReview.push({ story: story, emotion: dominant, label: statusLabels[dominant] || '—' });
+  }
+
+  var longestTask = null, longestDays = 0;
+  var mostStuckTask = null, mostStuckCount = 0;
+  ringTasks.forEach(function(t) {
+    if (t._trailStatusLog && t._trailStatusLog.length > 1) {
+      var log = t._trailStatusLog;
+      var days = log.length;
+      if (days > longestDays) { longestDays = days; longestTask = t; }
+      var stuckCount = 0;
+      log.forEach(function(entry) { if (entry.status === 'stuck') stuckCount++; });
+      if (stuckCount > mostStuckCount) { mostStuckCount = stuckCount; mostStuckTask = t; }
+    }
+  });
+  if (longestTask) result.longestTask = { name: longestTask.name, days: longestDays };
+  if (mostStuckTask && mostStuckCount > 0) result.mostStuckTask = { name: mostStuckTask.name, stuckCount: mostStuckCount };
+
+  var allEntries = [];
+  ringTasks.forEach(function(t) {
+    if (t._trailStatusLog) {
+      t._trailStatusLog.forEach(function(e, i) { allEntries.push({ status: e.status || t.status, idx: i, task: t.name }); });
+    }
+  });
+  if (allEntries.length >= 2) {
+    var half = Math.floor(allEntries.length / 2);
+    var early = allEntries.slice(0, half), late = allEntries.slice(half);
+    function countStatus(arr, st) { return arr.filter(function(e) { return e.status === st; }).length; }
+    var earlySmooth = countStatus(early, 'smooth'), earlyStruggle = countStatus(early, 'stuck') + countStatus(early, 'procrastinating');
+    var lateSmooth = countStatus(late, 'smooth'), lateStruggle = countStatus(late, 'stuck') + countStatus(late, 'procrastinating');
+    if (earlySmooth > earlyStruggle && lateSmooth > lateStruggle) {
+      result.rhythm = 'Steady progress — you maintained a consistent pace throughout.';
+    } else if (earlyStruggle > earlySmooth && lateSmooth > lateStruggle) {
+      result.rhythm = 'A rocky start that found its flow — the second half was smoother.';
+    } else if (earlySmooth > earlyStruggle && lateStruggle > lateSmooth) {
+      result.rhythm = 'Started strong, but hit resistance later — a project of two halves.';
+    } else if (earlyStruggle > earlySmooth && lateStruggle > lateSmooth) {
+      result.rhythm = 'A challenging journey from start to finish, but you pushed through.';
+    } else {
+      result.rhythm = 'Ups and downs throughout — every creative journey has its own rhythm.';
+    }
+  } else {
+    result.rhythm = 'Not enough tracking data to determine rhythm.';
+  }
+
+  var worstStory = null, worstStruggle = 0;
+  for (var story in storyStatuses) {
+    var c = storyStatuses[story];
+    var struggle = (c.stuck || 0) + (c.procrastinating || 0);
+    if (struggle > worstStruggle) { worstStruggle = struggle; worstStory = story; }
+  }
+  if (worstStory && worstStruggle > 0) {
+    result.suggestion = 'You tend to struggle most during the ' + worstStory + ' phase. Next time, try breaking this stage into smaller, more concrete tasks.';
+  } else {
+    result.suggestion = 'Your workflow looks solid. For your next project, consider adding more granular check-ins to capture subtle patterns.';
+  }
+
+  return result;
+}
+
+function renderAnalysis(project) {
+  var analysis = generateProjectAnalysis(project);
+
+  var storyHTML = '';
+  analysis.storyReview.forEach(function(sr) {
+    var cls = 'emotion-' + (sr.emotion || 'done');
+    storyHTML += '<div class="story-emotion-row"><span class="story-name">' + sr.story + '</span><span class="story-emotion ' + cls + '">' + sr.label + '</span></div>';
+  });
+  var storyEl = document.getElementById('analysisStoryReview');
+  if (storyEl) storyEl.innerHTML = storyHTML || '<span style="opacity:0.5">No story data</span>';
+
+  var taskHTML = '';
+  if (analysis.longestTask) {
+    taskHTML += 'Longest tracked: <span class="highlight-task">' + analysis.longestTask.name + '</span><br>';
+  }
+  if (analysis.mostStuckTask) {
+    taskHTML += 'Most stuck: <span class="highlight-task">' + analysis.mostStuckTask.name + '</span>';
+  }
+  var taskEl = document.getElementById('analysisTaskReview');
+  if (taskEl) taskEl.innerHTML = taskHTML || '<span style="opacity:0.5">Not enough data</span>';
+
+  var rhythmEl = document.getElementById('analysisRhythm');
+  if (rhythmEl) rhythmEl.textContent = analysis.rhythm;
+
+  var suggEl = document.getElementById('analysisSuggestion');
+  if (suggEl) suggEl.textContent = analysis.suggestion;
+}
 
 // ============= OVERLAYS =============
 const scrim = document.getElementById('scrim');
 const outlinePanel = document.getElementById('outlinePanel');
 const recordPanel = document.getElementById('recordPanel');
 const createSheet = document.getElementById('createSheet');
+const export3dSheet = document.getElementById('export3dSheet');
 
 function closeAllOverlays() {
   outlinePanel.classList.remove('open');
   recordPanel.classList.remove('open');
   createSheet.classList.remove('open');
+  export3dSheet.classList.remove('open');
   scrim.classList.remove('active');
+  scrim.classList.remove('blurred');
 }
 
 function openOutline() {
@@ -2873,15 +3433,12 @@ function openRecordForTask(task) {
   closeAllOverlays();
   activeRecordTask = task;
 
-  // Update record panel with task info
   document.getElementById('recordTaskTitle').textContent = task.name;
 
-  // Highlight current status
   document.querySelectorAll('.status-pill').forEach(p => {
     p.classList.toggle('selected', p.dataset.status === (task.status || ''));
   });
 
-  // Restore feelings slider positions
   var fx = task.feelings ? task.feelings.x : 0.5;
   var fy = task.feelings ? task.feelings.y : 0.5;
   var handleMot = document.getElementById('handleMotivation');
@@ -2897,6 +3454,24 @@ function openCreate() {
   closeAllOverlays();
   createSheet.classList.add('open');
   scrim.classList.add('active');
+  scrim.classList.add('blurred');
+}
+
+function openExport3D(project) {
+  closeAllOverlays();
+  export3dPreviewProject = project;
+  stlRotX = -0.5; stlRotY = 0.3;
+
+  var created = new Date(project.createdAt);
+  var now = new Date();
+  var defaultEngraving = project.name + ' / ' + formatDate(created) + ' - ' + formatDate(now);
+  var engravingInput = document.getElementById('engravingText');
+  if (engravingInput) engravingInput.value = defaultEngraving;
+
+  export3dSheet.classList.add('open');
+  scrim.classList.add('active');
+
+  setTimeout(function() { render3DPreviewToCanvas(); }, 150);
 }
 
 document.getElementById('menuBtn').addEventListener('click', openOutline);
@@ -2905,10 +3480,511 @@ document.getElementById('archiveBackBtn').addEventListener('click', function() {
   archiveDetailProject = null;
   switchPage('projects');
 });
-document.getElementById('generate3dBtn').addEventListener('click', function() {
-  alert('3D model export coming soon');
+document.getElementById('openExport3dBtn').addEventListener('click', function() {
+  if (archiveDetailProject) openExport3D(archiveDetailProject);
+});
+document.getElementById('closeExport3d').addEventListener('click', function() {
+  export3dSheet.classList.remove('open');
+  scrim.classList.remove('active');
+});
+document.getElementById('downloadStlFromSheet').addEventListener('click', function() {
+  if (export3dPreviewProject) downloadSTL(export3dPreviewProject);
 });
 
+// ============= 3D PREVIEW ENGINE (shared) =============
+var stlRotX = -0.5, stlRotY = 0.3;
+var stlDrag3D = null;
+var export3dPreviewProject = null;
+
+function project3D(x, y, z, cx, cy) {
+  var cosY = Math.cos(stlRotY), sinY = Math.sin(stlRotY);
+  var cosX = Math.cos(stlRotX), sinX = Math.sin(stlRotX);
+  var rx = x * cosY + z * sinY;
+  var rz = -x * sinY + z * cosY;
+  var ry = y * cosX - rz * sinX;
+  var rz2 = y * sinX + rz * cosX;
+  var d = 500;
+  var s = d / (d + rz2 + 200);
+  return { x: cx + rx * s, y: cy - ry * s, z: rz2 };
+}
+
+function render3DPreviewToCanvas() {
+  var canvas = document.getElementById('export3dCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var CX = W / 2, CY = H / 2;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#141414';
+  ctx.fillRect(0, 0, W, H);
+
+  var project = export3dPreviewProject;
+  if (!project || !project.tasks || project.tasks.length === 0) {
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '14px "Roboto Serif", serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No data to preview', CX, CY);
+    return;
+  }
+
+  var tasks = project.tasks;
+  var taskCount = tasks.length;
+  var R_MIN = 60, R_MAX = 260;
+  var gap = taskCount > 1 ? (R_MAX - R_MIN) / (taskCount - 1) : 20;
+  var ringW = gap * 0.55;
+  var statusH = { smooth: 10, procrastinating: 18, stuck: 28, done: 5 };
+  var N = 72;
+  var segAngle = (Math.PI * 2) / N;
+  var allQuads = [];
+
+  for (var i = 0; i < taskCount; i++) {
+    var task = tasks[i];
+    var r1 = R_MIN + i * gap;
+    var r2 = r1 + ringW;
+    var baseH = statusH[task.status] || 10;
+
+    var wobbles = [];
+    for (var s = 0; s < N; s++) {
+      var a = s * segAngle;
+      var w = 0;
+      if (task._trailHistory && task._trailHistory.length > 0) {
+        var best = null;
+        for (var h = 0; h < task._trailHistory.length; h++) {
+          var hp = task._trailHistory[h];
+          var da = hp.angle - a;
+          while (da > Math.PI) da -= Math.PI * 2;
+          while (da < -Math.PI) da += Math.PI * 2;
+          if (!best || Math.abs(da) < Math.abs(best.da)) { best = { da: da, r: hp.radius }; }
+        }
+        if (best) { var midR = (r1 + r2) / 2; w = (best.r - midR) * 0.3; }
+      }
+      wobbles.push(w);
+    }
+
+    for (var s = 0; s < N; s++) {
+      var a1 = s * segAngle, a2 = (s + 1) * segAngle;
+      var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
+      var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
+      var h1 = baseH + wobbles[s];
+      var h2 = baseH + wobbles[(s + 1) % N];
+
+      var ow = [{ x: r2 * ca1, y: r2 * sa1, z: 0 }, { x: r2 * ca2, y: r2 * sa2, z: 0 }, { x: r2 * ca2, y: r2 * sa2, z: h2 }, { x: r2 * ca1, y: r2 * sa1, z: h1 }];
+      allQuads.push({ quad: ow, color: 'outer', ringIdx: i });
+      var iw = [{ x: r1 * ca1, y: r1 * sa1, z: h1 }, { x: r1 * ca2, y: r1 * sa2, z: h2 }, { x: r1 * ca2, y: r1 * sa2, z: 0 }, { x: r1 * ca1, y: r1 * sa1, z: 0 }];
+      allQuads.push({ quad: iw, color: 'inner', ringIdx: i });
+      var tq = [{ x: r1 * ca1, y: r1 * sa1, z: h1 }, { x: r2 * ca1, y: r2 * sa1, z: h1 }, { x: r2 * ca2, y: r2 * sa2, z: h2 }, { x: r1 * ca2, y: r1 * sa2, z: h2 }];
+      allQuads.push({ quad: tq, color: 'top', ringIdx: i });
+      var bq = [{ x: r1 * ca2, y: r1 * sa2, z: 0 }, { x: r2 * ca2, y: r2 * sa2, z: 0 }, { x: r2 * ca1, y: r2 * sa1, z: 0 }, { x: r1 * ca1, y: r1 * sa1, z: 0 }];
+      allQuads.push({ quad: bq, color: 'bottom', ringIdx: i });
+    }
+  }
+
+  allQuads.forEach(function(q) {
+    q.proj = q.quad.map(function(v) { return project3D(v.x, v.y, v.z, CX, CY); });
+    q.avgZ = (q.proj[0].z + q.proj[1].z + q.proj[2].z + q.proj[3].z) / 4;
+  });
+  allQuads.sort(function(a, b) { return a.avgZ - b.avgZ; });
+
+  var ringColors = ['#8C7354', '#5C7A6B', '#7A5C6B', '#7E8FA5', '#9B8C74', '#6B8A7C', '#8C6B7C', '#8F9EB5', '#A89A82', '#7A9A8C'];
+
+  allQuads.forEach(function(q) {
+    var p = q.proj;
+    var ringColor = ringColors[q.ringIdx % ringColors.length];
+    ctx.beginPath();
+    ctx.moveTo(p[0].x, p[0].y);
+    ctx.lineTo(p[1].x, p[1].y);
+    ctx.lineTo(p[2].x, p[2].y);
+    ctx.lineTo(p[3].x, p[3].y);
+    ctx.closePath();
+    if (q.color === 'top') {
+      ctx.fillStyle = ringColor; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 0.5; ctx.stroke();
+    } else if (q.color === 'outer') {
+      ctx.fillStyle = shadeColor(ringColor, -25); ctx.fill();
+    } else if (q.color === 'inner') {
+      ctx.fillStyle = shadeColor(ringColor, -40); ctx.fill();
+    } else {
+      ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fill();
+    }
+  });
+}
+
+function shadeColor(hex, percent) {
+  var num = parseInt(hex.replace('#', ''), 16);
+  var r = Math.min(255, Math.max(0, (num >> 16) + percent));
+  var g = Math.min(255, Math.max(0, ((num >> 8) & 0xFF) + percent));
+  var b = Math.min(255, Math.max(0, (num & 0xFF) + percent));
+  return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
+
+// 3D preview drag interaction
+var export3dCanvas = document.getElementById('export3dCanvas');
+if (export3dCanvas) {
+  export3dCanvas.addEventListener('mousedown', function(e) {
+    stlDrag3D = { x: e.clientX, y: e.clientY, rotX: stlRotX, rotY: stlRotY };
+    e.preventDefault();
+  });
+  export3dCanvas.addEventListener('touchstart', function(e) {
+    stlDrag3D = { x: e.touches[0].clientX, y: e.touches[0].clientY, rotX: stlRotX, rotY: stlRotY };
+  });
+}
+
+window.addEventListener('mousemove', function(e) {
+  if (!stlDrag3D) return;
+  if (!export3dSheet.classList.contains('open')) return;
+  stlRotY = stlDrag3D.rotY + (e.clientX - stlDrag3D.x) * 0.008;
+  stlRotX = stlDrag3D.rotX + (e.clientY - stlDrag3D.y) * 0.008;
+  stlRotX = Math.max(-1.2, Math.min(1.2, stlRotX));
+  render3DPreviewToCanvas();
+});
+window.addEventListener('touchmove', function(e) {
+  if (!stlDrag3D) return;
+  if (!export3dSheet.classList.contains('open')) return;
+  stlRotY = stlDrag3D.rotY + (e.touches[0].clientX - stlDrag3D.x) * 0.008;
+  stlRotX = stlDrag3D.rotX + (e.touches[0].clientY - stlDrag3D.y) * 0.008;
+  stlRotX = Math.max(-1.2, Math.min(1.2, stlRotX));
+  render3DPreviewToCanvas();
+});
+window.addEventListener('mouseup', function() { stlDrag3D = null; });
+window.addEventListener('touchend', function() { stlDrag3D = null; });
+
+// ============= SHARE POSTER =============
+var posterPoems = {
+  smooth: [
+    'Every step light, every ring complete.',
+    'Time flowed like water, now frozen in eternal rings.',
+    'Steady hands make the truest circles.',
+    'In the flow, you found your rhythm.'
+  ],
+  struggle: [
+    'The struggle left its mark — and that mark is beautiful.',
+    'In pauses you gathered strength, in detours you found your way.',
+    'Imperfection is its own perfection — every trace tells a story.',
+    'The rings that wavered the most hold the most truth.'
+  ],
+  mixed: [
+    'Between rush and rest, the rings remember it all.',
+    'High and low woven together — your unique creative score.',
+    'Time says nothing, but the rings say everything.',
+    'A journey of many moods, captured in concentric traces.'
+  ]
+};
+
+function generatePosterPoem(project) {
+  var ringTasks = project.tasks.filter(function(t) { return t.inRing; });
+  var statusCount = { smooth: 0, procrastinating: 0, stuck: 0, done: 0 };
+  ringTasks.forEach(function(t) {
+    if (t.status && statusCount[t.status] !== undefined) statusCount[t.status]++;
+  });
+  var struggleCount = statusCount.procrastinating + statusCount.stuck;
+  var smoothCount = statusCount.smooth + statusCount.done;
+  var category;
+  if (smoothCount > struggleCount * 1.5) category = 'smooth';
+  else if (struggleCount > smoothCount * 1.5) category = 'struggle';
+  else category = 'mixed';
+  var poems = posterPoems[category];
+  var hash = 0;
+  var key = project.name + project.createdAt;
+  for (var i = 0; i < key.length; i++) { hash = ((hash << 5) - hash) + key.charCodeAt(i); hash |= 0; }
+  return poems[Math.abs(hash) % poems.length];
+}
+
+function renderPoster(project) {
+  var canvas = document.getElementById('posterCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var bgGrad = ctx.createLinearGradient(0, 0, W, H);
+  bgGrad.addColorStop(0, '#F7F3EC');
+  bgGrad.addColorStop(0.5, '#F2EDE5');
+  bgGrad.addColorStop(1, '#EDE7DD');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = 'rgba(180,170,155,0.15)';
+  for (var i = 0; i < 200; i++) {
+    var dx = Math.random() * W, dy = Math.random() * H;
+    ctx.beginPath(); ctx.arc(dx, dy, Math.random() * 1.5, 0, Math.PI * 2); ctx.fill();
+  }
+
+  var ringCX = W / 2, ringCY = H * 0.38;
+  var ringTasks = project.tasks.filter(function(t) { return t.inRing; });
+  var taskCount = ringTasks.length;
+  if (taskCount > 0) {
+    var MIN_R = 80, MAX_R = 280;
+    var gap = taskCount > 1 ? (MAX_R - MIN_R) / (taskCount - 1) : 0;
+    var statusThick = { smooth: 2.0, procrastinating: 4.0, stuck: 6.5, done: 1.2 };
+    for (var i = 0; i < taskCount; i++) {
+      var task = ringTasks[i];
+      var baseR = MIN_R + i * gap;
+      var slog = task._trailStatusLog;
+      if (!slog || slog.length === 0) { slog = [{ atRotation: 0, thickness: statusThick[task.status || 'done'] || 1.5 }]; }
+      var segCount = 180;
+      var segAngle = (Math.PI * 2) / segCount;
+      for (var s = 0; s < segCount; s++) {
+        var a = s * segAngle;
+        var nextA = a + segAngle;
+        var thickness = getThicknessAtRotation(slog, a);
+        ctx.beginPath();
+        ctx.moveTo(ringCX + Math.cos(a) * baseR, ringCY + Math.sin(a) * baseR);
+        ctx.lineTo(ringCX + Math.cos(nextA) * baseR, ringCY + Math.sin(nextA) * baseR);
+        ctx.strokeStyle = 'rgba(60,50,40,0.55)';
+        ctx.lineWidth = thickness * 1.2;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+    }
+  }
+
+  var poem = generatePosterPoem(project);
+  ctx.fillStyle = '#3A3228';
+  ctx.font = 'italic 400 26px "Roboto Serif", serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('“' + poem + '”', W / 2, H * 0.72);
+
+  ctx.fillStyle = '#5C5244';
+  ctx.font = '500 18px "Roboto Serif", serif';
+  ctx.fillText(project.name, W / 2, H * 0.80);
+
+  var created = new Date(project.createdAt);
+  var now = new Date();
+  ctx.fillStyle = '#8C8070';
+  ctx.font = '400 13px "Roboto Serif", serif';
+  ctx.fillText(formatDate(created) + ' — ' + formatDate(now), W / 2, H * 0.85);
+
+  ctx.beginPath();
+  ctx.moveTo(W / 2 - 60, H * 0.88);
+  ctx.lineTo(W / 2 + 60, H * 0.88);
+  ctx.strokeStyle = 'rgba(60,50,40,0.2)';
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+
+  ctx.fillStyle = '#3A3228';
+  ctx.font = '400 16px "Roboto Serif", serif';
+  ctx.fillText('Dormant', W / 2, H * 0.93);
+}
+
+document.getElementById('openPosterBtn').addEventListener('click', function() {
+  if (!archiveDetailProject) return;
+  var posterEl = document.getElementById('posterPreview');
+  if (posterEl.classList.contains('expanded')) {
+    posterEl.classList.remove('expanded');
+  } else {
+    renderPoster(archiveDetailProject);
+    posterEl.classList.add('expanded');
+    setTimeout(function() { posterEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
+  }
+});
+
+document.getElementById('collapsePosterBtn').addEventListener('click', function() {
+  document.getElementById('posterPreview').classList.remove('expanded');
+});
+
+document.getElementById('savePosterBtn').addEventListener('click', function() {
+  var canvas = document.getElementById('posterCanvas');
+  if (!canvas) return;
+  canvas.toBlob(function(blob) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = (archiveDetailProject ? archiveDetailProject.name : 'poster').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_poster.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 'image/png');
+});
+
+document.getElementById('sharePosterBtn').addEventListener('click', function() {
+  var canvas = document.getElementById('posterCanvas');
+  if (!canvas) return;
+  canvas.toBlob(function(blob) {
+    var file = new File([blob], 'dormant_poster.png', { type: 'image/png' });
+    if (navigator.share) {
+      navigator.share({ title: 'Dormant Poster', files: [file] }).catch(function() {});
+    } else {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'dormant_poster.png';
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+  }, 'image/png');
+});
+
+// ============= STL GENERATOR =============
+function generateSTL(project) {
+  var tasks = project.tasks;
+  var taskCount = tasks.length;
+  var R_MIN = 60, R_MAX = 260;
+  var gap = taskCount > 1 ? (R_MAX - R_MIN) / (taskCount - 1) : 20;
+  var ringW = gap * 0.55;
+  var statusH = { smooth: 10, procrastinating: 18, stuck: 28, done: 5 };
+  var N = 120; // segments per ring
+  var segAngle = (Math.PI * 2) / N;
+
+  // Scale factor: design units → mm (1 unit = 0.2mm for 3D printing)
+  var scale = 0.2;
+
+  var triangles = [];
+
+  function addTriangle(v0, v1, v2, nx, ny, nz) {
+    // Scale
+    var p0 = [v0[0] * scale, v0[1] * scale, v0[2] * scale];
+    var p1 = [v1[0] * scale, v1[1] * scale, v1[2] * scale];
+    var p2 = [v2[0] * scale, v2[1] * scale, v2[2] * scale];
+    triangles.push({
+      normal: [nx, ny, nz],
+      v0: p0, v1: p1, v2: p2
+    });
+  }
+
+  // Base plate (solid disc)
+  var baseR = R_MIN - ringW * 0.5;
+  var baseThick = 2;
+  for (var s = 0; s < N; s++) {
+    var a1 = s * segAngle, a2 = (s + 1) * segAngle;
+    var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
+    var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
+    // Top base disc
+    addTriangle([0, 0, baseThick], [baseR * ca1, baseR * sa1, baseThick], [baseR * ca2, baseR * sa2, baseThick], 0, 0, 1);
+    // Bottom base disc
+    addTriangle([baseR * ca2, baseR * sa2, 0], [baseR * ca1, baseR * sa1, 0], [0, 0, 0], 0, 0, -1);
+    // Edge of base
+    var e0 = [baseR * ca1, baseR * sa1, 0], e1 = [baseR * ca2, baseR * sa2, 0];
+    var e2 = [baseR * ca2, baseR * sa2, baseThick], e3 = [baseR * ca1, baseR * sa1, baseThick];
+    var enx = ca1 + ca2, eny = sa1 + sa2;
+    var enl = Math.sqrt(enx * enx + eny * eny);
+    addTriangle(e0, e1, e2, enx / enl, eny / enl, 0);
+    addTriangle(e0, e2, e3, enx / enl, eny / enl, 0);
+  }
+
+  for (var i = 0; i < taskCount; i++) {
+    var task = tasks[i];
+    var r1 = R_MIN + i * gap;
+    var r2 = r1 + ringW;
+    var baseH = statusH[task.status] || 10;
+
+    // Wobble data
+    var wobbles = [];
+    for (var s = 0; s < N; s++) {
+      var a = s * segAngle;
+      var w = 0;
+      if (task._trailHistory && task._trailHistory.length > 0) {
+        var best = null;
+        for (var h = 0; h < task._trailHistory.length; h++) {
+          var hp = task._trailHistory[h];
+          var da = hp.angle - a;
+          while (da > Math.PI) da -= Math.PI * 2;
+          while (da < -Math.PI) da += Math.PI * 2;
+          if (!best || Math.abs(da) < Math.abs(best.da)) {
+            best = { da: da, r: hp.radius };
+          }
+        }
+        if (best) {
+          var midR = (r1 + r2) / 2;
+          w = (best.r - midR) * 0.3;
+        }
+      }
+      wobbles.push(w);
+    }
+
+    for (var s = 0; s < N; s++) {
+      var a1 = s * segAngle, a2 = (s + 1) * segAngle;
+      var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
+      var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
+      var h1 = baseH + wobbles[s];
+      var h2 = baseH + wobbles[(s + 1) % N];
+
+      // Outer wall
+      var ow0 = [r2 * ca1, r2 * sa1, 0], ow1 = [r2 * ca2, r2 * sa2, 0];
+      var ow2 = [r2 * ca2, r2 * sa2, h2], ow3 = [r2 * ca1, r2 * sa1, h1];
+      var onx = ca1 + ca2, ony = sa1 + sa2, onl = Math.sqrt(onx * onx + ony * ony);
+      addTriangle(ow0, ow1, ow2, onx / onl, ony / onl, 0);
+      addTriangle(ow0, ow2, ow3, onx / onl, ony / onl, 0);
+
+      // Inner wall (normals point inward)
+      var iw0 = [r1 * ca1, r1 * sa1, h1], iw1 = [r1 * ca2, r1 * sa2, h2];
+      var iw2 = [r1 * ca2, r1 * sa2, 0], iw3 = [r1 * ca1, r1 * sa1, 0];
+      var inx = -(ca1 + ca2), iny = -(sa1 + sa2), inl = Math.sqrt(inx * inx + iny * iny);
+      addTriangle(iw0, iw1, iw2, inx / inl, iny / inl, 0);
+      addTriangle(iw0, iw2, iw3, inx / inl, iny / inl, 0);
+
+      // Top surface (with wobble)
+      var tv0 = [r1 * ca1, r1 * sa1, h1], tv1 = [r2 * ca1, r2 * sa1, h1];
+      var tv2 = [r2 * ca2, r2 * sa2, h2], tv3 = [r1 * ca2, r1 * sa2, h2];
+      // Normal: cross product of edges
+      var tux = tv1[0] - tv0[0], tuy = tv1[1] - tv0[1], tuz = tv1[2] - tv0[2];
+      var tvx = tv3[0] - tv0[0], tvy = tv3[1] - tv0[1], tvz = tv3[2] - tv0[2];
+      var tnx = tuy * tvz - tuz * tvy, tny = tuz * tvx - tux * tvz, tnz = tux * tvy - tuy * tvx;
+      var tnl = Math.sqrt(tnx * tnx + tny * tny + tnz * tnz) || 1;
+      addTriangle(tv0, tv1, tv2, tnx / tnl, tny / tnl, tnz / tnl);
+      addTriangle(tv0, tv2, tv3, tnx / tnl, tny / tnl, tnz / tnl);
+
+      // Bottom surface (flat)
+      var bv0 = [r1 * ca2, r1 * sa2, 0], bv1 = [r2 * ca2, r2 * sa2, 0];
+      var bv2 = [r2 * ca1, r2 * sa1, 0], bv3 = [r1 * ca1, r1 * sa1, 0];
+      addTriangle(bv0, bv1, bv2, 0, 0, -1);
+      addTriangle(bv0, bv2, bv3, 0, 0, -1);
+    }
+  }
+
+  return triangles;
+}
+
+function downloadSTL(project) {
+  var triangles = generateSTL(project);
+
+  // Build binary STL
+  var triCount = triangles.length;
+  var buf = new ArrayBuffer(84 + triCount * 50);
+  var dv = new DataView(buf);
+  var offset = 0;
+
+  // 80-byte header
+  var header = 'Dormant Ring Export';
+  for (var i = 0; i < 80; i++) {
+    dv.setUint8(offset++, i < header.length ? header.charCodeAt(i) : 0);
+  }
+
+  // Triangle count
+  dv.setUint32(offset, triCount, true); offset += 4;
+
+  // Triangles
+  for (var t = 0; t < triCount; t++) {
+    var tri = triangles[t];
+    // Normal
+    dv.setFloat32(offset, tri.normal[0], true); offset += 4;
+    dv.setFloat32(offset, tri.normal[1], true); offset += 4;
+    dv.setFloat32(offset, tri.normal[2], true); offset += 4;
+    // v0
+    dv.setFloat32(offset, tri.v0[0], true); offset += 4;
+    dv.setFloat32(offset, tri.v0[1], true); offset += 4;
+    dv.setFloat32(offset, tri.v0[2], true); offset += 4;
+    // v1
+    dv.setFloat32(offset, tri.v1[0], true); offset += 4;
+    dv.setFloat32(offset, tri.v1[1], true); offset += 4;
+    dv.setFloat32(offset, tri.v1[2], true); offset += 4;
+    // v2
+    dv.setFloat32(offset, tri.v2[0], true); offset += 4;
+    dv.setFloat32(offset, tri.v2[1], true); offset += 4;
+    dv.setFloat32(offset, tri.v2[2], true); offset += 4;
+    // Attribute
+    dv.setUint16(offset, 0, true); offset += 2;
+  }
+
+  var blob = new Blob([buf], { type: 'application/octet-stream' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = (project.name || 'dormant-ring').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.stl';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 // ============= RENDER PROJECTS PAGE (BUBBLE LAYOUT) =============
 var currentProjectsTab = 'in-progress';

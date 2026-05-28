@@ -33,6 +33,7 @@
 - 浅强调: `#818CF8`
 
 ## 字体规范
+- 字体族: 'Roboto Serif', serif
 - 标题: 20-32px, fontWeight 700-800
 - 正文: 14-17px, fontWeight 400-600
 - 辅助: 11-13px, fontWeight 400-500
