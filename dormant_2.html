@@ -627,7 +627,7 @@ body {
 .nav-item.active { opacity: 1; }
 .nav-item:hover { opacity: 0.7; }
 .nav-item.active:hover { opacity: 1; }
-.nav-item .ico { font-size: 14px; color: var(--ink); }
+.nav-item .ico { font-size: 18px; color: var(--ink); }
 .nav-item .lbl {
   font-size: 7px;
   letter-spacing: 0.08em;
@@ -724,7 +724,7 @@ body {
 .story-name-lg {
   font-family: 'Roboto Serif', serif;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 18px;
   color: var(--ink);
 }
 
@@ -1817,9 +1817,9 @@ body {
   <!-- ============= BOTTOM NAV ============= -->
   <div class="bnav-wrap">
     <div class="bnav">
-      <div class="nav-item active" data-nav="ring"><div class="ico">◎</div><div class="lbl">Ring</div></div>
-      <div class="nav-item" data-nav="projects"><div class="ico">⊞</div><div class="lbl">Projects</div></div>
-      <div class="nav-item" data-nav="profile"><div class="ico">○</div><div class="lbl">Profile</div></div>
+      <div class="nav-item active" data-nav="ring"><div class="ico">◎</div></div>
+      <div class="nav-item" data-nav="projects"><div class="ico">⊞</div></div>
+      <div class="nav-item" data-nav="profile"><div class="ico"><svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="7" cy="4.5" r="2.5"/><path d="M2.5 13c0-3 2-4.5 4.5-4.5s4.5 1.5 4.5 4.5"/></svg></div></div>
     </div>
     <button class="add-floating" id="addBtn">+</button>
   </div>
@@ -2788,7 +2788,7 @@ function drawRingFrame(angle, time) {
     ) * (feelX * 12.0);
 
     // Status offset — staggered endpoint positions like a race
-    var statusDrift = { smooth: 0.04, procrastinating: 0.02, stuck: -0.04 };
+    var statusDrift = { smooth: 0.04, procrastinating: 0.01, stuck: -0.04 };
     if (task._statusOffset === undefined) task._statusOffset = 0;
     if (task._lastAngle !== undefined) {
       var angleDelta = angle - task._lastAngle;
