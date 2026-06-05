@@ -3549,6 +3549,17 @@ function project3D(x, y, z, cx, cy) {
   return { x: cx + rx * s, y: cy - ry * s, z: rz2 };
 }
 
+function computeQuadNormal(q) {
+  var v0 = q[0], v1 = q[1], v2 = q[2];
+  var ux = v1.x - v0.x, uy = v1.y - v0.y, uz = v1.z - v0.z;
+  var vx = v2.x - v0.x, vy = v2.y - v0.y, vz = v2.z - v0.z;
+  var nx = uy * vz - uz * vy;
+  var ny = uz * vx - ux * vz;
+  var nz = ux * vy - uy * vx;
+  var len = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+  return { x: nx / len, y: ny / len, z: nz / len };
+}
+
 function render3DPreviewToCanvas() {
   var canvas = document.getElementById('export3dCanvas');
   if (!canvas) return;
@@ -3570,86 +3581,190 @@ function render3DPreviewToCanvas() {
 
   var tasks = project.tasks;
   var taskCount = tasks.length;
-  var R_MIN = 60, R_MAX = 260;
+  var N = 256;
+  var segAngle = (Math.PI * 2) / N;
+
+  var R_MIN = 130, R_MAX = 260;
   var gap = taskCount > 1 ? (R_MAX - R_MIN) / (taskCount - 1) : 20;
   var ringW = gap * 0.55;
-  var statusH = { smooth: 10, procrastinating: 18, stuck: 28, done: 5 };
-  var N = 72;
-  var segAngle = (Math.PI * 2) / N;
-  var allQuads = [];
+  var medalOuterR = R_MAX + ringW + 10;
+  var BASE_THICK = 30;
+  var RIM_HEIGHT = 2;
+  var RIM_WIDTH = 3;
+  var RELIEF_SCALE = 1.6;
 
+  var discOuter = medalOuterR - RIM_WIDTH;
+  var rimOuter = medalOuterR;
+
+  // Precompute ring band data: per-ring, per-angle-segment wobbled radius + thickness
+  var ringBands = [];
+  var ringMidRs = [];
   for (var i = 0; i < taskCount; i++) {
     var task = tasks[i];
-    var r1 = R_MIN + i * gap;
-    var r2 = r1 + ringW;
-    var baseH = statusH[task.status] || 10;
-
-    var wobbles = [];
+    var medalBaseR = R_MIN + i * gap;
+    ringMidRs.push(medalBaseR + ringW / 2);
+    var trailHist = task._trailHistory || task.trailHistory;
+    var slog = task._trailStatusLog || task.trailStatusLog;
+    if (!slog || slog.length === 0) {
+      slog = [{ atRotation: 0, thickness: 1.5 }];
+    }
+    var bands = [];
     for (var s = 0; s < N; s++) {
       var a = s * segAngle;
-      var w = 0;
-	      var trailHist = task._trailHistory || task.trailHistory;
-	      if (trailHist && trailHist.length > 0) {
-	        var best = null;
-	        for (var h = 0; h < trailHist.length; h++) {
-	          var hp = trailHist[h];
-          var da = hp.angle - a;
-          while (da > Math.PI) da -= Math.PI * 2;
-          while (da < -Math.PI) da += Math.PI * 2;
-          if (!best || Math.abs(da) < Math.abs(best.da)) { best = { da: da, r: hp.radius }; }
-        }
-        if (best) { var midR = (r1 + r2) / 2; w = (best.r - midR) * 0.3; }
-      }
-      wobbles.push(w);
+      var wobbledR = getWobbleRadius(trailHist, a, medalBaseR, medalBaseR);
+      var thickness = getThicknessAtRotation(slog, a);
+      bands.push({ wobbledR: wobbledR, thickness: thickness });
     }
+    ringBands.push(bands);
+  }
+
+  function getReliefHeight(r, angle) {
+    var na = angle % (Math.PI * 2);
+    if (na < 0) na += Math.PI * 2;
+    var s = na / segAngle;
+    var s0 = Math.floor(s);
+    var frac = s - s0;
+    var height = 0;
+    var MAX_BAND_HALF = 5.0;
+    for (var i = 0; i < taskCount; i++) {
+      if (Math.abs(r - ringMidRs[i]) > ringW / 2 + MAX_BAND_HALF) continue;
+      var s0m = s0 % N, s1m = (s0 + 1) % N;
+      var band0 = ringBands[i][s0m];
+      var band1 = ringBands[i][s1m];
+      var wobbledR = band0.wobbledR + (band1.wobbledR - band0.wobbledR) * frac;
+      var thick = band0.thickness + (band1.thickness - band0.thickness) * frac;
+      var halfW = Math.max(0.4, thick * 0.8);
+      var dr = Math.abs(r - wobbledR);
+      if (dr < halfW) {
+        height = Math.max(height, thick * RELIEF_SCALE * (1 - dr / halfW));
+      }
+    }
+    return height;
+  }
+
+  // Build dense uniform radial grid — single radii set for all angles (watertight)
+  var M = 180;
+  var radii = [];
+  for (var m = 0; m <= M; m++) {
+    radii.push(discOuter * m / M);
+  }
+  radii.push(rimOuter);
+
+  var allQuads = [];
+
+  for (var b = 0; b < radii.length - 1; b++) {
+    var ra = radii[b], rb = radii[b + 1];
+    var isRim = (b === radii.length - 2);
 
     for (var s = 0; s < N; s++) {
-      var a1 = s * segAngle, a2 = (s + 1) * segAngle;
+      var s2 = (s + 1) % N;
+      var a1 = s * segAngle, a2 = s2 * segAngle;
       var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
       var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
-      var h1 = baseH + wobbles[s];
-      var h2 = baseH + wobbles[(s + 1) % N];
 
-      var ow = [{ x: r2 * ca1, y: r2 * sa1, z: 0 }, { x: r2 * ca2, y: r2 * sa2, z: 0 }, { x: r2 * ca2, y: r2 * sa2, z: h2 }, { x: r2 * ca1, y: r2 * sa1, z: h1 }];
-      allQuads.push({ quad: ow, color: 'outer', ringIdx: i });
-      var iw = [{ x: r1 * ca1, y: r1 * sa1, z: h1 }, { x: r1 * ca2, y: r1 * sa2, z: h2 }, { x: r1 * ca2, y: r1 * sa2, z: 0 }, { x: r1 * ca1, y: r1 * sa1, z: 0 }];
-      allQuads.push({ quad: iw, color: 'inner', ringIdx: i });
-      var tq = [{ x: r1 * ca1, y: r1 * sa1, z: h1 }, { x: r2 * ca1, y: r2 * sa1, z: h1 }, { x: r2 * ca2, y: r2 * sa2, z: h2 }, { x: r1 * ca2, y: r1 * sa2, z: h2 }];
-      allQuads.push({ quad: tq, color: 'top', ringIdx: i });
-      var bq = [{ x: r1 * ca2, y: r1 * sa2, z: 0 }, { x: r2 * ca2, y: r2 * sa2, z: 0 }, { x: r2 * ca1, y: r2 * sa1, z: 0 }, { x: r1 * ca1, y: r1 * sa1, z: 0 }];
-      allQuads.push({ quad: bq, color: 'bottom', ringIdx: i });
+      var zBase = isRim ? BASE_THICK + RIM_HEIGHT : BASE_THICK;
+      var r00 = isRim ? 0 : getReliefHeight(ra, a1);
+      var r01 = isRim ? 0 : getReliefHeight(ra, a2);
+      var r10 = isRim ? 0 : getReliefHeight(rb, a1);
+      var r11 = isRim ? 0 : getReliefHeight(rb, a2);
+
+      var h00 = zBase - r00, h01 = zBase - r01;
+      var h10 = zBase - r10, h11 = zBase - r11;
+
+      var q = [
+        { x: ra * ca1, y: ra * sa1, z: h00 },
+        { x: rb * ca1, y: rb * sa1, z: h10 },
+        { x: rb * ca2, y: rb * sa2, z: h11 },
+        { x: ra * ca2, y: ra * sa2, z: h01 }
+      ];
+      allQuads.push({ quad: q, color: 'top', ringIdx: 0, normal: computeQuadNormal(q), s: s });
+
+      var bq = [
+        { x: ra * ca2, y: ra * sa2, z: 0 },
+        { x: rb * ca2, y: rb * sa2, z: 0 },
+        { x: rb * ca1, y: rb * sa1, z: 0 },
+        { x: ra * ca1, y: ra * sa1, z: 0 }
+      ];
+      allQuads.push({ quad: bq, color: 'bottom', ringIdx: 0, normal: computeQuadNormal(bq), s: s });
     }
   }
 
+  // Rim inner wall
+  for (var s = 0; s < N; s++) {
+    var s2 = (s + 1) % N;
+    var a1 = s * segAngle, a2 = s2 * segAngle;
+    var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
+    var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
+    var wq = [
+      { x: discOuter * ca1, y: discOuter * sa1, z: BASE_THICK },
+      { x: discOuter * ca2, y: discOuter * sa2, z: BASE_THICK },
+      { x: discOuter * ca2, y: discOuter * sa2, z: BASE_THICK + RIM_HEIGHT },
+      { x: discOuter * ca1, y: discOuter * sa1, z: BASE_THICK + RIM_HEIGHT }
+    ];
+    allQuads.push({ quad: wq, color: 'wall', ringIdx: 0, normal: computeQuadNormal(wq), s: s });
+  }
+
+  // Outer wall
+  for (var s = 0; s < N; s++) {
+    var s2 = (s + 1) % N;
+    var a1 = s * segAngle, a2 = s2 * segAngle;
+    var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
+    var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
+    var topZ = BASE_THICK + RIM_HEIGHT;
+    var wq = [
+      { x: rimOuter * ca1, y: rimOuter * sa1, z: 0 },
+      { x: rimOuter * ca2, y: rimOuter * sa2, z: 0 },
+      { x: rimOuter * ca2, y: rimOuter * sa2, z: topZ },
+      { x: rimOuter * ca1, y: rimOuter * sa1, z: topZ }
+    ];
+    allQuads.push({ quad: wq, color: 'wall', ringIdx: 0, normal: computeQuadNormal(wq), s: s });
+  }
+
+  // Smooth top normals
+  var topIndices = [];
+  for (var gi = 0; gi < allQuads.length; gi++) {
+    if (allQuads[gi].color === 'top') topIndices.push(gi);
+  }
+  topIndices.sort(function(a, b) { return (allQuads[a].s || 0) - (allQuads[b].s || 0); });
+  var tc = topIndices.length;
+  for (var j = 0; j < tc; j++) {
+    var prev = topIndices[(j - 1 + tc) % tc];
+    var curr = topIndices[j];
+    var next = topIndices[(j + 1) % tc];
+    var pn = allQuads[prev].normal, cn = allQuads[curr].normal, nn = allQuads[next].normal;
+    var sx = pn.x + cn.x + nn.x, sy = pn.y + cn.y + nn.y, sz = pn.z + cn.z + nn.z;
+    var sl = Math.sqrt(sx * sx + sy * sy + sz * sz) || 1;
+    allQuads[curr].normal = { x: sx / sl, y: sy / sl, z: sz / sl };
+  }
+
+  // Project and depth-sort
   allQuads.forEach(function(q) {
     q.proj = q.quad.map(function(v) { return project3D(v.x, v.y, v.z, CX, CY); });
     q.avgZ = (q.proj[0].z + q.proj[1].z + q.proj[2].z + q.proj[3].z) / 4;
   });
   allQuads.sort(function(a, b) { return a.avgZ - b.avgZ; });
 
-  var ringColors = ['#8C7354', '#5C7A6B', '#7A5C6B', '#7E8FA5', '#9B8C74', '#6B8A7C', '#8C6B7C', '#8F9EB5', '#A89A82', '#7A9A8C'];
-
   allQuads.forEach(function(q) {
     var p = q.proj;
-    var ringColor = ringColors[q.ringIdx % ringColors.length];
     ctx.beginPath();
-    ctx.moveTo(p[0].x, p[0].y);
-    ctx.lineTo(p[1].x, p[1].y);
-    ctx.lineTo(p[2].x, p[2].y);
-    ctx.lineTo(p[3].x, p[3].y);
+    ctx.moveTo(p[0].x, p[0].y); ctx.lineTo(p[1].x, p[1].y);
+    ctx.lineTo(p[2].x, p[2].y); ctx.lineTo(p[3].x, p[3].y);
     ctx.closePath();
-    if (q.color === 'top') {
-      ctx.fillStyle = ringColor; ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 0.5; ctx.stroke();
-    } else if (q.color === 'outer') {
-      ctx.fillStyle = shadeColor(ringColor, -25); ctx.fill();
-    } else if (q.color === 'inner') {
-      ctx.fillStyle = shadeColor(ringColor, -40); ctx.fill();
+
+    if (q.color === 'bottom' || q.color === 'wall') {
+      ctx.fillStyle = '#B8B4AD'; ctx.fill();
     } else {
-      ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fill();
+      var lightX = -0.45, lightY = -0.45, lightZ = 0.77;
+      var Nq = q.normal || { x: 0, y: 0, z: 1 };
+      var diffuse = Math.max(0, Nq.x * lightX + Nq.y * lightY + Nq.z * lightZ);
+      var brightness = 0.40 + diffuse * 0.54;
+      var gray = Math.round(brightness * 255);
+      ctx.fillStyle = 'rgb(' + gray + ',' + gray + ',' + gray + ')'; ctx.fill();
     }
   });
 }
+
+
 
 function shadeColor(hex, percent) {
   var num = parseInt(hex.replace('#', ''), 16);
@@ -3860,122 +3975,170 @@ document.getElementById('sharePosterBtn').addEventListener('click', function() {
 function generateSTL(project) {
   var tasks = project.tasks;
   var taskCount = tasks.length;
-  var R_MIN = 60, R_MAX = 260;
+  var N = 360;
+  var segAngle = (Math.PI * 2) / N;
+  var scale = 0.2;
+
+  var R_MIN = 130, R_MAX = 260;
   var gap = taskCount > 1 ? (R_MAX - R_MIN) / (taskCount - 1) : 20;
   var ringW = gap * 0.55;
-  var statusH = { smooth: 10, procrastinating: 18, stuck: 28, done: 5 };
-  var N = 120; // segments per ring
-  var segAngle = (Math.PI * 2) / N;
+  var medalOuterR = R_MAX + ringW + 10;
+  var BASE_THICK = 30;
+  var RIM_HEIGHT = 2;
+  var RIM_WIDTH = 3;
+  var RELIEF_SCALE = 1.6;
 
-  // Scale factor: design units → mm (1 unit = 0.2mm for 3D printing)
-  var scale = 0.2;
+  var discOuter = medalOuterR - RIM_WIDTH;
+  var rimOuter = medalOuterR;
 
   var triangles = [];
 
   function addTriangle(v0, v1, v2, nx, ny, nz) {
-    // Scale
     var p0 = [v0[0] * scale, v0[1] * scale, v0[2] * scale];
     var p1 = [v1[0] * scale, v1[1] * scale, v1[2] * scale];
     var p2 = [v2[0] * scale, v2[1] * scale, v2[2] * scale];
-    triangles.push({
-      normal: [nx, ny, nz],
-      v0: p0, v1: p1, v2: p2
-    });
+    triangles.push({ normal: [nx, ny, nz], v0: p0, v1: p1, v2: p2 });
   }
 
-  // Base plate (solid disc)
-  var baseR = R_MIN - ringW * 0.5;
-  var baseThick = 2;
+  // Precompute ring band data: per-ring, per-angle-segment wobbled radius + thickness
+  var ringBands = [];
+  var ringMidRs = [];
+  for (var i = 0; i < taskCount; i++) {
+    var task = tasks[i];
+    var medalBaseR = R_MIN + i * gap;
+    ringMidRs.push(medalBaseR + ringW / 2);
+    var trailHist = task._trailHistory || task.trailHistory;
+    var slog = task._trailStatusLog || task.trailStatusLog;
+    if (!slog || slog.length === 0) {
+      slog = [{ atRotation: 0, thickness: 1.5 }];
+    }
+    var bands = [];
+    for (var s = 0; s < N; s++) {
+      var a = s * segAngle;
+      var wobbledR = getWobbleRadius(trailHist, a, medalBaseR, medalBaseR);
+      var thickness = getThicknessAtRotation(slog, a);
+      bands.push({ wobbledR: wobbledR, thickness: thickness });
+    }
+    ringBands.push(bands);
+  }
+
+  // Relief height at (r, angle) — positive displacement where ring passes
+  function getReliefHeight(r, angle) {
+    var na = angle % (Math.PI * 2);
+    if (na < 0) na += Math.PI * 2;
+    var s = na / segAngle;
+    var s0 = Math.floor(s);
+    var frac = s - s0;
+    var height = 0;
+    var MAX_BAND_HALF = 5.0;
+    for (var i = 0; i < taskCount; i++) {
+      if (Math.abs(r - ringMidRs[i]) > ringW / 2 + MAX_BAND_HALF) continue;
+      var s0m = s0 % N, s1m = (s0 + 1) % N;
+      var band0 = ringBands[i][s0m];
+      var band1 = ringBands[i][s1m];
+      var wobbledR = band0.wobbledR + (band1.wobbledR - band0.wobbledR) * frac;
+      var thick = band0.thickness + (band1.thickness - band0.thickness) * frac;
+      var halfW = Math.max(0.4, thick * 0.8);
+      var dr = Math.abs(r - wobbledR);
+      if (dr < halfW) {
+        height = Math.max(height, thick * RELIEF_SCALE * (1 - dr / halfW));
+      }
+    }
+    return height;
+  }
+
+  // Build dense uniform radial grid — single radii set for all angles (watertight)
+  var M = 200;
+  var radii = [];
+  for (var m = 0; m <= M; m++) {
+    radii.push(discOuter * m / M);
+  }
+  radii.push(rimOuter);
+
+  // Top surface
+  for (var b = 0; b < radii.length - 1; b++) {
+    var ra = radii[b], rb = radii[b + 1];
+    var isRim = (b === radii.length - 2);
+
+    for (var s = 0; s < N; s++) {
+      var s2 = (s + 1) % N;
+      var a1 = s * segAngle, a2 = s2 * segAngle;
+      var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
+      var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
+
+      var zBase = isRim ? BASE_THICK + RIM_HEIGHT : BASE_THICK;
+      var r00 = isRim ? 0 : getReliefHeight(ra, a1);
+      var r01 = isRim ? 0 : getReliefHeight(ra, a2);
+      var r10 = isRim ? 0 : getReliefHeight(rb, a1);
+      var r11 = isRim ? 0 : getReliefHeight(rb, a2);
+
+      var h00 = zBase - r00, h01 = zBase - r01;
+      var h10 = zBase - r10, h11 = zBase - r11;
+
+      var p00 = [ra * ca1, ra * sa1, h00];
+      var p01 = [ra * ca2, ra * sa2, h01];
+      var p10 = [rb * ca1, rb * sa1, h10];
+      var p11 = [rb * ca2, rb * sa2, h11];
+
+      var ux = p10[0] - p00[0], uy = p10[1] - p00[1], uz = p10[2] - p00[2];
+      var vx = p01[0] - p00[0], vy = p01[1] - p00[1], vz = p01[2] - p00[2];
+      var nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+      var nl = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+      nx /= nl; ny /= nl; nz /= nl;
+      if (nz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+
+      addTriangle(p00, p10, p11, nx, ny, nz);
+      addTriangle(p00, p11, p01, nx, ny, nz);
+    }
+  }
+
+  // Bottom surface
   for (var s = 0; s < N; s++) {
     var a1 = s * segAngle, a2 = (s + 1) * segAngle;
     var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
     var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
-    // Top base disc
-    addTriangle([0, 0, baseThick], [baseR * ca1, baseR * sa1, baseThick], [baseR * ca2, baseR * sa2, baseThick], 0, 0, 1);
-    // Bottom base disc
-    addTriangle([baseR * ca2, baseR * sa2, 0], [baseR * ca1, baseR * sa1, 0], [0, 0, 0], 0, 0, -1);
-    // Edge of base
-    var e0 = [baseR * ca1, baseR * sa1, 0], e1 = [baseR * ca2, baseR * sa2, 0];
-    var e2 = [baseR * ca2, baseR * sa2, baseThick], e3 = [baseR * ca1, baseR * sa1, baseThick];
-    var enx = ca1 + ca2, eny = sa1 + sa2;
-    var enl = Math.sqrt(enx * enx + eny * eny);
-    addTriangle(e0, e1, e2, enx / enl, eny / enl, 0);
-    addTriangle(e0, e2, e3, enx / enl, eny / enl, 0);
+    addTriangle(
+      [0, 0, 0],
+      [rimOuter * ca2, rimOuter * sa2, 0],
+      [rimOuter * ca1, rimOuter * sa1, 0],
+      0, 0, -1
+    );
   }
 
-  for (var i = 0; i < taskCount; i++) {
-    var task = tasks[i];
-    var r1 = R_MIN + i * gap;
-    var r2 = r1 + ringW;
-    var baseH = statusH[task.status] || 10;
+  // Outer wall
+  for (var s = 0; s < N; s++) {
+    var a1 = s * segAngle, a2 = (s + 1) * segAngle;
+    var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
+    var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
+    var topZ = BASE_THICK + RIM_HEIGHT;
+    var b0 = [rimOuter * ca1, rimOuter * sa1, 0];
+    var b1 = [rimOuter * ca2, rimOuter * sa2, 0];
+    var t0 = [rimOuter * ca1, rimOuter * sa1, topZ];
+    var t1 = [rimOuter * ca2, rimOuter * sa2, topZ];
+    var onx = ca1 + ca2, ony = sa1 + sa2;
+    var onl = Math.sqrt(onx * onx + ony * ony);
+    addTriangle(b0, b1, t1, onx / onl, ony / onl, 0);
+    addTriangle(b0, t1, t0, onx / onl, ony / onl, 0);
+  }
 
-    // Wobble data
-    var wobbles = [];
-    for (var s = 0; s < N; s++) {
-      var a = s * segAngle;
-      var w = 0;
-	      var trailHist = task._trailHistory || task.trailHistory;
-	      if (trailHist && trailHist.length > 0) {
-	        var best = null;
-	        for (var h = 0; h < trailHist.length; h++) {
-	          var hp = trailHist[h];
-          var da = hp.angle - a;
-          while (da > Math.PI) da -= Math.PI * 2;
-          while (da < -Math.PI) da += Math.PI * 2;
-          if (!best || Math.abs(da) < Math.abs(best.da)) {
-            best = { da: da, r: hp.radius };
-          }
-        }
-        if (best) {
-          var midR = (r1 + r2) / 2;
-          w = (best.r - midR) * 0.3;
-        }
-      }
-      wobbles.push(w);
-    }
-
-    for (var s = 0; s < N; s++) {
-      var a1 = s * segAngle, a2 = (s + 1) * segAngle;
-      var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
-      var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
-      var h1 = baseH + wobbles[s];
-      var h2 = baseH + wobbles[(s + 1) % N];
-
-      // Outer wall
-      var ow0 = [r2 * ca1, r2 * sa1, 0], ow1 = [r2 * ca2, r2 * sa2, 0];
-      var ow2 = [r2 * ca2, r2 * sa2, h2], ow3 = [r2 * ca1, r2 * sa1, h1];
-      var onx = ca1 + ca2, ony = sa1 + sa2, onl = Math.sqrt(onx * onx + ony * ony);
-      addTriangle(ow0, ow1, ow2, onx / onl, ony / onl, 0);
-      addTriangle(ow0, ow2, ow3, onx / onl, ony / onl, 0);
-
-      // Inner wall (normals point inward)
-      var iw0 = [r1 * ca1, r1 * sa1, h1], iw1 = [r1 * ca2, r1 * sa2, h2];
-      var iw2 = [r1 * ca2, r1 * sa2, 0], iw3 = [r1 * ca1, r1 * sa1, 0];
-      var inx = -(ca1 + ca2), iny = -(sa1 + sa2), inl = Math.sqrt(inx * inx + iny * iny);
-      addTriangle(iw0, iw1, iw2, inx / inl, iny / inl, 0);
-      addTriangle(iw0, iw2, iw3, inx / inl, iny / inl, 0);
-
-      // Top surface (with wobble)
-      var tv0 = [r1 * ca1, r1 * sa1, h1], tv1 = [r2 * ca1, r2 * sa1, h1];
-      var tv2 = [r2 * ca2, r2 * sa2, h2], tv3 = [r1 * ca2, r1 * sa2, h2];
-      // Normal: cross product of edges
-      var tux = tv1[0] - tv0[0], tuy = tv1[1] - tv0[1], tuz = tv1[2] - tv0[2];
-      var tvx = tv3[0] - tv0[0], tvy = tv3[1] - tv0[1], tvz = tv3[2] - tv0[2];
-      var tnx = tuy * tvz - tuz * tvy, tny = tuz * tvx - tux * tvz, tnz = tux * tvy - tuy * tvx;
-      var tnl = Math.sqrt(tnx * tnx + tny * tny + tnz * tnz) || 1;
-      addTriangle(tv0, tv1, tv2, tnx / tnl, tny / tnl, tnz / tnl);
-      addTriangle(tv0, tv2, tv3, tnx / tnl, tny / tnl, tnz / tnl);
-
-      // Bottom surface (flat)
-      var bv0 = [r1 * ca2, r1 * sa2, 0], bv1 = [r2 * ca2, r2 * sa2, 0];
-      var bv2 = [r2 * ca1, r2 * sa1, 0], bv3 = [r1 * ca1, r1 * sa1, 0];
-      addTriangle(bv0, bv1, bv2, 0, 0, -1);
-      addTriangle(bv0, bv2, bv3, 0, 0, -1);
-    }
+  // Rim inner wall
+  for (var s = 0; s < N; s++) {
+    var a1 = s * segAngle, a2 = (s + 1) * segAngle;
+    var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
+    var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
+    var b0 = [discOuter * ca1, discOuter * sa1, BASE_THICK];
+    var b1 = [discOuter * ca2, discOuter * sa2, BASE_THICK];
+    var t0 = [discOuter * ca1, discOuter * sa1, BASE_THICK + RIM_HEIGHT];
+    var t1 = [discOuter * ca2, discOuter * sa2, BASE_THICK + RIM_HEIGHT];
+    var onx = ca1 + ca2, ony = sa1 + sa2;
+    var onl = Math.sqrt(onx * onx + ony * ony);
+    addTriangle(b0, b1, t1, onx / onl, ony / onl, 0);
+    addTriangle(b0, t1, t0, onx / onl, ony / onl, 0);
   }
 
   return triangles;
 }
+
 
 function downloadSTL(project) {
   var triangles = generateSTL(project);
