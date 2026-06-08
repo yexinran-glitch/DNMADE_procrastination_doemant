@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Dormant</title>
+<title>Fallow</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap" rel="stylesheet">
@@ -1597,6 +1597,14 @@ body {
   color: var(--ink);
 }
 .engraving-input::placeholder { color: rgba(245, 241, 233, 0.25); }
+.flip-btn {
+  display: block; margin: 8px auto 0;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  color: var(--ink2); font-family: 'Inter', sans-serif; font-size: 11px;
+  padding: 6px 18px; border-radius: 14px; cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.flip-btn:hover { background: rgba(255,255,255,0.14); color: var(--ink); }
 
 /* ============= SHARE POSTER ============= */
 .poster-preview {
@@ -1654,7 +1662,7 @@ body {
 
   <!-- ============= STATUS BAR ============= -->
   <div class="status-bar">
-    <span class="brand">Dormant</span>
+    <span class="brand">Fallow</span>
   </div>
 
   <!-- ============= PAGES ============= -->
@@ -1915,6 +1923,7 @@ body {
       </div>
       <div class="export-preview-area">
         <canvas id="export3dCanvas" width="600" height="400"></canvas>
+        <button class="flip-btn" id="flip3dBtn">↺ Flip</button>
       </div>
       <div class="export-quote">Your journey is now an object.</div>
       <div class="export-subtitle">This model is generated from your project's ring data — every ripple reflects your creative journey.</div>
@@ -1959,7 +1968,7 @@ let tasks = [];
 
 function loadProjects() {
   try {
-    const saved = localStorage.getItem('dormant-projects');
+    const saved = localStorage.getItem('fallow-projects');
     if (saved) {
       const parsed = JSON.parse(saved);
       parsed.forEach(p => {
@@ -1984,7 +1993,7 @@ function loadProjects() {
 }
 
 function saveProjects() {
-  try { localStorage.setItem('dormant-projects', JSON.stringify(projects)); } catch(e) {}
+  try { localStorage.setItem('fallow-projects', JSON.stringify(projects)); } catch(e) {}
 }
 
 function saveTasks() {
@@ -2025,7 +2034,7 @@ function persistTrailData(project) {
 
 function migrateFromLegacyTasks() {
   try {
-    const saved = localStorage.getItem('dormant-tasks');
+    const saved = localStorage.getItem('fallow-tasks');
     if (saved) {
       const legacyTasks = JSON.parse(saved);
       legacyTasks.forEach(t => {
@@ -2038,7 +2047,7 @@ function migrateFromLegacyTasks() {
         createdAt: '2026-01-15'
       };
       projects.push(project);
-      localStorage.removeItem('dormant-tasks');
+      localStorage.removeItem('fallow-tasks');
       return true;
     }
   } catch(e) {}
@@ -2134,7 +2143,7 @@ if (!projects) {
 }
 
 // Set active project
-activeProjectId = localStorage.getItem('dormant-active-project') || (projects.length > 0 ? projects[0].id : null);
+activeProjectId = localStorage.getItem('fallow-active-project') || (projects.length > 0 ? projects[0].id : null);
 
 function setActiveProject(projectId) {
   const project = projects.find(p => p.id === projectId);
@@ -2148,7 +2157,7 @@ function setActiveProject(projectId) {
   });
   Array.prototype.push.apply(tasks, project.tasks);
   currentRingTasks = tasks.filter(t => t.inRing);
-  localStorage.setItem('dormant-active-project', activeProjectId);
+  localStorage.setItem('fallow-active-project', activeProjectId);
   loadStoryMeta();
   saveProjects();
   renderOutlinePanel();
@@ -2178,7 +2187,7 @@ if (activeProjectId) {
     activeProjectId = projects[0].id;
     tasks.length = 0;
     Array.prototype.push.apply(tasks, projects[0].tasks);
-    localStorage.setItem('dormant-active-project', activeProjectId);
+    localStorage.setItem('fallow-active-project', activeProjectId);
   }
 }
 
@@ -3217,11 +3226,11 @@ document.querySelectorAll('.settings-row').forEach(function(row) {
       var blob = new Blob([data], { type: 'application/json' });
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.href = url; a.download = 'dormant_backup_' + new Date().toISOString().slice(0, 10) + '.json';
+      a.href = url; a.download = 'fallow_backup_' + new Date().toISOString().slice(0, 10) + '.json';
       document.body.appendChild(a); a.click();
       document.body.removeChild(a); URL.revokeObjectURL(url);
     } else if (action === 'feedback') {
-      window.location.href = 'mailto:dormant-feedback@pm.me?subject=Dormant Feedback';
+      window.location.href = 'mailto:fallow-feedback@pm.me?subject=Fallow Feedback';
     }
     // language is a placeholder
   });
@@ -3581,7 +3590,7 @@ function render3DPreviewToCanvas() {
 
   var tasks = project.tasks;
   var taskCount = tasks.length;
-  var N = 256;
+  var N = 360;
   var segAngle = (Math.PI * 2) / N;
 
   var R_MIN = 130, R_MAX = 260;
@@ -3633,13 +3642,56 @@ function render3DPreviewToCanvas() {
       var band1 = ringBands[i][s1m];
       var wobbledR = band0.wobbledR + (band1.wobbledR - band0.wobbledR) * frac;
       var thick = band0.thickness + (band1.thickness - band0.thickness) * frac;
-      var halfW = Math.max(0.4, thick * 0.8);
+      var halfW = Math.max(3.5, thick * 1.6);
       var dr = Math.abs(r - wobbledR);
       if (dr < halfW) {
-        height = Math.max(height, thick * RELIEF_SCALE * (1 - dr / halfW));
+        var t = 1 - dr / halfW;
+        var st = t * t * (3 - 2 * t);
+        height = Math.max(height, thick * RELIEF_SCALE * st);
       }
     }
     return height;
+  }
+
+  // Text bitmap for bottom engraving
+  var TEXTSZ = 1024;
+  var textCanvas = document.createElement('canvas');
+  textCanvas.width = TEXTSZ;
+  textCanvas.height = TEXTSZ;
+  var tctx = textCanvas.getContext('2d');
+  tctx.fillStyle = '#FFFFFF';
+  tctx.fillRect(0, 0, TEXTSZ, TEXTSZ);
+  tctx.fillStyle = '#000000';
+  tctx.textAlign = 'center';
+  tctx.textBaseline = 'middle';
+  var maxTextW = TEXTSZ * 0.72;
+  var fontSize = 80;
+  tctx.font = 'bold ' + fontSize + 'px "Inter", sans-serif';
+  var engravingInput = document.getElementById('engravingText');
+  var pname = (engravingInput && engravingInput.value) || (project.name || '');
+  var metrics = tctx.measureText(pname);
+  if (metrics.width > maxTextW) {
+    fontSize = Math.floor(fontSize * maxTextW / metrics.width);
+    tctx.font = 'bold ' + fontSize + 'px "Inter", sans-serif';
+  }
+  if (pname) tctx.fillText(pname, TEXTSZ / 2, TEXTSZ * 0.38);
+  tctx.font = 'italic 32px "Inter", sans-serif';
+  tctx.fillText('Every creator has a fallow period.', TEXTSZ / 2, TEXTSZ * 0.64);
+  var imageData = tctx.getImageData(0, 0, TEXTSZ, TEXTSZ);
+  var textPixels = imageData.data;
+  var TEXT_DEPTH = 3.5;
+
+  function getTextDepth(x, y) {
+    var r = Math.sqrt(x * x + y * y);
+    if (r > discOuter) return 0;
+    var cx = Math.floor((x / discOuter + 1) * TEXTSZ / 2);
+    var cy = Math.floor((y / discOuter + 1) * TEXTSZ / 2);
+    cx = Math.max(0, Math.min(TEXTSZ - 1, cx));
+    cy = Math.max(0, Math.min(TEXTSZ - 1, cy));
+    var idx = (cy * TEXTSZ + cx) * 4;
+    var brightness = textPixels[idx];
+    if (brightness < 128) return TEXT_DEPTH * (1 - brightness / 128);
+    return 0;
   }
 
   // Build dense uniform radial grid — single radii set for all angles (watertight)
@@ -3679,11 +3731,15 @@ function render3DPreviewToCanvas() {
       ];
       allQuads.push({ quad: q, color: 'top', ringIdx: 0, normal: computeQuadNormal(q), s: s });
 
+      var bx00 = ra * ca2, by00 = ra * sa2;
+      var bx10 = rb * ca2, by10 = rb * sa2;
+      var bx11 = rb * ca1, by11 = rb * sa1;
+      var bx01 = ra * ca1, by01 = ra * sa1;
       var bq = [
-        { x: ra * ca2, y: ra * sa2, z: 0 },
-        { x: rb * ca2, y: rb * sa2, z: 0 },
-        { x: rb * ca1, y: rb * sa1, z: 0 },
-        { x: ra * ca1, y: ra * sa1, z: 0 }
+        { x: bx00, y: by00, z: -getTextDepth(bx00, by00) },
+        { x: bx10, y: by10, z: -getTextDepth(bx10, by10) },
+        { x: bx11, y: by11, z: -getTextDepth(bx11, by11) },
+        { x: bx01, y: by01, z: -getTextDepth(bx01, by01) }
       ];
       allQuads.push({ quad: bq, color: 'bottom', ringIdx: 0, normal: computeQuadNormal(bq), s: s });
     }
@@ -3783,6 +3839,14 @@ if (export3dCanvas) {
   });
   export3dCanvas.addEventListener('touchstart', function(e) {
     stlDrag3D = { x: e.touches[0].clientX, y: e.touches[0].clientY, rotX: stlRotX, rotY: stlRotY };
+  });
+}
+
+var flip3dBtn = document.getElementById('flip3dBtn');
+if (flip3dBtn) {
+  flip3dBtn.addEventListener('click', function() {
+    stlRotX += Math.PI;
+    render3DPreviewToCanvas();
   });
 }
 
@@ -3920,7 +3984,7 @@ function renderPoster(project) {
 
   ctx.fillStyle = '#3A3228';
   ctx.font = '400 16px "Roboto Serif", serif';
-  ctx.fillText('Dormant', W / 2, H * 0.93);
+  ctx.fillText('Fallow', W / 2, H * 0.93);
 }
 
 document.getElementById('openPosterBtn').addEventListener('click', function() {
@@ -3958,13 +4022,13 @@ document.getElementById('sharePosterBtn').addEventListener('click', function() {
   var canvas = document.getElementById('posterCanvas');
   if (!canvas) return;
   canvas.toBlob(function(blob) {
-    var file = new File([blob], 'dormant_poster.png', { type: 'image/png' });
+    var file = new File([blob], 'fallow_poster.png', { type: 'image/png' });
     if (navigator.share) {
-      navigator.share({ title: 'Dormant Poster', files: [file] }).catch(function() {});
+      navigator.share({ title: 'Fallow Poster', files: [file] }).catch(function() {});
     } else {
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.href = url; a.download = 'dormant_poster.png';
+      a.href = url; a.download = 'fallow_poster.png';
       document.body.appendChild(a); a.click();
       document.body.removeChild(a); URL.revokeObjectURL(url);
     }
@@ -3975,9 +4039,10 @@ document.getElementById('sharePosterBtn').addEventListener('click', function() {
 function generateSTL(project) {
   var tasks = project.tasks;
   var taskCount = tasks.length;
-  var N = 360;
-  var segAngle = (Math.PI * 2) / N;
-  var scale = 0.2;
+  var N_TOP = 180;
+  var N_SIMPLE = 48;
+  var segAngle = (Math.PI * 2) / N_TOP;
+  var scale = 0.08;
 
   var R_MIN = 130, R_MAX = 260;
   var gap = taskCount > 1 ? (R_MAX - R_MIN) / (taskCount - 1) : 20;
@@ -4013,7 +4078,7 @@ function generateSTL(project) {
       slog = [{ atRotation: 0, thickness: 1.5 }];
     }
     var bands = [];
-    for (var s = 0; s < N; s++) {
+    for (var s = 0; s < N_TOP; s++) {
       var a = s * segAngle;
       var wobbledR = getWobbleRadius(trailHist, a, medalBaseR, medalBaseR);
       var thickness = getThicknessAtRotation(slog, a);
@@ -4033,22 +4098,24 @@ function generateSTL(project) {
     var MAX_BAND_HALF = 5.0;
     for (var i = 0; i < taskCount; i++) {
       if (Math.abs(r - ringMidRs[i]) > ringW / 2 + MAX_BAND_HALF) continue;
-      var s0m = s0 % N, s1m = (s0 + 1) % N;
+      var s0m = s0 % N_TOP, s1m = (s0 + 1) % N_TOP;
       var band0 = ringBands[i][s0m];
       var band1 = ringBands[i][s1m];
       var wobbledR = band0.wobbledR + (band1.wobbledR - band0.wobbledR) * frac;
       var thick = band0.thickness + (band1.thickness - band0.thickness) * frac;
-      var halfW = Math.max(0.4, thick * 0.8);
+      var halfW = Math.max(3.5, thick * 1.6);
       var dr = Math.abs(r - wobbledR);
       if (dr < halfW) {
-        height = Math.max(height, thick * RELIEF_SCALE * (1 - dr / halfW));
+        var t = 1 - dr / halfW;
+        var st = t * t * (3 - 2 * t);
+        height = Math.max(height, thick * RELIEF_SCALE * st);
       }
     }
     return height;
   }
 
-  // Build dense uniform radial grid — single radii set for all angles (watertight)
-  var M = 200;
+  // Build uniform radial grid (watertight)
+  var M = 120;
   var radii = [];
   for (var m = 0; m <= M; m++) {
     radii.push(discOuter * m / M);
@@ -4060,8 +4127,8 @@ function generateSTL(project) {
     var ra = radii[b], rb = radii[b + 1];
     var isRim = (b === radii.length - 2);
 
-    for (var s = 0; s < N; s++) {
-      var s2 = (s + 1) % N;
+    for (var s = 0; s < N_TOP; s++) {
+      var s2 = (s + 1) % N_TOP;
       var a1 = s * segAngle, a2 = s2 * segAngle;
       var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
       var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
@@ -4092,22 +4159,90 @@ function generateSTL(project) {
     }
   }
 
-  // Bottom surface
-  for (var s = 0; s < N; s++) {
-    var a1 = s * segAngle, a2 = (s + 1) * segAngle;
-    var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
-    var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
-    addTriangle(
-      [0, 0, 0],
-      [rimOuter * ca2, rimOuter * sa2, 0],
-      [rimOuter * ca1, rimOuter * sa1, 0],
-      0, 0, -1
-    );
+  // Bottom surface with text engraving
+  var TEXT_DEPTH = 3.5;
+  var TEXTSZ = 1024;
+  var textCanvas = document.createElement('canvas');
+  textCanvas.width = TEXTSZ;
+  textCanvas.height = TEXTSZ;
+  var tctx = textCanvas.getContext('2d');
+  tctx.fillStyle = '#FFFFFF';
+  tctx.fillRect(0, 0, TEXTSZ, TEXTSZ);
+  tctx.fillStyle = '#000000';
+  tctx.textAlign = 'center';
+  tctx.textBaseline = 'middle';
+  var maxTextW = TEXTSZ * 0.72;
+  // Line 1: project name (large, upper portion)
+  var fontSize = 80;
+  tctx.font = 'bold ' + fontSize + 'px "Inter", sans-serif';
+  var engravingInput = document.getElementById('engravingText');
+  var pname = (engravingInput && engravingInput.value) || project.name || '';
+  var metrics = tctx.measureText(pname);
+  if (metrics.width > maxTextW) {
+    fontSize = Math.floor(fontSize * maxTextW / metrics.width);
+    tctx.font = 'bold ' + fontSize + 'px "Inter", sans-serif';
+  }
+  if (pname) {
+    tctx.fillText(pname, TEXTSZ / 2, TEXTSZ * 0.38);
+  }
+  // Line 2: slogan (smaller, lower portion)
+  var slogan = 'Every creator has a fallow period.';
+  tctx.font = 'italic 32px "Inter", sans-serif';
+  tctx.fillText(slogan, TEXTSZ / 2, TEXTSZ * 0.64);
+  var imageData = tctx.getImageData(0, 0, TEXTSZ, TEXTSZ);
+  var textPixels = imageData.data;
+
+  function getTextDepth(x, y) {
+    var r = Math.sqrt(x * x + y * y);
+    if (r > discOuter) return 0;
+    var cx = Math.floor((x / discOuter + 1) * TEXTSZ / 2);
+    var cy = Math.floor((y / discOuter + 1) * TEXTSZ / 2);
+    cx = Math.max(0, Math.min(TEXTSZ - 1, cx));
+    cy = Math.max(0, Math.min(TEXTSZ - 1, cy));
+    var idx = (cy * TEXTSZ + cx) * 4;
+    var brightness = textPixels[idx];
+    if (brightness < 128) {
+      return TEXT_DEPTH * (1 - brightness / 128);
+    }
+    return 0;
+  }
+
+  var M_BOT = 100;
+  var N_BOT = 180;
+  var segAngleBot = (Math.PI * 2) / N_BOT;
+  var botRadii = [];
+  for (var m = 0; m <= M_BOT; m++) {
+    botRadii.push(rimOuter * m / M_BOT);
+  }
+
+  for (var b = 0; b < botRadii.length - 1; b++) {
+    var ra = botRadii[b], rb = botRadii[b + 1];
+    for (var s = 0; s < N_BOT; s++) {
+      var s2 = (s + 1) % N_BOT;
+      var a1 = s * segAngleBot, a2 = s2 * segAngleBot;
+      var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
+      var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
+
+      var d00 = getTextDepth(ra * ca1, ra * sa1);
+      var d10 = getTextDepth(rb * ca1, rb * sa1);
+      var d11 = getTextDepth(rb * ca2, rb * sa2);
+      var d01 = getTextDepth(ra * ca2, ra * sa2);
+
+      var p00 = [ra * ca1, ra * sa1, -d00];
+      var p10 = [rb * ca1, rb * sa1, -d10];
+      var p11 = [rb * ca2, rb * sa2, -d11];
+      var p01 = [ra * ca2, ra * sa2, -d01];
+
+      addTriangle(p00, p11, p10, 0, 0, -1);
+      addTriangle(p00, p01, p11, 0, 0, -1);
+    }
   }
 
   // Outer wall
-  for (var s = 0; s < N; s++) {
-    var a1 = s * segAngle, a2 = (s + 1) * segAngle;
+  var N_WALL = 72;
+  var segAngleWall = (Math.PI * 2) / N_WALL;
+  for (var s = 0; s < N_WALL; s++) {
+    var a1 = s * segAngleWall, a2 = (s + 1) * segAngleWall;
     var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
     var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
     var topZ = BASE_THICK + RIM_HEIGHT;
@@ -4122,8 +4257,8 @@ function generateSTL(project) {
   }
 
   // Rim inner wall
-  for (var s = 0; s < N; s++) {
-    var a1 = s * segAngle, a2 = (s + 1) * segAngle;
+  for (var s = 0; s < N_WALL; s++) {
+    var a1 = s * segAngleWall, a2 = (s + 1) * segAngleWall;
     var ca1 = Math.cos(a1), sa1 = Math.sin(a1);
     var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
     var b0 = [discOuter * ca1, discOuter * sa1, BASE_THICK];
@@ -4150,7 +4285,7 @@ function downloadSTL(project) {
   var offset = 0;
 
   // 80-byte header
-  var header = 'Dormant Ring Export';
+  var header = 'Fallow Ring Export';
   for (var i = 0; i < 80; i++) {
     dv.setUint8(offset++, i < header.length ? header.charCodeAt(i) : 0);
   }
@@ -4185,7 +4320,7 @@ function downloadSTL(project) {
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
   a.href = url;
-  a.download = (project.name || 'dormant-ring').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.stl';
+  a.download = (project.name || 'fallow-ring').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.stl';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -4951,7 +5086,7 @@ const sheetStoryPalette = ['#8C7354', '#5C7A6B', '#7A5C6B', '#7E8FA5'];
 
 function loadSheetStories() {
   try {
-    const saved = localStorage.getItem('dormant-sheet-stories');
+    const saved = localStorage.getItem('fallow-sheet-stories');
     if (saved) return JSON.parse(saved);
   } catch(e) {}
   return [
@@ -4962,7 +5097,7 @@ function loadSheetStories() {
 }
 
 function saveSheetStories() {
-  try { localStorage.setItem('dormant-sheet-stories', JSON.stringify(sheetStories)); } catch(e) {}
+  try { localStorage.setItem('fallow-sheet-stories', JSON.stringify(sheetStories)); } catch(e) {}
 }
 
 let sheetStories = loadSheetStories();
