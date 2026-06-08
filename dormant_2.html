@@ -1470,6 +1470,49 @@ body {
   color: var(--ink);
 }
 
+/* Per-task chart area */
+.archive-chart-area {
+  margin-bottom: 16px;
+}
+.chart-hint {
+  font-family: 'Roboto Serif', serif;
+  font-size: 11px;
+  color: var(--ink2);
+  text-align: center;
+  padding: 20px 0;
+  font-style: italic;
+}
+.chart-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.chart-card {
+  background: var(--card-bg);
+  border: 0.5px solid var(--card-stroke);
+  border-radius: 14px;
+  padding: 12px;
+}
+.chart-card canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.chart-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 7.5px;
+  font-weight: 500;
+  color: var(--ink2);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+
+/* Selected ring highlight */
+.archive-ring-section canvas {
+  cursor: pointer;
+}
+
 /* Analysis cards */
 .archive-analysis {
   display: flex;
@@ -1818,6 +1861,10 @@ body {
         <!-- Project basic info -->
         <div class="archive-info-card">
           <div class="archive-info-row">
+            <span class="archive-info-label">Project</span>
+            <span class="archive-info-value" id="archiveProjectName">--</span>
+          </div>
+          <div class="archive-info-row">
             <span class="archive-info-label">Time span</span>
             <span class="archive-info-value" id="archiveTimeSpan">--</span>
           </div>
@@ -1827,14 +1874,23 @@ body {
           </div>
         </div>
 
+        <!-- Per-task charts (appear when a ring is tapped) -->
+        <div class="archive-chart-area" id="archiveChartArea">
+          <div class="chart-hint" id="chartHint">Tap a ring to see its status &amp; feelings</div>
+          <div class="chart-pair" id="chartPair" style="display:none">
+            <div class="chart-card">
+              <div class="chart-label">STATUS — <span id="chartTaskName"></span></div>
+              <canvas id="statusChartCanvas" width="600" height="120"></canvas>
+            </div>
+            <div class="chart-card">
+              <div class="chart-label">FEELINGS — <span id="chartFeelingTaskName"></span></div>
+              <canvas id="feelingChartCanvas" width="600" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+
         <!-- Analysis cards -->
         <div class="archive-analysis" id="archiveAnalysis">
-          <!-- Story Review -->
-          <div class="analysis-card">
-            <div class="analysis-label">STORY REVIEW</div>
-            <div class="analysis-content" id="analysisStoryReview"></div>
-          </div>
-
           <!-- Task Review -->
           <div class="analysis-card">
             <div class="analysis-label">TASK REVIEW</div>
@@ -2066,9 +2122,31 @@ function checkAutoArchive() {
   const allDone = active.tasks.every(t => t.status === 'done');
   if (allDone && active.tasks.length > 0) {
     active.archived = true;
-	    persistTrailData(active);
+    persistTrailData(active);
     saveProjects();
     renderProjectsPage();
+
+    // Switch to next unarchived project
+    var next = null;
+    for (var i = 0; i < projects.length; i++) {
+      if (!projects[i].archived && projects[i].id !== active.id) {
+        next = projects[i];
+        break;
+      }
+    }
+    if (next) {
+      setActiveProject(next.id);
+      if (currentPage !== 'ring') switchPage('ring');
+    } else {
+      // No more projects — show empty ring state
+      activeProjectId = null;
+      tasks.length = 0;
+      currentRingTasks = [];
+      localStorage.removeItem('fallow-active-project');
+      renderOutlinePanel();
+      updateRingHeader();
+      if (currentPage !== 'ring') switchPage('ring');
+    }
   }
 }
 
@@ -2221,7 +2299,12 @@ function getActiveProject() {
 
 function updateRingHeader() {
   const active = getActiveProject();
-  if (!active) return;
+  if (!active) {
+    document.getElementById('ringProjTitle').textContent = 'Fallow';
+    document.getElementById('ringProjMeta').textContent = 'CREATE A NEW PROJECT';
+    document.getElementById('ringHint').style.display = 'none';
+    return;
+  }
   const inRingCount = active.tasks.filter(t => t.inRing).length;
   document.getElementById('ringProjTitle').textContent = active.name;
   document.getElementById('ringProjMeta').textContent = active.tasks.length + ' TASKS · ' + inRingCount + ' IN RING';
@@ -2665,12 +2748,33 @@ function onProjDragEnd(e) {
     }, 50);
     setTimeout(function() {
       if (projDrag.ghost) projDrag.ghost.remove();
+      var archivedId = projDrag.project.id;
       projDrag.project.tasks.forEach(function(t) { t.status = 'done'; });
       projDrag.project.archived = true;
       saveProjects();
       if (projDrag.card) projDrag.card.style.opacity = '';
       projDrag = null;
       renderProjectsPage();
+
+      // If the archived project was the active one, switch to next
+      if (activeProjectId === archivedId) {
+        var next = null;
+        for (var i = 0; i < projects.length; i++) {
+          if (!projects[i].archived) { next = projects[i]; break; }
+        }
+        if (next) {
+          setActiveProject(next.id);
+          if (currentPage !== 'ring') switchPage('ring');
+        } else {
+          activeProjectId = null;
+          tasks.length = 0;
+          currentRingTasks = [];
+          localStorage.removeItem('fallow-active-project');
+          renderOutlinePanel();
+          updateRingHeader();
+          if (currentPage !== 'ring') switchPage('ring');
+        }
+      }
     }, 550);
   } else {
     if (projDrag.ghost) {
@@ -2796,15 +2900,27 @@ function drawRingFrame(angle, time) {
   const taskCount = ringTasks.length;
 
   if (taskCount === 0) {
-    for (let i = 0; i < 3; i++) {
-      const r = RING_MIN_R + i * 50;
-      ctx.beginPath();
-      ctx.arc(RING_CX, RING_CY, r, 0, Math.PI * 2);
-      ctx.setLineDash([4, 10]);
-      ctx.strokeStyle = 'rgba(245,241,233,0.12)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.setLineDash([]);
+    if (projects.length === 0 || projects.every(function(p) { return p.archived; })) {
+      // No active projects — prompt to create one
+      ctx.fillStyle = 'rgba(245,241,233,0.45)';
+      ctx.font = '14px "Roboto Serif", serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Create a new project', RING_CX + CANVAS_W / 2, RING_CY);
+      ctx.fillStyle = 'rgba(245,241,233,0.2)';
+      ctx.font = '10px "Inter", sans-serif';
+      ctx.fillText('Tap + to begin', RING_CX + CANVAS_W / 2, RING_CY + 24);
+      ctx.textAlign = 'start';
+    } else {
+      for (let i = 0; i < 3; i++) {
+        const r = RING_MIN_R + i * 50;
+        ctx.beginPath();
+        ctx.arc(RING_CX, RING_CY, r, 0, Math.PI * 2);
+        ctx.setLineDash([4, 10]);
+        ctx.strokeStyle = 'rgba(245,241,233,0.12)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
     }
     return;
   }
@@ -3065,6 +3181,26 @@ function startRingAnimation() {
       globalAngle += 0.22 * dt;
     }
     lastTime = tSec;
+
+    // Auto-switch if active project was archived (safety net)
+    var activeProj = getActiveProject();
+    if (activeProj && activeProj.archived) {
+      var nextProj = null;
+      for (var pi = 0; pi < projects.length; pi++) {
+        if (!projects[pi].archived) { nextProj = projects[pi]; break; }
+      }
+      if (nextProj) {
+        setActiveProject(nextProj.id);
+      } else {
+        activeProjectId = null;
+        tasks.length = 0;
+        currentRingTasks = [];
+        localStorage.removeItem('fallow-active-project');
+        renderOutlinePanel();
+        updateRingHeader();
+      }
+    }
+
     currentRingTasks = tasks.filter(t => t.inRing);
     drawRingFrame(globalAngle, animTime);
     ringAnimFrame = requestAnimationFrame(animate);
@@ -3214,12 +3350,13 @@ ringTap.addEventListener('touchstart', (e) => {
 // ============= PAGE NAVIGATION =============
 const pages = document.querySelectorAll('.page');
 const navItems = document.querySelectorAll('.nav-item');
-let currentPage = 'ring';
+let currentPage = localStorage.getItem('fallow-current-page') || 'ring';
 
 function switchPage(pageName) {
   if (pageName === currentPage) return;
   if (currentPage === 'ring') saveTasks();
   currentPage = pageName;
+  localStorage.setItem('fallow-current-page', pageName);
   pages.forEach(p => p.classList.toggle('active', p.dataset.page === pageName));
   navItems.forEach(n => n.classList.toggle('active', n.dataset.nav === pageName));
   closeAllOverlays();
@@ -3419,16 +3556,21 @@ var archiveDetailProject = null;
 
 function openArchiveDetail(project) {
   archiveDetailProject = project;
+  selectedArchiveTask = null;
   switchPage('archive-detail');
   document.getElementById('archiveDetailTitle').textContent = project.name;
   document.getElementById('archiveDetailMeta').textContent = 'ARCHIVED';
 
+  document.getElementById('archiveProjectName').textContent = project.name;
   var created = new Date(project.createdAt);
   var now = new Date();
   document.getElementById('archiveTimeSpan').textContent = formatDate(created) + ' → ' + formatDate(now);
   var ringTasks = project.tasks.filter(function(t) { return t.inRing; });
   document.getElementById('archiveTaskCount').textContent = ringTasks.length + ' in ring / ' + project.tasks.length + ' total';
 
+  // Reset chart area
+  document.getElementById('chartHint').style.display = 'block';
+  document.getElementById('chartPair').style.display = 'none';
   document.getElementById('posterPreview').classList.remove('expanded');
 
   setTimeout(function() {
@@ -3436,6 +3578,8 @@ function openArchiveDetail(project) {
     renderAnalysis(project);
   }, 50);
 }
+
+var selectedArchiveTask = null;
 
 function formatDate(d) {
   var y = d.getFullYear();
@@ -3450,6 +3594,8 @@ function computeBrewDays(project) {
   return days || '--';
 }
 
+var archiveRingHitAreas = [];
+
 function renderArchiveRing(project) {
   var canvas = document.getElementById('archiveRingCanvas');
   if (!canvas) return;
@@ -3458,6 +3604,8 @@ function renderArchiveRing(project) {
   var CX = W / 2, CY = H / 2;
   ctx.clearRect(0, 0, W, H);
 
+  archiveRingHitAreas = [];
+
   var tasks = project.tasks;
   var taskCount = tasks.length;
   if (taskCount === 0) return;
@@ -3465,10 +3613,20 @@ function renderArchiveRing(project) {
   var MIN_R = 60, MAX_R = 240;
   var gap = taskCount > 1 ? (MAX_R - MIN_R) / (taskCount - 1) : 0;
   var statusThick = { smooth: 1.5, procrastinating: 3.0, stuck: 5.0, done: 0.8 };
+  var HIT_BAND = Math.max(14, gap * 0.45);
 
   for (var i = 0; i < taskCount; i++) {
     var task = tasks[i];
     var baseR = MIN_R + i * gap;
+    var isSelected = (selectedArchiveTask && selectedArchiveTask.id === task.id);
+
+    if (isSelected) {
+      ctx.beginPath();
+      ctx.arc(CX, CY, baseR, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = HIT_BAND * 2;
+      ctx.stroke();
+    }
 
 	    var slog = task._trailStatusLog || task.trailStatusLog;
 	    if (!slog || slog.length === 0) {
@@ -3494,64 +3652,78 @@ function renderArchiveRing(project) {
 	      var y2 = CY + Math.sin(nextA) * r2;
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.strokeStyle = isSelected ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.7)';
       ctx.lineWidth = thickness;
       ctx.lineCap = 'round';
       ctx.stroke();
     }
+
+    archiveRingHitAreas.push({
+      task: task,
+      baseR: baseR,
+      innerR: baseR - HIT_BAND,
+      outerR: baseR + HIT_BAND
+    });
   }
 }
 
 // ============= PROJECT ANALYSIS ENGINE =============
+function thicknessToStatus(t) {
+  if (t <= 1.5) return 'smooth';
+  if (t <= 3.5) return 'procrastinating';
+  if (t <= 5.5) return 'stressed';
+  return 'stuck';
+}
+
 function generateProjectAnalysis(project) {
   var ringTasks = project.tasks.filter(function(t) { return t.inRing; });
   var result = { storyReview: [], longestTask: null, mostStuckTask: null, rhythm: '', suggestion: '' };
 
-  var storyStatuses = {};
-  ringTasks.forEach(function(t) {
-    if (!t.story || !t.status) return;
-    if (!storyStatuses[t.story]) storyStatuses[t.story] = {};
-    if (!storyStatuses[t.story][t.status]) storyStatuses[t.story][t.status] = 0;
-    storyStatuses[t.story][t.status]++;
-  });
-  var statusLabels = { smooth: 'Steady', procrastinating: 'Procrastinating', stuck: 'Stuck', done: 'Done' };
-  for (var story in storyStatuses) {
-    var counts = storyStatuses[story];
-    var dominant = null, maxCount = 0;
-    for (var st in counts) {
-      if (counts[st] > maxCount) { maxCount = counts[st]; dominant = st; }
-    }
-    result.storyReview.push({ story: story, emotion: dominant, label: statusLabels[dominant] || '—' });
-  }
-
-  var longestTask = null, longestDays = 0;
+  // Longest tracked & most stuck — from status logs
+  var longestTask = null, longestSpan = 0;
   var mostStuckTask = null, mostStuckCount = 0;
   ringTasks.forEach(function(t) {
     var tLog = t._trailStatusLog || t.trailStatusLog;
     if (tLog && tLog.length > 1) {
-      var log = tLog;
-      if (days > longestDays) { longestDays = days; longestTask = t; }
+      var sorted = tLog.slice().sort(function(a, b) { return a.atRotation - b.atRotation; });
+      var span = sorted[sorted.length - 1].atRotation - sorted[0].atRotation;
+      if (span > longestSpan) { longestSpan = span; longestTask = t; }
+    }
+    if (tLog && tLog.length > 0) {
       var stuckCount = 0;
-      log.forEach(function(entry) { if (entry.status === 'stuck') stuckCount++; });
+      tLog.forEach(function(e) { if (e.thickness >= 6.0) stuckCount++; });
       if (stuckCount > mostStuckCount) { mostStuckCount = stuckCount; mostStuckTask = t; }
     }
   });
-  if (longestTask) result.longestTask = { name: longestTask.name, days: longestDays };
-  if (mostStuckTask && mostStuckCount > 0) result.mostStuckTask = { name: mostStuckTask.name, stuckCount: mostStuckCount };
+  if (longestTask) {
+    var estMinutes = Math.round(longestSpan / 0.22 / 60);
+    result.longestTask = { name: longestTask.name, estMinutes: estMinutes };
+  }
+  if (mostStuckTask && mostStuckCount > 0) {
+    result.mostStuckTask = { name: mostStuckTask.name, stuckCount: mostStuckCount };
+  }
 
+  // Rhythm — split all status entries into early/late halves by rotation
   var allEntries = [];
   ringTasks.forEach(function(t) {
-	    var tStatusLog = t._trailStatusLog || t.trailStatusLog;
-	    if (tStatusLog) {
-	      tStatusLog.forEach(function(e, i) { allEntries.push({ status: e.status || t.status, idx: i, task: t.name }); });
-	    }
-	  });
-  if (allEntries.length >= 2) {
+    var tLog = t._trailStatusLog || t.trailStatusLog;
+    if (tLog) {
+      tLog.forEach(function(e) {
+        allEntries.push({ atRotation: e.atRotation, thickness: e.thickness, task: t.name, story: t.story });
+      });
+    }
+  });
+  if (allEntries.length >= 4) {
+    allEntries.sort(function(a, b) { return a.atRotation - b.atRotation; });
     var half = Math.floor(allEntries.length / 2);
     var early = allEntries.slice(0, half), late = allEntries.slice(half);
-    function countStatus(arr, st) { return arr.filter(function(e) { return e.status === st; }).length; }
-    var earlySmooth = countStatus(early, 'smooth'), earlyStruggle = countStatus(early, 'stuck') + countStatus(early, 'procrastinating');
-    var lateSmooth = countStatus(late, 'smooth'), lateStruggle = countStatus(late, 'stuck') + countStatus(late, 'procrastinating');
+    function countByThick(arr, minT, maxT) {
+      return arr.filter(function(e) { return e.thickness >= minT && e.thickness <= maxT; }).length;
+    }
+    var earlySmooth = countByThick(early, 0, 1.5);
+    var earlyStruggle = countByThick(early, 5.0, 10);
+    var lateSmooth = countByThick(late, 0, 1.5);
+    var lateStruggle = countByThick(late, 5.0, 10);
     if (earlySmooth > earlyStruggle && lateSmooth > lateStruggle) {
       result.rhythm = 'Steady progress — you maintained a consistent pace throughout.';
     } else if (earlyStruggle > earlySmooth && lateSmooth > lateStruggle) {
@@ -3564,14 +3736,19 @@ function generateProjectAnalysis(project) {
       result.rhythm = 'Ups and downs throughout — every creative journey has its own rhythm.';
     }
   } else {
-    result.rhythm = 'Not enough tracking data to determine rhythm.';
+    result.rhythm = 'Not enough tracking data to determine rhythm. Keep recording and check back.';
   }
 
+  // Suggestion — find story with the most struggle entries
+  var storyStruggle = {};
+  allEntries.forEach(function(e) {
+    if (!e.story) return;
+    if (!storyStruggle[e.story]) storyStruggle[e.story] = 0;
+    if (e.thickness >= 5.0) storyStruggle[e.story]++;
+  });
   var worstStory = null, worstStruggle = 0;
-  for (var story in storyStatuses) {
-    var c = storyStatuses[story];
-    var struggle = (c.stuck || 0) + (c.procrastinating || 0);
-    if (struggle > worstStruggle) { worstStruggle = struggle; worstStory = story; }
+  for (var story in storyStruggle) {
+    if (storyStruggle[story] > worstStruggle) { worstStruggle = storyStruggle[story]; worstStory = story; }
   }
   if (worstStory && worstStruggle > 0) {
     result.suggestion = 'You tend to struggle most during the ' + worstStory + ' phase. Next time, try breaking this stage into smaller, more concrete tasks.';
@@ -3585,29 +3762,203 @@ function generateProjectAnalysis(project) {
 function renderAnalysis(project) {
   var analysis = generateProjectAnalysis(project);
 
-  var storyHTML = '';
-  analysis.storyReview.forEach(function(sr) {
-    var cls = 'emotion-' + (sr.emotion || 'done');
-    storyHTML += '<div class="story-emotion-row"><span class="story-name">' + sr.story + '</span><span class="story-emotion ' + cls + '">' + sr.label + '</span></div>';
-  });
-  var storyEl = document.getElementById('analysisStoryReview');
-  if (storyEl) storyEl.innerHTML = storyHTML || '<span style="opacity:0.5">No story data</span>';
-
   var taskHTML = '';
   if (analysis.longestTask) {
-    taskHTML += 'Longest tracked: <span class="highlight-task">' + analysis.longestTask.name + '</span><br>';
+    var timeStr = analysis.longestTask.estMinutes > 60
+      ? Math.round(analysis.longestTask.estMinutes / 60) + 'h'
+      : analysis.longestTask.estMinutes + 'min';
+    taskHTML += 'Longest in ring: <span class="highlight-task">' + analysis.longestTask.name + '</span> (≈' + timeStr + ')<br>';
   }
   if (analysis.mostStuckTask) {
-    taskHTML += 'Most stuck: <span class="highlight-task">' + analysis.mostStuckTask.name + '</span>';
+    taskHTML += 'Most stuck: <span class="highlight-task">' + analysis.mostStuckTask.name + '</span> (' + analysis.mostStuckTask.stuckCount + ' stuck entries)';
   }
   var taskEl = document.getElementById('analysisTaskReview');
-  if (taskEl) taskEl.innerHTML = taskHTML || '<span style="opacity:0.5">Not enough data</span>';
+  if (taskEl) taskEl.innerHTML = taskHTML || '<span style="opacity:0.5">Not enough tracking data</span>';
 
   var rhythmEl = document.getElementById('analysisRhythm');
   if (rhythmEl) rhythmEl.textContent = analysis.rhythm;
 
   var suggEl = document.getElementById('analysisSuggestion');
   if (suggEl) suggEl.textContent = analysis.suggestion;
+}
+
+// ============= PER-TASK CHARTS =============
+var STATUS_NAMES = { 1.0: 'smooth', 1.5: 'smooth', 3.0: 'procrastinating', 5.0: 'stressed', 7.0: 'stuck', 0.8: 'done' };
+
+function renderStatusChart(task, project) {
+  var canvas = document.getElementById('statusChartCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var slog = task._trailStatusLog || task.trailStatusLog;
+  if (!slog || slog.length < 2) {
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = '11px "Roboto Serif", serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Not enough data', W / 2, H / 2);
+    return;
+  }
+
+  // Sort and normalize
+  var entries = slog.slice().sort(function(a, b) { return a.atRotation - b.atRotation; });
+  var minRot = entries[0].atRotation;
+  var maxRot = entries[entries.length - 1].atRotation;
+  var rotSpan = maxRot - minRot || 1;
+
+  var padL = 50, padR = 20, padT = 30, padB = 30;
+  var chartW = W - padL - padR;
+  var lineY = H / 2 + 10;
+
+  // Draw baseline
+  ctx.beginPath();
+  ctx.moveTo(padL, lineY);
+  ctx.lineTo(W - padR, lineY);
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Draw segments
+  var INK = 'rgba(255,255,255,0.85)';
+  var TICK_H = 8;
+  var lastX = null;
+  var lastStatus = null;
+  var segments = [];
+
+  for (var i = 0; i < entries.length; i++) {
+    var e = entries[i];
+    var x = padL + ((e.atRotation - minRot) / rotSpan) * chartW;
+    var statusName = STATUS_NAMES[e.thickness] || 'unknown';
+
+    // Tick mark at status change
+    ctx.beginPath();
+    ctx.moveTo(x, lineY - TICK_H);
+    ctx.lineTo(x, lineY + TICK_H);
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    if (lastX !== null && lastStatus !== null) {
+      segments.push({ x1: lastX, x2: x, status: lastStatus });
+    }
+    lastX = x;
+    lastStatus = statusName;
+  }
+  // Final segment extends to end
+  if (lastX !== null && lastStatus !== null) {
+    segments.push({ x1: lastX, x2: W - padR, status: lastStatus });
+  }
+
+  // Draw segment labels
+  ctx.fillStyle = INK;
+  ctx.font = '9px "Inter", sans-serif';
+  ctx.textAlign = 'center';
+  for (var s = 0; s < segments.length; s++) {
+    var seg = segments[s];
+    var midX = (seg.x1 + seg.x2) / 2;
+    if (midX > padL && midX < W - padR) {
+      ctx.fillText(seg.status, midX, lineY - TICK_H - 6);
+    }
+  }
+
+  // Time labels at ends
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '7.5px "Inter", sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('start', padL, H - 6);
+  ctx.textAlign = 'right';
+  ctx.fillText('end', W - padR, H - 6);
+}
+
+function renderFeelingChart(task, project) {
+  var canvas = document.getElementById('feelingChartCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var flog = task._trailFeelingsLog || task.trailFeelingsLog;
+  if (!flog || flog.length < 2) {
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = '11px "Roboto Serif", serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Not enough data', W / 2, H / 2);
+    return;
+  }
+
+  var entries = flog.slice().sort(function(a, b) { return a.atRotation - b.atRotation; });
+  var minRot = entries[0].atRotation;
+  var maxRot = entries[entries.length - 1].atRotation;
+  var rotSpan = maxRot - minRot || 1;
+
+  var padL = 50, padR = 20, padT = 25, padB = 35;
+  var chartW = W - padL - padR;
+  var chartH = H - padT - padB;
+
+  function toX(rot) { return padL + ((rot - minRot) / rotSpan) * chartW; }
+  function toY(v) { return padT + (1 - v) * chartH; }
+
+  // Grid lines (subtle)
+  for (var g = 0; g <= 1; g += 0.25) {
+    var gy = toY(g);
+    ctx.beginPath();
+    ctx.moveTo(padL, gy);
+    ctx.lineTo(W - padR, gy);
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+
+  // Y-axis labels
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '7.5px "Inter", sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('1', padL - 6, toY(1) + 3);
+  ctx.fillText('0', padL - 6, toY(0) + 3);
+
+  // Draw Motivation line (solid)
+  ctx.beginPath();
+  for (var i = 0; i < entries.length; i++) {
+    var x = toX(entries[i].atRotation);
+    var y = toY(entries[i].feelX !== undefined ? entries[i].feelX : 0.5);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([]);
+  ctx.stroke();
+
+  // Label: Motivation
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  ctx.font = '7.5px "Inter", sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('— Motivation', padL, padT - 8);
+
+  // Draw Anxiety line (dashed)
+  ctx.beginPath();
+  for (var i = 0; i < entries.length; i++) {
+    var x = toX(entries[i].atRotation);
+    var y = toY(entries[i].feelY !== undefined ? entries[i].feelY : 0.5);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Label: Anxiety
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.fillText('- - Anxiety', padL + 90, padT - 8);
+
+  // Axis labels (left/right ends)
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '7px "Inter", sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('start', padL, H - 6);
+  ctx.textAlign = 'right';
+  ctx.fillText('end', W - padR, H - 6);
 }
 
 // ============= OVERLAYS =============
@@ -3685,8 +4036,43 @@ document.getElementById('menuBtn').addEventListener('click', openOutline);
 document.getElementById('addBtn').addEventListener('click', openCreate);
 document.getElementById('archiveBackBtn').addEventListener('click', function() {
   archiveDetailProject = null;
+  selectedArchiveTask = null;
   switchPage('projects');
 });
+
+// Archive ring click detection
+document.getElementById('archiveRingCanvas').addEventListener('click', function(e) {
+  if (!archiveDetailProject) return;
+  var canvas = e.target;
+  var rect = canvas.getBoundingClientRect();
+  var scaleX = canvas.width / rect.width;
+  var scaleY = canvas.height / rect.height;
+  var cx = (e.clientX - rect.left) * scaleX;
+  var cy = (e.clientY - rect.top) * scaleY;
+  var CX = canvas.width / 2, CY = canvas.height / 2;
+  var dist = Math.sqrt((cx - CX) * (cx - CX) + (cy - CY) * (cy - CY));
+
+  var hit = null;
+  for (var i = 0; i < archiveRingHitAreas.length; i++) {
+    var area = archiveRingHitAreas[i];
+    if (dist >= area.innerR && dist <= area.outerR) {
+      hit = area.task;
+      break;
+    }
+  }
+
+  if (hit) {
+    selectedArchiveTask = hit;
+    document.getElementById('chartHint').style.display = 'none';
+    document.getElementById('chartPair').style.display = 'flex';
+    document.getElementById('chartTaskName').textContent = hit.name;
+    document.getElementById('chartFeelingTaskName').textContent = hit.name;
+    renderStatusChart(hit, archiveDetailProject);
+    renderFeelingChart(hit, archiveDetailProject);
+    renderArchiveRing(archiveDetailProject);
+  }
+});
+
 document.getElementById('openExport3dBtn').addEventListener('click', function() {
   if (archiveDetailProject) openExport3D(archiveDetailProject);
 });
@@ -4962,6 +5348,8 @@ document.addEventListener('pointerup', function(e) {
     try { pointerState.bubble.releasePointerCapture(e.pointerId); } catch(ex) {}
   }
 
+  var archivedId = pointerState.projectId;
+
   pointerState.active = false;
   pointerState.bubble = null;
   pointerState.projectId = null;
@@ -4971,6 +5359,26 @@ document.addEventListener('pointerup', function(e) {
   // Re-render if archived
   if (archiving) {
     renderProjectsPage();
+
+    // If the archived project was the active one, switch to next
+    if (activeProjectId === archivedId) {
+      var next = null;
+      for (var i = 0; i < projects.length; i++) {
+        if (!projects[i].archived) { next = projects[i]; break; }
+      }
+      if (next) {
+        setActiveProject(next.id);
+        if (currentPage !== 'ring') switchPage('ring');
+      } else {
+        activeProjectId = null;
+        tasks.length = 0;
+        currentRingTasks = [];
+        localStorage.removeItem('fallow-active-project');
+        renderOutlinePanel();
+        updateRingHeader();
+        if (currentPage !== 'ring') switchPage('ring');
+      }
+    }
   }
 });
 
@@ -5082,6 +5490,7 @@ document.querySelectorAll('.status-pill').forEach(pill => {
         }
       }
       saveTasks();
+      checkAutoArchive();
     }
   });
 });
@@ -5240,6 +5649,22 @@ window.addEventListener('beforeunload', function() { saveTasks(); });
 // ============= INITIAL RENDER =============
 initOutlineAddStory();
 renderOutlinePanel();
+
+// Restore saved page on refresh
+if (currentPage !== 'ring') {
+  pages.forEach(p => p.classList.toggle('active', p.dataset.page === currentPage));
+  navItems.forEach(n => n.classList.toggle('active', n.dataset.nav === currentPage));
+  if (currentPage === 'projects') { startPhysics(); renderProjectsPage(); }
+  if (currentPage === 'profile') { renderProfilePage(); }
+  if (currentPage === 'archive-detail') {
+    // archive-detail needs a project — fall back to projects
+    currentPage = 'projects';
+    localStorage.setItem('fallow-current-page', 'projects');
+    pages.forEach(p => p.classList.toggle('active', p.dataset.page === 'projects'));
+    navItems.forEach(n => n.classList.toggle('active', n.dataset.nav === 'projects'));
+    startPhysics(); renderProjectsPage();
+  }
+}
 
 // ============= CREATE PROJECT — EXPANDABLE STORIES =============
 const sheetStoryPalette = ['#8C7354', '#5C7A6B', '#7A5C6B', '#7E8FA5'];
