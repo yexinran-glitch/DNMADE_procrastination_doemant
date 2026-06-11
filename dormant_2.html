@@ -30,7 +30,7 @@
 html, body {
   height: 100%;
   font-family: 'Roboto Serif', serif;
-  background: #2A2520;
+  background: #000000 url('image_background.jpg') center/cover no-repeat;
   color: var(--ink);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
@@ -52,12 +52,17 @@ body {
   max-height: 812px;
   background: var(--bg-base);
   border-radius: 38px;
-  border: 1.5px solid rgba(255,255,255,0.06);
-  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  border: 5px solid #1C1C1E;
+  outline: 1px solid #3A3A3C;
+  outline-offset: -3px;
+  box-shadow:
+    0 0 0 2px #0D0D0D,
+    0 24px 64px rgba(0,0,0,0.6);
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transform: translateZ(0);
 }
 
 .phone::before {
@@ -144,10 +149,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  flex-direction: column;
+  gap: 4px;
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.2s, transform 0.2s;
+}
+.menu-bar {
+  display: block;
+  width: 13px;
+  height: 1.8px;
+  background: var(--ink);
+  border-radius: 1px;
 }
 .menu-btn:hover { background: rgba(255, 255, 255, 0.16); }
 .menu-btn:active { transform: scale(0.95); }
@@ -717,6 +730,8 @@ body {
   pointer-events: none;
   transition: background 0.35s ease;
   z-index: 10;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
 }
 .scrim.active {
   background: rgba(0, 0, 0, 0.4);
@@ -1179,7 +1194,8 @@ body {
 
 .sheet-content {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
   padding: 0 20px 16px;
   scrollbar-width: none;
 }
@@ -1772,7 +1788,7 @@ body {
           <div class="proj-meta" id="ringProjMeta">6 TASKS · IN PROGRESS</div>
           <div class="proj-dropdown" id="projDropdown"></div>
         </div>
-        <div class="menu-btn" id="menuBtn">≡</div>
+        <div class="menu-btn" id="menuBtn"><span class="menu-bar"></span><span class="menu-bar"></span><span class="menu-bar"></span></div>
       </div>
 
       <div class="ring-area" id="ringArea">
@@ -2308,7 +2324,7 @@ function updateRingHeader() {
   const inRingCount = active.tasks.filter(t => t.inRing).length;
   document.getElementById('ringProjTitle').textContent = active.name;
   document.getElementById('ringProjMeta').textContent = active.tasks.length + ' TASKS · ' + inRingCount + ' IN RING';
-  document.getElementById('ringHint').style.display = inRingCount > 0 ? 'none' : 'block';
+  document.getElementById('ringHint').style.display = 'none';
 }
 
 // Initialize tasks from active project
@@ -2541,7 +2557,7 @@ function initOutlineAddStory() {
   addBtn.addEventListener('click', function() {
     addBtn.style.display = 'none';
     addForm.style.display = 'flex';
-    addInput.focus();
+    addInput.focus({ preventScroll: true });
   });
 
   confirmBtn.addEventListener('click', function() {
@@ -2789,6 +2805,12 @@ function onProjDragEnd(e) {
 // ============= MAIN RING ARCS (ANIMATED) =============
 const ringCanvas = document.getElementById('ringCanvas');
 const ringCtx = ringCanvas.getContext('2d');
+const dpr = window.devicePixelRatio || 1;
+ringCanvas.width = 540 * dpr;
+ringCanvas.height = 540 * dpr;
+ringCanvas.style.width = '540px';
+ringCanvas.style.height = '540px';
+ringCtx.scale(dpr, dpr);
 const CANVAS_W = 540;
 const RING_CX = -90;
 const RING_CY = 270;
@@ -2911,6 +2933,11 @@ function drawRingFrame(angle, time) {
       ctx.fillText('Tap + to begin', RING_CX + CANVAS_W / 2, RING_CY + 24);
       ctx.textAlign = 'start';
     } else {
+      ctx.fillStyle = 'rgba(245,241,233,0.45)';
+      ctx.font = '14px "Roboto Serif", serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('DRAG A TASK FROM SIDEBAR TO BEGIN', RING_CX + CANVAS_W / 2, RING_CY - 20);
+      ctx.textAlign = 'start';
       for (let i = 0; i < 3; i++) {
         const r = RING_MIN_R + i * 50;
         ctx.beginPath();
@@ -3497,6 +3524,7 @@ function renderProjDropdown() {
   var currentId = activeProjectId;
   for (var i = 0; i < projects.length; i++) {
     var p = projects[i];
+    if (p.archived) continue;
     var isCurrent = p.id === currentId;
     var taskCount = p.tasks ? p.tasks.length : 0;
     var inRing = p.tasks ? p.tasks.filter(function(t) { return t.inRing; }).length : 0;
@@ -4010,6 +4038,11 @@ function openRecordForTask(task) {
 
 function openCreate() {
   closeAllOverlays();
+  // Reset sheet to empty state
+  sheetStories = [];
+  nextSheetStoryId = 1;
+  renderSheetStories();
+  document.querySelector('.proj-input').value = '';
   createSheet.classList.add('open');
   scrim.classList.add('active');
   scrim.classList.add('blurred');
@@ -4460,74 +4493,235 @@ function renderPoster(project) {
   var W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
 
-  var bgGrad = ctx.createLinearGradient(0, 0, W, H);
-  bgGrad.addColorStop(0, '#F7F3EC');
-  bgGrad.addColorStop(0.5, '#F2EDE5');
-  bgGrad.addColorStop(1, '#EDE7DD');
-  ctx.fillStyle = bgGrad;
+  // Pure black background
+  ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, W, H);
 
-  ctx.fillStyle = 'rgba(180,170,155,0.15)';
-  for (var i = 0; i < 200; i++) {
-    var dx = Math.random() * W, dy = Math.random() * H;
-    ctx.beginPath(); ctx.arc(dx, dy, Math.random() * 1.5, 0, Math.PI * 2); ctx.fill();
-  }
-
-  var ringCX = W / 2, ringCY = H * 0.38;
-  var ringTasks = project.tasks.filter(function(t) { return t.inRing; });
-  var taskCount = ringTasks.length;
+  // ===== RING — centered, with glow =====
+  var ringCX = W / 2, ringCY = H * 0.32;
+  var tasks = project.tasks;
+  var taskCount = tasks.length;
   if (taskCount > 0) {
     var MIN_R = 80, MAX_R = 280;
     var gap = taskCount > 1 ? (MAX_R - MIN_R) / (taskCount - 1) : 0;
-    var statusThick = { smooth: 2.0, procrastinating: 4.0, stuck: 6.5, done: 1.2 };
+    // Glow layer 1 — widest, softest halo
+    ctx.save();
+    ctx.shadowColor = 'rgba(245,241,233,0.7)';
+    ctx.shadowBlur = 120;
     for (var i = 0; i < taskCount; i++) {
-      var task = ringTasks[i];
+      var baseR2 = MIN_R + i * gap;
+      ctx.beginPath();
+      ctx.arc(ringCX, ringCY, baseR2, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(245,241,233,0.12)';
+      ctx.lineWidth = 6;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Glow layer 2 — tighter, brighter halo
+    ctx.save();
+    ctx.shadowColor = 'rgba(245,241,233,0.65)';
+    ctx.shadowBlur = 55;
+    for (var i = 0; i < taskCount; i++) {
+      var baseR3 = MIN_R + i * gap;
+      ctx.beginPath();
+      ctx.arc(ringCX, ringCY, baseR3, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(245,241,233,0.2)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Main ring pass
+    ctx.save();
+    ctx.shadowColor = 'rgba(245,241,233,0.6)';
+    ctx.shadowBlur = 32;
+    var statusThick = { smooth: 1.5, procrastinating: 3.0, stuck: 5.0, done: 0.8 };
+    for (var i = 0; i < taskCount; i++) {
+      var task = tasks[i];
       var baseR = MIN_R + i * gap;
       var slog = task._trailStatusLog || task.trailStatusLog;
       if (!slog || slog.length === 0) { slog = [{ atRotation: 0, thickness: statusThick[task.status || 'done'] || 1.5 }]; }
-      var segCount = 180;
+      var segCount = 120;
       var segAngle = (Math.PI * 2) / segCount;
       for (var s = 0; s < segCount; s++) {
         var a = s * segAngle;
         var nextA = a + segAngle;
         var thickness = getThicknessAtRotation(slog, a);
+        var mainBaseR = 130 + i * ((260 - 130) / Math.max(taskCount - 1, 1));
+        var trailHist = task._trailHistory || task.trailHistory;
+        var r1 = getWobbleRadius(trailHist, a, mainBaseR, baseR);
+        var r2 = getWobbleRadius(trailHist, nextA, mainBaseR, baseR);
         ctx.beginPath();
-        ctx.moveTo(ringCX + Math.cos(a) * baseR, ringCY + Math.sin(a) * baseR);
-        ctx.lineTo(ringCX + Math.cos(nextA) * baseR, ringCY + Math.sin(nextA) * baseR);
-        ctx.strokeStyle = 'rgba(60,50,40,0.55)';
+        ctx.moveTo(ringCX + Math.cos(a) * r1, ringCY + Math.sin(a) * r1);
+        ctx.lineTo(ringCX + Math.cos(nextA) * r2, ringCY + Math.sin(nextA) * r2);
+        ctx.strokeStyle = 'rgba(245,241,233,0.9)';
         ctx.lineWidth = thickness * 1.2;
         ctx.lineCap = 'round';
         ctx.stroke();
       }
     }
+    ctx.restore();
   }
 
-  var poem = generatePosterPoem(project);
-  ctx.fillStyle = '#3A3228';
-  ctx.font = 'italic 400 26px "Roboto Serif", serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('“' + poem + '”', W / 2, H * 0.72);
+  // ===== TWO-COLUMN INFO AREA (bottom 25%) =====
+  var colTop = H * 0.67;
+  var colW = 310;
+  var colGap = 60;
+  var col1X = 48;
+  var col2X = col1X + colW + colGap;
 
-  ctx.fillStyle = '#5C5244';
-  ctx.font = '500 18px "Roboto Serif", serif';
-  ctx.fillText(project.name, W / 2, H * 0.80);
+  // --- Left column: project name, time span, poem ---
+  var leftY = colTop;
+  ctx.fillStyle = '#F5F1E9';
+  ctx.font = '500 24px "Roboto Serif", serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(project.name, col1X, leftY);
+  leftY += 32;
 
   var created = new Date(project.createdAt);
   var now = new Date();
-  ctx.fillStyle = '#8C8070';
-  ctx.font = '400 13px "Roboto Serif", serif';
-  ctx.fillText(formatDate(created) + ' — ' + formatDate(now), W / 2, H * 0.85);
+  ctx.fillStyle = 'rgba(245,241,233,0.4)';
+  ctx.font = '400 15px "Roboto Serif", serif';
+  ctx.fillText(formatDate(created) + ' — ' + formatDate(now), col1X, leftY);
+  leftY += 28;
 
+  var poem = generatePosterPoem(project);
+  ctx.fillStyle = 'rgba(245,241,233,0.7)';
+  ctx.font = 'italic 400 18px "Roboto Serif", serif';
+  var poemLines = wrapText(ctx, poem, colW);
+  for (var pl = 0; pl < poemLines.length; pl++) {
+    ctx.fillText(poemLines[pl], col1X, leftY);
+    leftY += 24;
+  }
+
+  // --- Right column: OVERALL RHYTHM + descriptive text ---
+  var rightY = colTop + 32;
+  ctx.fillStyle = 'rgba(245,241,233,0.5)';
+  ctx.font = '500 13px "Inter", sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('OVERALL RHYTHM', col2X, rightY);
+  rightY += 26;
+
+  var rhythmText = generateRhythmText(project);
+  ctx.fillStyle = 'rgba(245,241,233,0.65)';
+  ctx.font = 'italic 400 17px "Roboto Serif", serif';
+  var rhythmLines = wrapText(ctx, rhythmText, colW);
+  for (var rl = 0; rl < rhythmLines.length; rl++) {
+    ctx.fillText(rhythmLines[rl], col2X, rightY);
+    rightY += 24;
+  }
+
+  // ===== FOOTER (bottom 5%) =====
+  var footerY = H * 0.95;
   ctx.beginPath();
-  ctx.moveTo(W / 2 - 60, H * 0.88);
-  ctx.lineTo(W / 2 + 60, H * 0.88);
-  ctx.strokeStyle = 'rgba(60,50,40,0.2)';
+  ctx.moveTo(40, footerY - 14);
+  ctx.lineTo(W - 40, footerY - 14);
+  ctx.strokeStyle = 'rgba(245,241,233,0.08)';
   ctx.lineWidth = 0.5;
   ctx.stroke();
 
-  ctx.fillStyle = '#3A3228';
-  ctx.font = '400 16px "Roboto Serif", serif';
-  ctx.fillText('Fallow', W / 2, H * 0.93);
+  ctx.fillStyle = 'rgba(245,241,233,0.5)';
+  ctx.font = '400 18px "Roboto Serif", serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Fallow', W / 2, footerY + 8);
+
+  ctx.fillStyle = 'rgba(245,241,233,0.25)';
+  ctx.font = 'italic 400 14px "Roboto Serif", serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Every creator has a fallow period.', W / 2, footerY + 24);
+}
+
+function wrapText(ctx, text, maxWidth) {
+  var words = text.split(' ');
+  var lines = [];
+  var current = '';
+  for (var w = 0; w < words.length; w++) {
+    var test = current ? current + ' ' + words[w] : words[w];
+    if (ctx.measureText(test).width > maxWidth && current) {
+      lines.push(current);
+      current = words[w];
+    } else {
+      current = test;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
+}
+
+function generateRhythmText(project) {
+  var tasks = project.tasks;
+
+  // Analyze status distribution
+  var statusCount = { smooth: 0, procrastinating: 0, stressed: 0, stuck: 0, done: 0 };
+  for (var i = 0; i < tasks.length; i++) {
+    var slog = tasks[i]._trailStatusLog || tasks[i].trailStatusLog;
+    if (slog) {
+      for (var j = 0; j < slog.length; j++) {
+        var t = slog[j].thickness;
+        if (t <= 1.5) statusCount.smooth++;
+        else if (t <= 3.5) statusCount.procrastinating++;
+        else if (t <= 5.5) statusCount.stressed++;
+        else statusCount.stuck++;
+      }
+    }
+    if (tasks[i].status === 'done') statusCount.done++;
+  }
+  var total = statusCount.smooth + statusCount.procrastinating + statusCount.stressed + statusCount.stuck + statusCount.done;
+
+  // Analyze feeling averages
+  var sumX = 0, sumY = 0, count = 0;
+  for (var i = 0; i < tasks.length; i++) {
+    var f = tasks[i].feelings;
+    if (f) {
+      sumX += f.x !== undefined ? f.x : 0.5;
+      sumY += f.y !== undefined ? f.y : 0.5;
+      count++;
+    }
+  }
+  var avgX = count > 0 ? sumX / count : 0.5;
+  var avgY = count > 0 ? sumY / count : 0.5;
+
+  // Build rhythm description
+  var parts = [];
+
+  if (total > 0) {
+    var smoothPct = statusCount.smooth / total;
+    var strugglePct = (statusCount.procrastinating + statusCount.stressed + statusCount.stuck) / total;
+
+    if (smoothPct > 0.7) {
+      parts.push('A smooth, flowing journey — you stayed in the zone most of the time.');
+    } else if (strugglePct > 0.7) {
+      parts.push('A challenging climb — friction was the norm, but you pushed through every phase.');
+    } else if (smoothPct > 0.5 && strugglePct > 0.2) {
+      parts.push('A rhythm of push and pull — smooth stretches punctuated by moments of resistance.');
+    } else {
+      parts.push('An unpredictable cadence — each stage brought its own tempo and texture.');
+    }
+  }
+
+  if (count > 0) {
+    if (avgX > 0.65) {
+      parts.push('Motivation held strong throughout.');
+    } else if (avgX < 0.35) {
+      parts.push('Motivation wavered, but the work got done.');
+    } else {
+      parts.push('Motivation ebbed and flowed with the work.');
+    }
+
+    if (avgY > 0.65) {
+      parts.push('Anxiety ran high — tension was a constant companion.');
+    } else if (avgY < 0.35) {
+      parts.push('You stayed remarkably calm through it all.');
+    } else {
+      parts.push('Anxiety surfaced in waves, never fully absent.');
+    }
+  }
+
+  if (parts.length === 0) {
+    return 'Not enough tracking data to describe the rhythm.';
+  }
+  return parts.join(' ');
 }
 
 document.getElementById('openPosterBtn').addEventListener('click', function() {
@@ -5427,7 +5621,7 @@ document.getElementById('closeCreate').addEventListener('click', closeAllOverlay
             id: 't' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
             name: taskName.trim(),
             story: story.name.toLowerCase(),
-            inRing: true,
+            inRing: false,
             status: 'smooth',
             feelings: { x: 0.5, y: 0.5 }
           });
@@ -5674,11 +5868,7 @@ function loadSheetStories() {
     const saved = localStorage.getItem('fallow-sheet-stories');
     if (saved) return JSON.parse(saved);
   } catch(e) {}
-  return [
-    { id: 'ss1', name: 'Research', color: '#8C7354', expanded: true, tasks: ['Competitor analysis', 'Mood board'] },
-    { id: 'ss2', name: 'Concept', color: '#5C7A6B', expanded: false, tasks: ['Logo exploration', 'Color study'] },
-    { id: 'ss3', name: 'Execution', color: '#7A5C6B', expanded: false, tasks: ['Final design', 'Spec sheet'] }
-  ];
+  return [];
 }
 
 function saveSheetStories() {
@@ -5686,7 +5876,7 @@ function saveSheetStories() {
 }
 
 let sheetStories = loadSheetStories();
-let nextSheetStoryId = Math.max(...sheetStories.map(s => parseInt(s.id.replace('ss',''))), 4) + 1;
+let nextSheetStoryId = Math.max(...sheetStories.map(s => parseInt(s.id.replace('ss',''))), 0) + 1;
 
 function renderSheetStories() {
   const container = document.getElementById('createStoriesContainer');
@@ -5734,7 +5924,7 @@ function renderSheetStories() {
   // Restore focus to add-task input if it was focused before
   if (focusedStoryId) {
     const card = container.querySelector(`.create-story-card[data-story-id="${focusedStoryId}"]`);
-    card?.querySelector('.add-task-input')?.focus();
+    card?.querySelector('.add-task-input')?.focus({ preventScroll: true });
   }
 
   saveSheetStories();
@@ -5821,7 +6011,7 @@ document.getElementById('addStoryBtn').addEventListener('click', () => {
     const newCard = document.querySelector('.create-story-card:last-child');
     const input = newCard?.querySelector('.create-story-name-input');
     if (input) {
-      input.focus();
+      input.focus({ preventScroll: true });
       input.select();
     }
   }, 50);
