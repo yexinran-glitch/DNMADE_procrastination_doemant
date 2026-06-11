@@ -1660,7 +1660,7 @@ body {
 }
 .export-preview-area canvas {
   max-width: 100%;
-  max-height: 240px;
+  max-height: 420px;
   border-radius: 12px;
 }
 
@@ -2048,15 +2048,11 @@ body {
         <button class="close-btn" id="closeExport3d">✕</button>
       </div>
       <div class="export-preview-area">
-        <canvas id="export3dCanvas" width="600" height="400"></canvas>
+        <canvas id="export3dCanvas" width="750" height="560"></canvas>
         <button class="flip-btn" id="flip3dBtn">↺ Flip</button>
       </div>
       <div class="export-quote">Your journey is now an object.</div>
       <div class="export-subtitle">This model is generated from your project's ring data — every ripple reflects your creative journey.</div>
-      <div class="export-engraving">
-        <label class="engraving-label">BACK ENGRAVING</label>
-        <input class="engraving-input" id="engravingText" type="text" />
-      </div>
     </div>
     <div class="sheet-footer">
       <button class="generate-3d-btn" id="downloadStlFromSheet">Download STL ↓</button>
@@ -4052,13 +4048,6 @@ function openExport3D(project) {
   closeAllOverlays();
   export3dPreviewProject = project;
   stlRotX = -0.5; stlRotY = 0.3;
-
-  var created = new Date(project.createdAt);
-  var now = new Date();
-  var defaultEngraving = project.name + ' / ' + formatDate(created) + ' - ' + formatDate(now);
-  var engravingInput = document.getElementById('engravingText');
-  if (engravingInput) engravingInput.value = defaultEngraving;
-
   export3dSheet.classList.add('open');
   scrim.classList.add('active');
 
@@ -4241,18 +4230,27 @@ function render3DPreviewToCanvas() {
   tctx.textAlign = 'center';
   tctx.textBaseline = 'middle';
   var maxTextW = TEXTSZ * 0.72;
+  // Line 1: project name
+  var pname = project.name || '';
   var fontSize = 80;
   tctx.font = 'bold ' + fontSize + 'px "Inter", sans-serif';
-  var engravingInput = document.getElementById('engravingText');
-  var pname = (engravingInput && engravingInput.value) || (project.name || '');
   var metrics = tctx.measureText(pname);
   if (metrics.width > maxTextW) {
     fontSize = Math.floor(fontSize * maxTextW / metrics.width);
     tctx.font = 'bold ' + fontSize + 'px "Inter", sans-serif';
   }
-  if (pname) tctx.fillText(pname, TEXTSZ / 2, TEXTSZ * 0.38);
+  if (pname) tctx.fillText(pname, TEXTSZ / 2, TEXTSZ * 0.43);
+  // Line 2: date range
+  var dcreated = new Date(project.createdAt);
+  var dnow = new Date();
   tctx.font = 'italic 32px "Inter", sans-serif';
-  tctx.fillText('Every creator has a fallow period.', TEXTSZ / 2, TEXTSZ * 0.64);
+  tctx.fillText(formatDate(dcreated) + ' — ' + formatDate(dnow), TEXTSZ / 2, TEXTSZ * 0.50);
+  // Line 3: Fallow
+  tctx.font = 'bold 36px "Inter", sans-serif';
+  tctx.fillText('Fallow', TEXTSZ / 2, TEXTSZ * 0.77);
+  // Line 4: slogan
+  tctx.font = 'italic 24px "Inter", sans-serif';
+  tctx.fillText('Every creator has a fallow period.', TEXTSZ / 2, TEXTSZ * 0.83);
   var imageData = tctx.getImageData(0, 0, TEXTSZ, TEXTSZ);
   var textPixels = imageData.data;
   var TEXT_DEPTH = 3.5;
@@ -4383,9 +4381,17 @@ function render3DPreviewToCanvas() {
     ctx.lineTo(p[2].x, p[2].y); ctx.lineTo(p[3].x, p[3].y);
     ctx.closePath();
 
-    if (q.color === 'bottom' || q.color === 'wall') {
+    if (q.color === 'wall') {
       ctx.fillStyle = '#B8B4AD'; ctx.fill();
+    } else if (q.color === 'bottom') {
+      var lightX = -0.45, lightY = -0.45, lightZ = 0.77;
+      var bN = q.normal || { x: 0, y: 0, z: 1 };
+      var bDiffuse = Math.max(0, -(bN.x * lightX + bN.y * lightY + bN.z * lightZ));
+      var bBrightness = 0.25 + bDiffuse * 0.50;
+      var bGray = Math.round(bBrightness * 255);
+      ctx.fillStyle = 'rgb(' + bGray + ',' + bGray + ',' + bGray + ')'; ctx.fill();
     } else {
+      var lightX = -0.45, lightY = -0.45, lightZ = 0.77;
       var lightX = -0.45, lightY = -0.45, lightZ = 0.77;
       var Nq = q.normal || { x: 0, y: 0, z: 1 };
       var diffuse = Math.max(0, Nq.x * lightX + Nq.y * lightY + Nq.z * lightZ);
@@ -4909,23 +4915,29 @@ function generateSTL(project) {
   tctx.textAlign = 'center';
   tctx.textBaseline = 'middle';
   var maxTextW = TEXTSZ * 0.72;
-  // Line 1: project name (large, upper portion)
+  // Line 1: project name
+  var pname = project.name || '';
   var fontSize = 80;
   tctx.font = 'bold ' + fontSize + 'px "Inter", sans-serif';
-  var engravingInput = document.getElementById('engravingText');
-  var pname = (engravingInput && engravingInput.value) || project.name || '';
   var metrics = tctx.measureText(pname);
   if (metrics.width > maxTextW) {
     fontSize = Math.floor(fontSize * maxTextW / metrics.width);
     tctx.font = 'bold ' + fontSize + 'px "Inter", sans-serif';
   }
   if (pname) {
-    tctx.fillText(pname, TEXTSZ / 2, TEXTSZ * 0.38);
+    tctx.fillText(pname, TEXTSZ / 2, TEXTSZ * 0.43);
   }
-  // Line 2: slogan (smaller, lower portion)
-  var slogan = 'Every creator has a fallow period.';
+  // Line 2: date range
+  var dcreated2 = new Date(project.createdAt);
+  var dnow2 = new Date();
   tctx.font = 'italic 32px "Inter", sans-serif';
-  tctx.fillText(slogan, TEXTSZ / 2, TEXTSZ * 0.64);
+  tctx.fillText(formatDate(dcreated2) + ' — ' + formatDate(dnow2), TEXTSZ / 2, TEXTSZ * 0.50);
+  // Line 3: Fallow
+  tctx.font = 'bold 36px "Inter", sans-serif';
+  tctx.fillText('Fallow', TEXTSZ / 2, TEXTSZ * 0.77);
+  // Line 4: slogan
+  tctx.font = 'italic 24px "Inter", sans-serif';
+  tctx.fillText('Every creator has a fallow period.', TEXTSZ / 2, TEXTSZ * 0.83);
   var imageData = tctx.getImageData(0, 0, TEXTSZ, TEXTSZ);
   var textPixels = imageData.data;
 
