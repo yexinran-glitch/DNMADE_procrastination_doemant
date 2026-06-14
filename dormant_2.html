@@ -143,8 +143,8 @@ body {
 }
 
 .menu-btn {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   border: 0.5px solid rgba(255, 255, 255, 0.3);
@@ -153,7 +153,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.2s, transform 0.2s;
@@ -378,18 +378,15 @@ body {
 	  transform: translate(-50%, -50%);
 	  transition: filter 0.2s, transform 0.2s;
 	  background:
-	    radial-gradient(circle at 30% 22%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 25%, transparent 50%),
-	    radial-gradient(circle at 65% 70%, rgba(255,255,255,0.04) 0%, transparent 40%),
-	    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 100%);
+	    radial-gradient(circle at 30% 22%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 25%, transparent 50%),
+	    radial-gradient(circle at 65% 70%, rgba(255,255,255,0.02) 0%, transparent 40%),
+	    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.04) 100%);
 	  backdrop-filter: blur(16px);
 	  -webkit-backdrop-filter: blur(16px);
 	  border: 0.5px solid rgba(255,255,255,0.18);
 	  box-shadow:
 	    0 8px 32px rgba(0,0,0,0.35),
-	    0 2px 8px rgba(0,0,0,0.25),
-	    inset 0 0 20px rgba(255,255,255,0.08),
-	    inset 0 0 40px rgba(0,0,0,0.12),
-	    inset 0 1px 2px rgba(255,255,255,0.12);
+	    0 2px 8px rgba(0,0,0,0.25);
 	}
 	.archive-bubble::before {
 	  content: '';
@@ -620,7 +617,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 .portrait-card {
   background: var(--card-bg);
@@ -685,10 +682,10 @@ body {
   position: relative;
 }
 .bnav {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  border: 0.5px solid rgba(255, 255, 255, 0.16);
   border-radius: 28px;
   height: 52px;
   display: flex;
@@ -697,8 +694,8 @@ body {
   padding: 0 24px;
   margin-right: 60px;
   box-shadow:
-    0 4px 16px rgba(0,0,0,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.08);
+    0 4px 16px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.04);
   position: relative;
 }
 .nav-item {
@@ -726,25 +723,24 @@ body {
 
 .add-floating {
   position: absolute;
-  right: 24px;
-  bottom: 24px;
+  right: 20px;
+  bottom: 25px;
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--add-btn);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--ink);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 300;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
   z-index: 5;
-  transition: transform 0.2s;
+  transition: background 0.2s, transform 0.2s;
 }
-.add-floating:hover { transform: scale(1.06); }
+.add-floating:hover { background: rgba(255, 255, 255, 0.16); }
 .add-floating:active { transform: scale(0.95); }
 
 /* ============= SCRIM ============= */
@@ -784,8 +780,8 @@ body {
   border-radius: 20px 0 0 20px;
   border-left: 0.5px solid rgba(255,255,255,0.22);
   box-shadow:
-    -12px 0 40px rgba(0,0,0,0.55),
-    -3px 0 10px rgba(0,0,0,0.35),
+    0 0 0 rgba(0,0,0,0), /* removed left shadow that bled into visible area */
+    0 0 0 rgba(0,0,0,0), /* removed */
     inset 1px 0 0 rgba(255,255,255,0.12),
     inset 2px 0 6px rgba(255,255,255,0.03),
     inset 0 0 0 1px rgba(255,255,255,0.03);
@@ -1085,8 +1081,8 @@ body {
   border-radius: 20px 0 0 20px;
   border-left: 0.5px solid rgba(255,255,255,0.22);
   box-shadow:
-    -12px 0 40px rgba(0,0,0,0.55),
-    -3px 0 10px rgba(0,0,0,0.35),
+    0 0 0 rgba(0,0,0,0), /* removed left shadow that bled into visible area */
+    0 0 0 rgba(0,0,0,0), /* removed */
     inset 1px 0 0 rgba(255,255,255,0.12),
     inset 2px 0 6px rgba(255,255,255,0.03),
     inset 0 0 0 1px rgba(255,255,255,0.03);
@@ -1284,8 +1280,8 @@ body {
   color: var(--ink);
 }
 .close-btn {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   border: 0.5px solid rgba(255, 255, 255, 0.3);
@@ -1528,6 +1524,8 @@ body {
   overflow-y: auto;
   padding: 0 20px 12px;
   scrollbar-width: none;
+  mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
 }
 .archive-detail-scroll::-webkit-scrollbar { display: none; }
 
@@ -2043,7 +2041,7 @@ body {
   <div class="bnav-wrap">
     <div class="bnav">
       <div class="nav-item active" data-nav="ring"><div class="ico">◎</div></div>
-      <div class="nav-item" data-nav="projects"><div class="ico" style="font-size:26px">⊞</div></div>
+      <div class="nav-item" data-nav="projects"><div class="ico" style="transform: translateY(2px)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="7" r="4"/><circle cx="16" cy="8" r="3"/><circle cx="10" cy="16" r="5"/></svg></div></div>
       <div class="nav-item" data-nav="profile"><div class="ico"><svg width="22" height="22" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="7" cy="4.5" r="2.5"/><path d="M2.5 13c0-3 2-4.5 4.5-4.5s4.5 1.5 4.5 4.5"/></svg></div></div>
     </div>
     <button class="add-floating" id="addBtn">+</button>
@@ -2203,15 +2201,20 @@ body {
 	  return v / total;
 	}
 
-	// 3-octave FBM — soft, round forms, no sharp ridges
-	function fbmSoft(x, y, t) {
-	  let v = 0, amp = 1, freq = 1, total = 0;
+	// 3-octave Ridged Multifractal — natural 3D ridge profile
+	function ridgedMF(x, y, t) {
+	  let val = 0, amp = 1, freq = 1, total = 0;
 	  for (let i = 0; i < 3; i++) {
-	    v += amp * noise2D(x * freq + t * (0.2 + i * 0.06), y * freq + t * (0.15 + i * 0.05));
+	    let n = Math.abs(noise2D(
+	      x * freq + t * (0.14 + i * 0.05),
+	      y * freq + t * (0.12 + i * 0.04)
+	    ));
+	    n = Math.pow(1 - n, 0.5);  // sqrt broadens peak into rounded dome
+	    val += n * amp;
 	    total += amp;
-	    amp *= 0.5; freq *= 2.0;
+	    amp *= 0.5; freq *= 1.8;
 	  }
-	  return v / total;
+	  return val / total;
 	}
 
 	const FLUID_W = 160, FLUID_H = 250;
@@ -2228,7 +2231,7 @@ body {
 
 	function renderFluidBg(time) {
 	  const data = fluidImageData.data;
-	  const t = time * 0.00004;
+	  const t = time * 0.00008;
 	  const ANGLE = 0.55;
 	  for (let py = 0; py < FLUID_H; py++) {
 	    for (let px = 0; px < FLUID_W; px++) {
@@ -2244,14 +2247,13 @@ body {
 	      const wx = fbm3(rx * 0.5 + t * 0.3, ry * 1.0, t * 0.18) * 0.5;
 	      const wy = fbm3(rx * 0.5, ry * 1.0 + t * 0.35, t * 0.22) * 0.5;
 
-	      // Stretch for elongated folds
-	      const sx = (rx + wx) * 0.5;
-	      const sy = (ry + wy) * 2.0;
+	      // Stretch — fewer, larger folds
+	      const sx = (rx + wx) * 0.25;
+	      const sy = (ry + wy) * 1.4;
 
-	      const n = fbmSoft(sx, sy, t) * 0.5 + 0.5;
+	      const n = ridgedMF(sx, sy, t);
 
-	      // Map: linear + slight boost for highlights reaching #4a4a4a (74)
-	      const b = Math.floor(Math.min(255, Math.pow(n, 1.6) * 78)); // strong contrast, soft peaks
+	      const b = Math.floor(Math.min(255, Math.pow(n, 5.0) * 80));
 	      data[i] = b; data[i + 1] = b; data[i + 2] = b; data[i + 3] = 255;
 	    }
 	  }
@@ -3295,8 +3297,8 @@ function drawRingFrame(angle, time) {
     });
 
     // Prune old points beyond TRAIL_SPAN
-    var pruneCutoff = angle - TRAIL_SPAN - 0.6;
-    while (task._trailHistory.length > 2 && task._trailHistory[1].angle < pruneCutoff) {
+    var pruneCutoff = angle - TRAIL_SPAN - 1.2;
+    while (task._trailHistory.length > 2 && task._trailHistory[0].angle < pruneCutoff) {
       task._trailHistory.shift();
     }
     while (task._trailHistory.length > 2500) {
@@ -3307,11 +3309,11 @@ function drawRingFrame(angle, time) {
     // Point is at screen angle PEN_ANGLE=0; trail spans behind it
     var visible = [];
     var visMin = -TRAIL_SPAN - 0.15;
-    var visMax = 0.15;
+    var visMax = offset;
     for (var h = 0; h < task._trailHistory.length; h++) {
       var hpt = task._trailHistory[h];
-      var sa = hpt.angle - angle;
-      if (sa >= visMin && sa <= visMax) {
+      var screenSa = hpt.angle - angle + offset;
+      if (screenSa >= visMin && screenSa <= visMax) {
         visible.push(hpt);
       }
     }
@@ -3323,7 +3325,7 @@ function drawRingFrame(angle, time) {
         var hptB = visible[h + 1];
         // Freshness: 1 = just created (white-hot), 0 = oldest (warm-dark, near invisible)
         var midDist = Math.max(0, -(hptA.angle - angle) / TRAIL_SPAN);
-        var fresh = 1 - midDist;
+        var fresh = Math.max(0, 1 - midDist);
         var alpha = Math.pow(fresh, 2.5) * layerBright;
         var ct = Math.pow(fresh, 1.5);
         var rr = Math.round(60 + 195 * ct);
